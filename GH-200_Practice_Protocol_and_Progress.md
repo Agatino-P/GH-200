@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-06-23 21:21 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7)*
+**Last updated: 2026-06-24 10:54 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Attempt log** and **Miss ledger** at the end of each session.*
 
@@ -23,6 +23,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 - The **free official Microsoft Learn practice assessment** is the anchor. **Caveat (see §7):** in the June 23 run it tested *foundational* material and did **not** touch the hard reworded objectives studied (OIDC, attestations, runner networking, enforcement). It is **necessary-not-sufficient** — supplement with banks that reflect the Jan-2026 reworded objectives.
 - Study-phase **recaps + per-topic cheats** (on the learner's HD + repo `Agatino-P/gh-200` → `Study material/`) — the remediation source whenever a miss maps to a studied topic. Ask the learner to upload the relevant one when needed.
 - `GH-200_Coverage_Map.md` and `GH-200_Study_Protocol_and_Progress.md` — objective list + teaching-phase record (for cross-referencing a miss back to where it was taught).
+- **GHCertified bank — captured to one project file:** `gh-200-ghcertified-bank-full-2026-06-24.md` (178 Qs; 41 multi-select, 137 single; lettered options + contributor-marked answer(s) + per-question docs link; Q009/Q052/Q072 have no docs link in source). Sourced from the open-source repo `github.com/FidelusAleksander/ghcertified` → `questions/en/actions/` (GPL-3.0, branch `main`). **This is now the quiz source — we run GHCertified as an in-chat quiz from this file, not the web UI (see §10 UI caveats).** Answers are *unverified* community keys → verify against `docs.github.com` before internalizing (§4.6).
 
 ## 4. Testing protocol (how we run the phase)
 1. **Anchor on the free official MS Learn assessment; supplement** from the provider list (the unofficial banks — Tutorials Dojo, GHCertified, SkillCertPro, ITExams — better reflect the reworded enterprise/security objectives, but accuracy is not guaranteed; treat their "correct" answers skeptically and verify against `docs.github.com`).
@@ -41,6 +42,8 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 7. **Timestamp every edit** — bump the header `Last updated` to current `YYYY-MM-DD HH:MM UTC`.
 8. **Formatting (study protocol §3.8):** in chat, small fenced blocks only; anything wide/long → a downloadable `.md` file with real markdown tables.
 9. **Three-source sync discipline (study protocol §8):** the project holds only the operating set (this protocol, the study protocol, coverage map, source PDFs/indexes, and the per-attempt practice files). The provider list now lives **in this protocol (§10)** — the standalone `gh-200-practice-providers.md` is retired and can be deleted from the project. Recaps/cheats stay on HD + repo. Keep repo / project / HD aligned; verify by fresh clone when in doubt.
+
+**Quiz delivery (decided 2026-06-24):** Because the GHCertified UI has **no progress save/resume and no exportable report** (verified from its open-source app code — see §10), we run banks as an **in-chat quiz from the captured file** (§3), not the web UI. **Format change from the default 5-per-quiz batch (§ study-protocol quiz discipline): at the start, go ONE question at a time** — present a single question (options only; rationale + marked answer hidden), let the learner commit *or ask questions first*, then reveal the bank's marked answer **and verify it against `docs.github.com`** before accepting it. Triage each miss into the four buckets (§4.4) and **add any newly surfaced gap to the Miss ledger (§7)**. Batch size can scale up later once warmed up — announce any change explicitly.
 
 ## 5. Readiness criteria / targets
 - **Learner's working target: consistently 77%+ across multiple attempts** (set in the June 23 results file).
@@ -94,7 +97,8 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | This practice protocol | ✅ created 2026-06-23 20:36 UTC |
 | Attempt 1 — MS Learn official practice | ✅ logged (27/30, 90%) — foundational, under-tests gap areas |
 | Attempt 1 — full question-vs-objective analysis | ✅ done — `gh-200-practice-analysis-2026-06-23.md`; all 3 misses bucket (d), zero review owed |
-| Reworded-objective bank (Domain 4/5 depth) | ⬜ not yet run |
+| GHCertified bank — captured to project file | ✅ done 2026-06-24 — `gh-200-ghcertified-bank-full-2026-06-24.md` (178 Qs) |
+| Reworded-objective bank (Domain 4/5 depth) | ▶ next — GHCertified, run as in-chat quiz, ONE question at a time (§4 quiz delivery) |
 | Parked calibration flags | ⬜ open (6 items, §8) |
 | Readiness (§5 stop-condition) | ⬜ not met — one easy attempt only |
 
@@ -105,12 +109,12 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 | Provider | Cost | Volume | Official? | Freshness (their claim) | Notes |
 |---|---|---|---|---|---|
-| **[Microsoft Learn practice assessment](https://learn.microsoft.com/en-us/credentials/certifications/exams/gh-200)** | Free | 30 | ✅ official | aligned to current study guide | The anchor. **But Attempt 1 showed it's foundational + partly dated** — under-tests the reworded Domain 4/5 depth. Necessary-not-sufficient. |
-| **[GHCertified](https://ghcertified.com/en/practice-tests/actions)** | Free | 178 | ❌ community | — | **Recommended next** — free first probe of reworded-objective depth. |
-| **[Tutorials Dojo](https://portal.tutorialsdojo.com/courses/gh-200-github-actions-practice-exams/)** | ~$10–15 (sales common) | 140+ full; **free 30-Q sampler** | ❌ unofficial | "continuously refined / aligned with official objectives" + 1-yr updates — **general claim, no dated post-Jan-2026 guarantee** (verified live 2026-06-23) | Detailed explanations + official doc links; 4 modes + flashcards. [Free sampler](https://portal.tutorialsdojo.com/product/free-gh-200-github-actions-practice-exams-sampler/) = low-risk quality probe before paying. |
-| **[MeasureUp](https://www.measureup.com/microsoft-gh-200-github-actions-practice-test.html)** | $99 | — | ✅ official simulator | — | Timed Certification + Practice modes; priciest. |
-| **[SkillCertPro](https://skillcertpro.com/product/github-actions-certification-exam-questions/)** | ~$20 | 540 / 9 mocks | ❌ unofficial | claims "weekly updates / 2026 latest" | Bug-bounty accuracy claims; verify answers. |
-| **[ITExams](https://www.itexams.com/info/GH-200)** | Free | 110 user-submitted | ❌ unofficial (dumps) | none | **Most skepticism** — user-submitted, accuracy not guaranteed. |
+| **Microsoft Learn practice assessment** | Free | 30 | ✅ official | aligned to current study guide | The anchor. **But Attempt 1 showed it's foundational + partly dated** — under-tests the reworded Domain 4/5 depth. Necessary-not-sufficient. |
+| **GHCertified** | Free | 178 | ❌ community | — | **In use — captured.** Open-source (GPL-3.0): 178 Qs are markdown files in `github.com/FidelusAleksander/ghcertified` → `questions/en/actions/`, captured to a project file (§3). **UI caveats (verified from source, 2026-06-24): no progress save/resume, no exportable/downloadable report; results are on-screen only; login benefits only the Challenges leaderboard, not practice tests.** → we quiz in-chat from the captured file, not the UI. |
+| **Tutorials Dojo** | ~$10–15 (sales common) | 140+ full; **free 30-Q sampler** | ❌ unofficial | "continuously refined / aligned with official objectives" + 1-yr updates — **general claim, no dated post-Jan-2026 guarantee** (verified live 2026-06-23) | Detailed explanations + official doc links; 4 modes + flashcards. Free sampler = low-risk quality probe before paying. |
+| **MeasureUp** | $99 | — | ✅ official simulator | — | Timed Certification + Practice modes; priciest. |
+| **SkillCertPro** | ~$20 | 540 / 9 mocks | ❌ unofficial | claims "weekly updates / 2026 latest" | Bug-bounty accuracy claims; verify answers. |
+| **ITExams** | Free | 110 user-submitted | ❌ unofficial (dumps) | none | **Most skepticism** — user-submitted, accuracy not guaranteed. |
 
 **Also seen in searches (unvetted, not curated in):** Udemy GH-200 banks (one claims 240 Q "regularly updated," another 6 exams / 390 Q); certificationpractice.com (free, self-described "reviewed up to date June 2026"). Capture here only if a future attempt uses one.
 
@@ -120,13 +124,13 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 ## ▶ RESUME POINT (start here next session)
 
-**STATUS:** Testing phase initialized. **One attempt logged + fully analyzed** — MS Learn official practice, **27/30 (90%)**, June 23. Foundational and partly dated; did **not** exercise the studied gap areas. Full mapping in `gh-200-practice-analysis-2026-06-23.md`; **all 3 misses bucket (d) (off-syllabus/outdated), zero review owed.** Necessary-not-sufficient.
+**STATUS:** Testing phase active. **One attempt logged + fully analyzed** — MS Learn official practice, **27/30 (90%)**, June 23; foundational + partly dated, did **not** exercise the studied gap areas; all 3 misses bucket (d), zero review owed. **GHCertified bank now captured** to `gh-200-ghcertified-bank-full-2026-06-24.md` (178 Qs). The GHCertified web UI can't save progress or export a report (verified from source, §10), so the bank is run **as an in-chat quiz from the captured file.**
 
 **Do this first:** read this protocol to reload state. Recaps/cheats are on the learner's HD + repo — ask the learner to upload any needed for a targeted review.
 
 **Next decisions / actions:**
-1. **Next bank = GHCertified (free, 178 Q)** — decided by learner 2026-06-23 as the first reworded-objective probe (Domain 4/5 depth). Provider details in **§10**. Fallback if it's thin/low-quality: Tutorials Dojo (free 30-Q sampler first, then ~$10–15 full). **Verify "correct" answers against `docs.github.com` before trusting them.**
-2. **Run → capture both files** (`full-questions` + `results`, dated) → **triage misses into the four buckets (§4.4)** → log in §6/§7 → route (b)/(c) to targeted review.
+1. **Run GHCertified in-chat from the captured file** (`gh-200-ghcertified-bank-full-2026-06-24.md`, §3/§10) — not the web UI. Fallback bank if it proves thin/low-quality: Tutorials Dojo (free 30-Q sampler first, then ~$10–15 full).
+2. **Quiz format = ONE question at a time to start** (§4 quiz delivery): present a single question, options only, answer + rationale hidden → learner commits *or asks first* → reveal the bank's marked answer **and verify against `docs.github.com`** → triage the miss into the four buckets (§4.4) → **add any surfaced gap to the Miss ledger (§7).** Scale batch size up later if wanted (announce it).
 3. **Settle parked flags (§8)** opportunistically as questions surface them.
 4. **Re-sync** after each session (project + repo + HD); bump the header timestamp.
 
