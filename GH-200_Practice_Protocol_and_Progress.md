@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-06-24 16:37 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
+**Last updated: 2026-06-24 20:27 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Attempt log** and **Miss ledger** at the end of each session.*
 
@@ -21,7 +21,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 ## 3. Source materials for this phase (already in the project / on HD)
 - **Practice question sources / providers → §10 (in this file).**
 - The **verified GHCertified bank** (`gh-200-ghcertified-verified-full-2026-06-24.md`) is the **primary drill source** — 178 questions, fully verified (0 wrong keys), covering Domain 1–5 incl. real Domain 4/5 depth (OIDC, GHES, REST, runner groups, packages). Drill it shuffled (§4.10).
-- Study-phase **recaps + per-topic cheats** (on the learner's HD + repo `Agatino-P/gh-200` → `Study material/`) — the remediation source whenever a miss maps to a studied topic. Ask the learner to upload the relevant one when needed.
+- Study-phase **recaps + cheats** — **consolidated 2026-06-24 into two combined files**, `GH-200_Combined_Recaps.md` (all 14 topic recaps) and `GH-200_Combined_Cheat_Sheets.md` (all 14 cheats). These now live in **all three sources** (project + repo `Agatino-P/gh-200` → `Study material/` + HD); the 28 per-topic files were retired from the repo. They are the remediation source whenever a miss maps to a studied topic.
 - `GH-200_Coverage_Map.md` and `GH-200_Study_Protocol_and_Progress.md` — objective list + teaching-phase record (for cross-referencing a miss back to where it was taught).
 
 ## 4. Testing protocol (how we run the phase)
@@ -38,7 +38,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 6. **Accuracy rules inherited from study protocol §4** (non-negotiable — learner prioritizes truth over helpfulness): verify current-state against official GitHub docs and cite; never invent action names / inputs / REST endpoints / CLI flags / YAML keys; state uncertainty plainly; flag anything that may have changed since the Jan-2026 cutoff.
 7. **Timestamp every edit** — bump the header `Last updated` to current `YYYY-MM-DD HH:MM UTC`.
 8. **Formatting (study protocol §3.8):** in chat, small fenced blocks only; anything wide/long → a downloadable `.md` file with real markdown tables.
-9. **Three-source sync discipline (study protocol §8):** the project holds only the operating set (this protocol, the study protocol, coverage map, source PDFs/indexes, and the GHCertified raw + verified bank files). Recaps/cheats stay on HD + repo. Keep repo / project / HD aligned; verify by fresh clone when in doubt.
+9. **Three-source sync discipline (study protocol §8):** the project holds the operating set (this protocol, the study protocol, coverage map, source PDFs/indexes, the GHCertified + Tutorials Dojo bank files) **plus the two combined study-material files** (`GH-200_Combined_Recaps.md`, `GH-200_Combined_Cheat_Sheets.md`). **Convention change (2026-06-24):** recaps/cheats were consolidated from 28 per-topic files into these two combined files and now live in **all three** sources (project + repo + HD) — superseding the earlier "recaps/cheats stay on HD + repo, not project / cheats are per-topic not monolithic" rule. Keep repo / project / HD aligned; verify by fresh clone when in doubt.
 10. **Quizzing from banks — ALWAYS shuffle option order.** Several banks (confirmed for **GHCertified**, 2026-06-24) list the correct option(s) first, so the answer-position is heavily skewed: ~67% of GHCertified items are a bare `A` and ~89% have `A` among the correct answers. Un-shuffled, the learner could score ~89% by reflexively picking A while testing nothing. **Rule:** whenever Claude quizzes from any captured bank, randomize the option order per question (and within multi-selects) and re-letter, keeping the original key mapped internally. The stored verification files keep the *original* letters (so they stay diffable against the raw bank) — the shuffle happens only at quiz time.
 11. **Project-contents manifest (§11) — keep current + verify at every session start.** Whenever a file is added to or removed from the project, update the §11 manifest in the same edit. At the **start of every session** (first read), verify the actual project against §11 and report missing/extra — the learner requests this on every restart. The `/mnt/project` mirror is a cross-check only; the claude.ai project UI is authoritative.
 
@@ -104,7 +104,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 **Reliability note (important):** the `/mnt/project` view Claude reads is a **mirror that can lag or shift** — it has disagreed with the prompt's own file list and changed mid-session before. It is a **cross-check, not ground truth.** The authoritative source is the **file panel in the claude.ai project UI**. Agreement between the two = confirmed; a mismatch = "check the UI." Claude must not assert the project is correct on its own listing alone.
 
-**Expected set — 18 files, nothing else:**
+**Expected set — 20 files, nothing else:**
 ```
 # Course materials (11) — stable, rarely change
 1_-_GitHub_Actions_The_Big_Picture_-_Index.md
@@ -129,11 +129,15 @@ gh-200-ghcertified-bank-full-2026-06-24.md        # raw capture
 gh-200-ghcertified-verified-full-2026-06-24.md    # verified + enriched
 gh-200-tutorialsdojo-sampler-bank-2026-06-24.md   # TD free sampler, raw capture (30 Q)
 gh-200-tutorialsdojo-sampler-verified-2026-06-24.md # TD free sampler, verified + enriched
+
+# Combined study material (2) — consolidated 2026-06-24 from the 28 per-topic files
+GH-200_Combined_Recaps.md                         # all 14 topic recaps
+GH-200_Combined_Cheat_Sheets.md                   # all 14 cheats
 ```
 
-**Deliberately NOT in the project (flag if any reappear):** the MS Learn practice files (`gh-200-practice-full-questions / -results / -analysis-2026-06-23.md`); the 7 per-block GHCertified verified files (superseded by the consolidated `-verified-full-` file); the retired `gh-200-practice-providers.md`.
+**Deliberately NOT in the project (flag if any reappear):** the MS Learn practice files (`gh-200-practice-full-questions / -results / -analysis-2026-06-23.md`); the 7 per-block GHCertified verified files (superseded by the consolidated `-verified-full-` file); the retired `gh-200-practice-providers.md`; **the 28 per-topic recap/cheat files** (`GH-200_Topic_*` / `GH-200_Cheat_*`) — consolidated 2026-06-24 into the two combined files and removed from the repo's `Study material/` (which now holds only those two).
 
-**Pending additions:** none outstanding. The Tutorials Dojo sampler landed 2026-06-24 (its 2 files are in the set above); the TD full 140+ bank is paid and not collected.
+**Pending additions:** none outstanding. The two combined study-material files (`GH-200_Combined_Recaps.md`, `GH-200_Combined_Cheat_Sheets.md`) landed 2026-06-24 in project + repo + HD. The TD full 140+ bank is paid and not collected.
 
 ---
 
