@@ -697,3 +697,46 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 - **★ Programmatic retention — precise meaning:** = per-artifact `retention-days` (declarative) + programmatic **deletion** via REST/`gh`. There is **NO confirmed REST endpoint to SET the retention period** (`PUT .../actions/retention` unverified/likely not official). REST does **get / list / delete** only.
   - `DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` (+ `GET` to list); `DELETE .../actions/runs/{run_id}`; `gh cache delete`.
 - **★ Quota recalculation lags** (commonly 6–24h). A "storage quota exceeded" error persists *after* a successful delete — deletion didn't fail; just wait + lower retention going forward.
+
+
+---
+
+## Drill-Surfaced Keepers — Pass 1 (added 2026-06-25)
+
+*Trap-grade items surfaced while drilling the GHCertified bank (Pass 1). Each was checked against the live material; most fill gaps the courses never covered. Distribute into the topic sections above on the next cleanup pass — kept together here for now.*
+
+
+**Topic 1A**
+- Run a job **only on a merged PR**: there is **no `merged` activity type** — use `pull_request: types: [closed]` + `if: github.event.pull_request.merged == true`.
+- Reusable-workflow limits: **max 50** reusable workflows callable per file (raised from 20); **nesting depth 10** levels (raised from 4). *(current-state — re-verify)*
+- `pull_request` `branches:`/`paths:` filters match the **base (target) branch** (where the PR merges INTO), NOT the source/head branch. `!pattern` excludes; a later negative line removes earlier matches. (`tags:` is push-only.)
+
+**Topic 1B**
+- Status-check functions (used in `if:`): `success()` (implicit default), `failure()`, `always()`, `cancelled()`. NOT functions: completed/state/status.
+- **Secrets NOT usable in `if:`** (job or step) — validation error. To gate on a secret: map to job-level `env:` then `if: ${{ env.X != '' }}` (unset secret → empty string).
+- `if:` — the surrounding `${{ }}` is **optional** (`if: success()` == `if: ${{ success() }}`). `github.repository` = full **`owner/repo`**; owner alone = `github.repository_owner` (no `github.org`/`github.organization`).
+- Runner default **env vars** use `RUNNER_` prefix: `RUNNER_OS` (Linux/Windows/macOS), `RUNNER_ARCH` (X86/X64/ARM/ARM64), `RUNNER_NAME`, `RUNNER_TEMP`, `RUNNER_TOOL_CACHE` — mirror the `runner` context (`runner.os` ↔ `RUNNER_OS`). NOT `GITHUB_RUNNER_OS`. `GITHUB_` = repo/event/workflow data; `RUNNER_` = runner machine.
+
+**Topic 1C**
+- You CAN parallelize an **entire reusable workflow**: put `strategy.matrix` on a job whose body is `jobs.<id>.uses: <reusable-wf>@ref` → runs that whole reusable workflow once per matrix combo. (Matrix itself is still job-scoped; this is the mechanism.)
+
+**Topic 1E**
+- `actions/cache`: `key` = exact key; `path` = files to cache; **`restore-keys`** = ordered **fallback prefixes** — on exact-key miss, restore the most recent **partial** match (still `cache-hit:false`). `enableCrossOsArchive` = cross-OS; `cache-hit` output = hit/miss.
+
+**Topic 2A**
+- Re-run actor split: `github.actor`/`GITHUB_ACTOR` = **original** triggerer (unchanged on re-run; re-run uses its privileges); `github.triggering_actor`/`GITHUB_TRIGGERING_ACTOR` = whoever **re-ran** (changes). Re-run also reuses the **original SHA/ref**.
+
+**Topic 4C**
+- Scope levels = **organization / repository / environment**. An environment is **repo-scoped** — there is NO environment shared across repositories (common distractor).
+
+**Topic 1A/2A**
+- Skip a run: put `[skip ci]` `[ci skip]` `[no ci]` `[skip actions]` `[actions skip]` (or a `skip-checks: true` trailer) in **any commit message of a push**, or in the **HEAD commit of a PR**. Applies ONLY to push & pull_request (not pull_request_target). `ci` tokens = cross-tool convention (Travis/GitLab); `actions` tokens = GitHub-specific.
+
+**Topic 4C/5**
+- Org-level **shareable/reusable** components (4): **Secrets, Configuration Variables, Self-Hosted Runners, Workflow Templates**. NOT shareable: **Environment Variables** (inline env:), **Cache**, **Artifacts** (run/repo-scoped). Trap = Configuration Variables (yes) vs Environment Variables (no).
+
+**Topic 1B/5A**
+- Default env vars (GITHUB_ prefix): GITHUB_WORKFLOW, GITHUB_REPOSITORY, GITHUB_ACTOR, GITHUB_SHA, GITHUB_REF, GITHUB_RUN_ID/NUMBER, GITHUB_JOB, GITHUB_EVENT_NAME, GITHUB_WORKSPACE, GITHUB_API_URL... **GITHUB_TOKEN is NOT one** — it's a secret (`secrets.GITHUB_TOKEN`/`github.token`), map it to env yourself. Runner machine defaults = `RUNNER_*`.
+
+**Topic 1E/5D**
+- CACHE access scope = own branch + default branch (+ PR base); **siblings isolated**. Default-branch caches shared to all. (Retention: cache 7d / artifact 90d.) ARTIFACT scope = the RUN, not branch; cross-branch/run download via `actions/download-artifact` w/ run-id + `actions: read`.

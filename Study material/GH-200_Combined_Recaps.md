@@ -272,7 +272,10 @@ exists at that phase.
 WHERE you write it                    WHAT's available
 on: / name: (earliest)                almost nothing
 job-level if: / strategy              github, needs, vars  (NO steps, NO runner yet)
-step-level if: / run: / with: / env   full set (github, needs, matrix, steps, runner, vars, secrets)
+step-level if:                        github, needs, matrix, steps, runner, vars  (NO secrets)
+step-level run: / with: / env         full set incl. secrets
+   [CORRECTION 2026-06-25] secrets are NOT usable in if: (job OR step) -> "Unrecognized
+   named-value: secrets". To gate on a secret: map to job env: then if: ${{ env.X != '' }}.
 ```
 
 ```yaml

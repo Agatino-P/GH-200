@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-06-24 20:27 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
+**Last updated: 2026-06-24 22:06 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Attempt log** and **Miss ledger** at the end of each session.*
 
@@ -41,6 +41,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 9. **Three-source sync discipline (study protocol §8):** the project holds the operating set (this protocol, the study protocol, coverage map, source PDFs/indexes, the GHCertified + Tutorials Dojo bank files) **plus the two combined study-material files** (`GH-200_Combined_Recaps.md`, `GH-200_Combined_Cheat_Sheets.md`). **Convention change (2026-06-24):** recaps/cheats were consolidated from 28 per-topic files into these two combined files and now live in **all three** sources (project + repo + HD) — superseding the earlier "recaps/cheats stay on HD + repo, not project / cheats are per-topic not monolithic" rule. Keep repo / project / HD aligned; verify by fresh clone when in doubt.
 10. **Quizzing from banks — ALWAYS shuffle option order.** Several banks (confirmed for **GHCertified**, 2026-06-24) list the correct option(s) first, so the answer-position is heavily skewed: ~67% of GHCertified items are a bare `A` and ~89% have `A` among the correct answers. Un-shuffled, the learner could score ~89% by reflexively picking A while testing nothing. **Rule:** whenever Claude quizzes from any captured bank, randomize the option order per question (and within multi-selects) and re-letter, keeping the original key mapped internally. The stored verification files keep the *original* letters (so they stay diffable against the raw bank) — the shuffle happens only at quiz time.
 11. **Project-contents manifest (§11) — keep current + verify at every session start.** Whenever a file is added to or removed from the project, update the §11 manifest in the same edit. At the **start of every session** (first read), verify the actual project against §11 and report missing/extra — the learner requests this on every restart. The `/mnt/project` mirror is a cross-check only; the claude.ai project UI is authoritative.
+12. **Quiz delivery — ONE QUESTION AT A TIME (critical, learner-mandated 2026-06-24).** Present **exactly one** question, options only (answer + rationale hidden), then **wait**. The learner may answer **or ask a clarifying question first** — never batch multiple questions or rush ahead. Only after the learner commits: reveal the marked answer, give the rationale, and **shuffle still applies (§4.10)**. Alongside each question, Claude **verifies in the background which objective it really maps to** (objective ID + a one-line why) and **records it** so the per-question objective map accumulates over the phase. **Per-question tracking** (so we always know what was asked / passed / failed): keep a running record of source Q-ID, the shuffled→original letter map, the learner's answer, correct/incorrect, the four-bucket triage (§4.4) on any miss, and the mapped objective. Summarize the running tally on request and roll confirmed (b)/(c) gaps into the Miss ledger (§7).
 
 ## 5. Readiness criteria / targets
 - **Learner's working target: consistently 77%+ across multiple attempts.**
@@ -52,7 +53,9 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 | # | Date | Provider | Raw score | By section | Misses | Bucket(s) |
 |---|---|---|---|---|---|---|
-| — | — | — | *(no attempts logged yet — first will be a GHCertified drill batch)* | — | — | — |
+| 1 | 2026-06-25 | GHCertified (verified bank, shuffled, one-at-a-time) | **20/35 = 57% raw** · **20/25 = 80% adjusted** | spans D1–D5 | 15 | (b)×9 (c)×5 (d)×1 |
+
+**Attempt 1 analysis:** First real GHCertified drill (35 Qs, partial bank, one-at-a-time per §4.12). **Raw 57% but adjusted 80%** once justified misses are set aside. **10 of 15 misses were bucket (b) material gaps + (d) bad wording — i.e. the reworded exam reaching past the course material, not recall failures; only ~5 were genuine (c) retention slips** (and one of those, Q068, exposed a material *error*). Key signal: command of *studied* material is solid (~80%); the raw gap is uncovered breadth, now captured (15 cheat keepers added to the Combined Cheat Sheets + 1 recap correction + the §12 gap agenda). Scoring convention adopted: report **raw AND adjusted** (adjusted excludes (b)+(d)), with the four-bucket breakdown.
 
 
 
@@ -61,9 +64,35 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 | From | Item | Bucket | Maps to | Action |
 |---|---|---|---|---|
-| — | *(empty — no (b)/(c) gaps logged yet)* | — | — | — |
+| A1·Q100 | status-check functions success()/failure()/always()/cancelled() | (b) | 1.11 | Added to cheat (1B); cover in expressions ref |
+| A1·Q050 | env is repo-scoped (no cross-repo env) | (c) | 4.7 | Cheat emphasis (4C) added |
+| A1·Q158 | merged-PR idiom: types:[closed] + if merged==true (no 'merged' type) | (b) | 1.1 | Cheat (1A) + triggers ref |
+| A1·Q076 | reusable-wf limits: 50/file, nesting 10 (was 20/4) | (b) | 1.3/2.7 | Cheat (1A); re-verify near exam |
+| A1·Q068 | secrets NOT usable in if: (map to env) — **recap had this WRONG** | (c)+err | 1.11 | **Recap corrected** + cheat (1B) |
+| A1·Q118 | skip-run keywords [skip ci] etc.; push=any commit / PR=HEAD | (b) | 2.x/1.1 | Cheat (1A/2A) |
+| A1·Q072 | env-vars vs config-vars; workflow templates are org-shareable | (c) | 4.1/4.7 | Cheat (4C/5) |
+| A1·Q031 | ${{ }} optional in if:; github.repository=owner/repo | (b) | 1.11/1.10 | Cheat (1B) + contexts ref |
+| A1·Q018 | pull_request branches: filters BASE (target) branch | (b) | 1.1 | Cheat (1A) + triggers ref |
+| A1·Q096 | RUNNER_ default env vars (RUNNER_OS etc.) | (b) | 1.6 | Cheat (1B) + env-var ref |
+| A1·Q171 | re-run: actor=original vs triggering_actor=re-runner; reuses SHA | (c)+(b) | 2.4 | Cheat (2A); actor split was a gap |
+| A1·Q043 | cache branch scope (own+default+PR-base; siblings isolated) | (b) | 1.16/5.9 | Cheat (1E/5D) |
+| A1·Q106 | restore-keys = fallback prefixes for partial cache match | (b) | 1.16 | Cheat (1E) |
+| A1·Q061 | default env-var list; GITHUB_TOKEN is a SECRET not a default env var | (c) | 1.6 | Cheat (1B/5A) |
 
 **Standing watch-items (not yet triggered by a miss, but where the studied material is most likely to be tested by harder banks):** Domain 4 (highest weight; runner networking / images / variables / REST) and Domain 5 (OIDC, attestations, enforcement, optimization). Watch their per-section scores closely as GHCertified drill batches are run.
+
+
+## 7b. Pass-1 drill gap agenda — COVER BEFORE PASS 2
+
+*Concepts the bank tested that the course material does NOT cover (or got wrong). Work through these (verify each against `docs.github.com`) before re-drilling. All have cheat keepers queued in `GH-200_Combined_Cheat_Sheets.md` → 'Drill-Surfaced Keepers — Pass 1'.*
+
+1.  [1.11 (expressions) / 1.4 (if:)] status-check functions: success()/failure()/always()/cancelled()
+2. **BUILD TASK** [1.1 / 1.2 triggers, events, scope] TRIGGERS & EVENTS — systematic reference MISSING: (1) full list of common trigger events (push, pull_request, pull_request_target, issues, issue_comment, workflow_dispatch, repository_dispatch, workflow_run, workflow_call, schedule, release, deployment, discussion, check_run/check_suite, registry_package); (2) their activity `types:` (opened/closed/synchronize/reopened/labeled/edited...); (3) key `github.event.*` payload properties. Specific keeper: merged PR = types:[closed] + if github.event.pull_request.merged==true (no 'merged' type). | ALSO: pull_request branches:/paths: filter the BASE/target branch, not source/head. | ALSO: default ENV VARS — RUNNER_ family (RUNNER_OS/ARCH/NAME/TEMP/TOOL_CACHE) vs GITHUB_ family; map to runner context. | ALSO: GITHUB_ default env-var list (GITHUB_WORKFLOW/REPOSITORY/ACTOR/SHA/REF/RUN_ID...); GITHUB_TOKEN is NOT a default env var (it's a secret).
+3.  [1.3 / 2.7 reusable workflows] reusable-workflow limits: max 50 callable per file (was 20); nesting depth 10 levels (was 4). Current-state — re-verify near exam.
+4.  [2.x manage runs / 1.1 triggers] skip a workflow run: [skip ci]/[ci skip]/[no ci]/[skip actions]/[actions skip] in ANY commit msg of a push, or the HEAD commit of a PR. Only push & pull_request (NOT pull_request_target). Also skip-checks trailer. (ci-based tokens = cross-tool convention shared w/ GitLab/Travis; actions-based = GitHub-specific.)
+5.  [1.11 expressions / 1.10 contexts] In `if:` the `${{ }}` wrapper is OPTIONAL — `if: success()` == `if: ${{ success() }}`. Plus github.repository = full owner/repo (owner alone = github.repository_owner; no github.org/github.organization).
+6.  [2.4 re-run / 1.10 contexts] On re-run: github.actor (GITHUB_ACTOR) = ORIGINAL triggerer, unchanged (re-run uses its privileges); github.triggering_actor (GITHUB_TRIGGERING_ACTOR) = whoever re-ran, changes.
+7.  [1.16 / 5.9 caching & artifacts] CACHE branch scoping: a run restores caches from its OWN branch + DEFAULT branch (+ PR BASE branch); sibling feature branches isolated (anti-poisoning). Default-branch caches shared to all. vs ARTIFACT: scoped to the RUN, not branch; cross-run/branch download via actions/download-artifact (run-id + actions:read; cross-repo token).
 
 ## 8. Parked calibration flags (carried from the teaching phase — resolve against real practice questions)
 *(Confirm or refute each as it surfaces in a bank; update the relevant cheat/recap if a question settles it.)*
