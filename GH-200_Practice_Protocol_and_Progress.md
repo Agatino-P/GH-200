@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-06-28 20:52 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
+**Last updated: 2026-06-28 22:05 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Session log (§6)**, **Coverage ledger (§6b)**, and **Miss ledger (§7)** at the end of every session, then re-syncs all three sources (project + repo + HD).*
 
@@ -59,6 +59,8 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
     - **(c) the answer** — the correct option **in the shuffled frame** (its presented letter) AND its content, plus the shuffled→original letter map;
     - **(d) the grading** — the learner's answer, and ✓/✗ obtained by comparing the learner's letter to the recorded correct letter from (c).
     **Order is mandatory:** the correct option's *shuffled letter* is written to the drill log **at the moment the question is presented** (before the learner answers) — grading then compares letters mechanically. **Claude must never grade by gluing the bank's original answer word onto the learner's letter** (the 2026-06-28 inversion bug: presented `A=regex / B=glob`, learner answered `A`, Claude wrote "correct — A, glob" — fusing original-answer *content* with shuffled *letter*. Banned.). The drill log is synced with the other three sources (§4.9) and is itself the audit trail behind the §6b ledger's pass/fail column.
+16. **Combined grade-and-present turn (added 2026-06-28, time-saving).** Each turn runs ONE bash call that (a) mechanically grades the just-answered question (learner letter vs recorded correct shuffled letter from the drill log) and (b) presents the next question in bank order. Halves round-trips; all §4.10–§4.15 guarantees (file-sourced pull, shuffle, single/multi from verified key, correct letter logged at presentation time, mechanical grading) preserved.
+17. **N-option + code-block + annotation handling (added 2026-06-28).** The presenter must: (a) support up to 7 options (A–G), not just A–D; (b) detect single vs multi-select from the **count** of answer letters in the verified key; (c) parse options whose body is a fenced code block (render block-style) vs inline (render inline); (d) **strip the bank's `>` annotation lines** from option bodies (they carry answer hints and must never be shown); (e) grade against the **last unique** drill-log entry for a Q-ID and refuse to present a Q-ID that already has a live entry (no duplicate entries — the Q015 phantom bug). The running tally is computed **bucket-aware**: adjusted = raw_correct / (total − count of bucket-(b)/(d) misses).
 
 ## 5. Readiness criteria / targets
 - **Learner's working target: consistently 77%+ across multiple attempts.**
@@ -75,23 +77,56 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 |---|---|---|---|---|---|---|
 | 1 | 2026-06-25 | GHCertified (verified bank, shuffled, one-at-a-time) — *passed-IDs unlogged, see caveat above* | **20/35 = 57% raw** · **20/25 = 80% adjusted** | spans D1–D5 | 15 | (b)×9 (c)×5 (d)×1 |
 | — | 2026-06-28 | GHCertified Q001–Q020 — **RESULTS VOIDED** (see analysis) | *not counted* | D1 | — | — |
+| 2 | 2026-06-28 | GHCertified **Q001–Q031** (clean restart, shuffled, one-at-a-time, drill-log audited) | **28/31 = 90% raw** · **28/29 = 97% adjusted** | D1 (triggers, jobs/needs, reusable wf, matrix, concurrency, defaults) | 3 | (b)×1 (c)×1 (d)×1 |
 
 **2026-06-28 session — VOIDED, gaps kept.** Ran GHCertified Q001–Q020 but the session hit three integrity failures: (1) Q003–Q014 were initially **fabricated from memory** instead of pulled from the bank file; (2) redacted-pull receipts twice **leaked the answer** (source-order echo; a `grep` hint that included the answer line); (3) a **grading inversion** on Q019 (presented `A=regex / B=glob`; learner answered `A`; graded "correct — A, glob" by fusing the bank's original-answer *word* to the shuffled *letter*). Because the shuffle→content map was never persisted, the other ✓ grades can't be re-audited either. **Decision (learner): void the entire question log for this session, reset Pass 1 to Q000, and keep only the validated gaps (→ §7).** Fixes added same day: §4.15 drill log (exact shuffled question + Q-ID + answer-in-shuffled-frame + grade, written at presentation time; mechanical letter-vs-letter grading; no memory grading).
 
 **Attempt 1 analysis:** First real GHCertified drill (35 Qs, partial bank, one-at-a-time per §4.12). **Raw 57% but adjusted 80%** once justified misses are set aside. **10 of 15 misses were bucket (b) material gaps + (d) bad wording — i.e. the reworded exam reaching past the course material, not recall failures; only ~5 were genuine (c) retention slips** (and one of those, Q068, exposed a material *error*). Key signal: command of *studied* material is solid (~80%); the raw gap is uncovered breadth, now captured (15 cheat keepers added to the Combined Cheat Sheets + 1 recap correction + the §7b gap agenda). Scoring convention adopted: report **raw AND adjusted** (adjusted excludes (b)+(d)), with the four-bucket breakdown. **Bookkeeping note:** A1 predates the §6b coverage ledger and in-order draw rule (both added 2026-06-28 after its passed-IDs proved unrecoverable); precise ID-tracking begins at Q001 (the next question drawn).
+
+**Session 2 analysis (2026-06-28, clean restart).** First fully clean drill under the §4.15 drill-log + mechanical-grading regime: **Q001–Q031, raw 28/31 (90%), adjusted 28/29 (97%)**. Three misses: **Q014 (d)** the known loose-wording matrix-over-workflows item (excluded); **Q027 (b)** `defaults` supports only `run` (shell/working-directory) — no `defaults.env` — a thin-coverage course gap, verified vs live docs (excluded); **Q022 (c)** `workflow_dispatch` IS triggerable via REST API/CLI/UI — the one genuine retention miss (counts). All studied material answered correctly. Process note: the session surfaced and fixed several presenter bugs early (Q015 duplicate-entry phantom, A–G option support, code-block/`>`-annotation parsing) — all now codified in §4.16/§4.17. Q021 (`number` is a valid `workflow_dispatch` input type) and Q027 both verified against `docs.github.com`. Coverage is D1-heavy (the bank's opening band); D4/D5 depth still ahead.
 
 
 
 ## 6b. Coverage ledger (per-question record — the system of record)
 *(Updated every session per §4.12/§4.14. This — not chat history — is how we know what has been answered (§0). In-order draw (§4.13) means the GHCertified line is effectively a high-water mark; the table records the detail. The audit trail behind each pass/fail is the drill log `gh-200-drill-log.md`, §4.15.)*
 
-**▶ Pass 1 high-water mark:** **GHCertified — through Q000** (next question to draw = **Q001**). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset.)*
+**▶ Pass 1 high-water mark:** **GHCertified — through Q031** (next question to draw = **Q032**). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 VOIDED session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset. The clean Q001–Q031 below ARE counted.)*
 
 **How to read/maintain this:** one row per question actually drawn, appended live during the session and saved at session end. `Result` = ✓ pass / ✗ miss. On a miss, `Bucket` is the §4.4 triage and the item also goes to §7. `Obj` = the objective it really maps to (§4.12 background check). When resuming, the next question = the lowest un-drawn Q-ID in bank order (§4.13).
 
 | Source Q-ID | Result | Bucket | Obj | Session |
 |---|---|---|---|---|
-| *(none logged yet — Pass 1 ID-tracking begins at Q001)* | | | | |
+| Q001 | ✓ | — | 1.3 reusable-wf token perms | S2 |
+| Q002 | ✓ | — | 1.3 GITHUB_TOKEN perm values | S2 |
+| Q003 | ✓ | — | 1.3 permissions scope (wf/job) | S2 |
+| Q004 | ✓ | — | 5.x billing (free for public) | S2 |
+| Q005 | ✓ | — | 1.1 events | S2 |
+| Q006 | ✓ | — | 1.1 workflow basics | S2 |
+| Q007 | ✓ | — | 1.1 required components | S2 |
+| Q008 | ✓ | — | 1.1 repository_dispatch | S2 |
+| Q009 | ✓ | — | 1.2 YAML | S2 |
+| Q010 | ✓ | — | 4.7/5.1 secrets | S2 |
+| Q011 | ✓ | — | 1.5 jobs parallel default | S2 |
+| Q012 | ✓ | — | 1.5 needs | S2 |
+| Q013 | ✓ | — | 1.5/1.11 fail→skip | S2 |
+| Q014 | ✗ | (d) | 1.8 matrix (loose wording §8#1) | S2 |
+| Q015 | ✓ | — | 1.8 matrix syntax | S2 |
+| Q016 | ✓ | — | 1.8 matrix context | S2 |
+| Q017 | ✓ | — | 1.1 branches filter | S2 |
+| Q018 | ✓ | — | 1.1 pull_request base-branch glob | S2 |
+| Q019 | ✓ | — | 1.1 glob branch filters | S2 |
+| Q020 | ✓ | — | 1.1 workflow_dispatch | S2 |
+| Q021 | ✓ | — | 1.1 workflow_dispatch input types (5; number valid) | S2 |
+| Q022 | ✗ | (c) | 1.1/3.x workflow_dispatch via REST API — **→§7** | S2 |
+| Q023 | ✓ | — | 5.x disable workflow | S2 |
+| Q024 | ✓ | — | 1.1 activity types / types filter | S2 |
+| Q025 | ✓ | — | 1.3 workflow_call | S2 |
+| Q026 | ✓ | — | 1.3 reusable-wf outputs (3-tier) | S2 |
+| Q027 | ✗ | (b) | 1.6 defaults = run only, no defaults.env — **→§7** | S2 |
+| Q028 | ✓ | — | 1.x concurrency | S2 |
+| Q029 | ✓ | — | 1.x concurrency + cancel-in-progress | S2 |
+| Q030 | ✓ | — | 1.5/1.11 always() + needs | S2 |
+| Q031 | ✓ | — | 1.10/1.11 github.repository / if: (${{}} optional) | S2 |
 
 ## 7. Miss ledger (running gap feedback → review)
 *(Confirmed weak spots harvested from attempts, with the bucket and the review action. Bucket (a)/(d) items are recorded for awareness but don't drive review.)*
@@ -112,6 +147,8 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | A1·Q043 | cache branch scope (own+default+PR-base; siblings isolated) | (b) | 1.16/5.9 | Cheat (1E/5D) |
 | A1·Q106 | restore-keys = fallback prefixes for partial cache match | (b) | 1.16 | Cheat (1E) |
 | A1·Q061 | default env-var list; GITHUB_TOKEN is a SECRET not a default env var | (c) | 1.6 | Cheat (1B/5A) |
+| S2·Q022 | `workflow_dispatch` IS triggerable via REST API (`POST .../dispatches`) / `gh` CLI / UI — not UI-only | (c) | 1.1/3.x | Cheat (1A) + contexts/triggers ref; verified vs live docs |
+| S2·Q027 | `defaults` supports ONLY `run` (shell + working-directory); there is NO `defaults.env` (env vars use `env:`); `defaults` is workflow/job level, never step | (b) | 1.6/2.x | Cheat keeper; verified vs live docs |
 
 **Standing watch-items (not yet triggered by a miss, but where the studied material is most likely to be tested by harder banks):** Domain 4 (highest weight; runner networking / images / variables / REST) and Domain 5 (OIDC, attestations, enforcement, optimization). Watch their per-section scores closely as GHCertified drill batches are run.
 
@@ -134,6 +171,9 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 5.  [1.11 expressions / 1.10 contexts] In `if:` the `${{ }}` wrapper is OPTIONAL — `if: success()` == `if: ${{ success() }}`. Plus github.repository = full owner/repo (owner alone = github.repository_owner; no github.org/github.organization).
 6.  [2.4 re-run / 1.10 contexts] On re-run: github.actor (GITHUB_ACTOR) = ORIGINAL triggerer, unchanged (re-run uses its privileges); github.triggering_actor (GITHUB_TRIGGERING_ACTOR) = whoever re-ran, changes.
 7.  [1.16 / 5.9 caching & artifacts] CACHE branch scoping: a run restores caches from its OWN branch + DEFAULT branch (+ PR BASE branch); sibling feature branches isolated (anti-poisoning). Default-branch caches shared to all. vs ARTIFACT: scoped to the RUN, not branch; cross-run/branch download via actions/download-artifact (run-id + actions:read; cross-repo token).
+8.  **[1.10 contexts — DEEP-DIVE, expands items 2 & 5; from S2 Q029/Q031]** `github.ref` value varies BY EVENT (verified vs live docs): push branch = `refs/heads/<branch>`; push tag / release = `refs/tags/<tag>`; `pull_request` (active) = `refs/pull/<n>/merge`; `pull_request` closed+MERGED = `refs/heads/<base>`; `pull_request_target` = `refs/heads/<base_branch>`; `workflow_dispatch`/`schedule` = `refs/heads/<branch the run is on>`. TRAP: on a PR `github.ref`/`github.ref_name` is the **merge ref** (e.g. `42/merge`), NOT the branch — use `github.head_ref` (source/head, PR-only) and `github.base_ref` (target/base, PR-only). Trio: `github.ref` (full) vs `github.ref_name` (short) vs `github.sha`.
+9.  **[1.11 / 1.4 `if:` — EMPHASIS, reconfirms item 1; learner-flagged S2]** STUDY `if:` + status-function COMBINATIONS deeper: `success()`/`failure()`/`always()`/`cancelled()` × `needs`; implicit `if: success()` on needed jobs; how `always()`+`needs` runs regardless of upstream result; `${{ }}` optional in `if:`.
+10. **[1.x concurrency — from S2 Q028/Q029]** `concurrency.group` is a label string scoping mutual-exclusion; `cancel-in-progress: true` cancels older in-progress runs in the **same** group. `group: ${{ github.workflow }}-${{ github.ref }}` = one group per (workflow, ref/PR) → a new commit cancels that PR's run only, never a different PR's. (Ties to item 8: `github.ref`.)
 
 ## 8. Parked calibration flags (carried from the teaching phase — resolve against real practice questions)
 *(Confirm or refute each as it surfaces in a bank; update the relevant cheat/recap if a question settles it.)*
@@ -214,14 +254,14 @@ GH-200_Combined_Cheat_Sheets.md                   # all 14 cheats
 
 ## ▶ RESUME POINT (start here next session)
 
-**STATUS:** Testing phase active — **Pass 1 in progress.** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). **Attempt 1** (35 Q, 2026-06-25) is logged in §6 but its passed-question IDs were unrecoverable from chat history (checked 2026-06-28), so **Pass 1 is restarting clean from Q001 in bank order** with full per-question tracking (§6b). New conventions added 2026-06-28: **session vs pass definitions (§0)**, **no-data-loss rule (§0)**, **in-order draw (§4.13)**, **durable per-question logging (§4.14 → §6b)**.
+**STATUS:** Testing phase active — **Pass 1 in progress, through GHCertified Q031 (next = Q032).** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). Session 2 (2026-06-28) ran a clean **Q001–Q031** under the §4.15 drill-log + mechanical-grading regime: **raw 28/31 (90%), adjusted 28/29 (97%)** — see §6/§6b. New conventions added 2026-06-28: **§4.16 combined grade-and-present turn**, **§4.17 N-option/code-block/annotation handling + unique-entry grading + bucket-aware tally**. Earlier 2026-06-28 conventions stand: session vs pass (§0), no-data-loss (§0), in-order draw (§4.13), durable logging (§4.14 → §6b). *(Manifest note: the `/mnt/project` mirror showed `GH-200_Study_Protocol_and_Progress.md` absent, but the claude.ai UI confirms it present — mirror was stale; no manifest change needed.)*
 
 **Do this first:**
 1. **Verify project contents against the §11 manifest** (the learner asks for this on every restart): list the actual project files, diff against §11, and report missing/extra. Remember the `/mnt/project` view is only a cross-check — confirm against the claude.ai project UI; if they disagree, the UI wins. If files were added/removed, update the §11 manifest in the same session.
 2. Read the rest of this protocol to reload state — especially **§0 (definitions + no-data-loss rule)** and the **§6b coverage ledger** (the high-water mark = where to resume). Recaps/cheats are in `Study material/` (repo + HD) — ask the learner to upload any needed for a targeted review.
 
 **Next decisions / actions:**
-1. **Drill the verified GHCertified bank IN ORDER** — next question = lowest un-drawn Q-ID per the §6b high-water mark (Pass 1 starts at Q001). **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)** — options shown, answer/rationale hidden until the learner commits. Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
+1. **Drill the verified GHCertified bank IN ORDER — resume at Q032** (lowest un-drawn Q-ID per the §6b high-water mark). **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)**; **combined grade-and-present turn (§4.16)**; presenter handles A–G / code-block / `>`-annotation options (§4.17). Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
 2. **Per question:** record it in §6b *as you go* (Q-ID, ✓/✗, bucket on a miss, mapped objective); roll confirmed (b)/(c) gaps into §7. Report each session's raw **and** adjusted score (§5) — readiness itself is judged on the completed pass, not the session.
 3. **At session end (NO-DATA-LOSS — §0):** write §6 (session row) + §6b (every Q-ID drawn) + §7 (new gaps), bump the timestamp, and re-sync project + repo + HD. Never leave progress only in chat.
 4. **Gap study is for AFTER Pass 1 completes (§7b)** — keep accumulating gaps during the pass; don't stop to study mid-pass.
