@@ -740,3 +740,28 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 
 **Topic 1E/5D**
 - CACHE access scope = own branch + default branch (+ PR base); **siblings isolated**. Default-branch caches shared to all. (Retention: cache 7d / artifact 90d.) ARTIFACT scope = the RUN, not branch; cross-branch/run download via `actions/download-artifact` w/ run-id + `actions: read`.
+
+---
+
+## Drill-Surfaced Keepers — Pass 1, Session 3 (added 2026-06-29)
+
+**Variables — disambiguation heuristic (exam-critical):** when a stem says "variables" ambiguously, let the OPTIONS disambiguate.
+- `env:` / `.env` keys in YAML → **custom environment variables**. Scopes: **workflow / job / step ONLY**. Inheritance flows parent→child, innermost wins; siblings never see each other.
+- `${{ vars.X }}` → **configuration variables** (set in settings UI). Scopes: **enterprise / org / repo / environment**.
+- Cross-step data sharing is NOT a sibling reference → write `$GITHUB_ENV` (later steps) or step outputs `$GITHUB_OUTPUT` → `steps.<id>.outputs.X`.
+
+**if: + status functions (HIGH VALUE — bit repeatedly):** every step/job carries an implicit `if: success()`. After a failure, later steps are SKIPPED unless their `if:` contains a status fn (`failure()` / `always()` / `cancelled()`). To run a step only when a specific prior step failed: `if: failure() && steps.<id>.outcome == 'failure'` (the bare outcome check alone gets skipped). A failing step DOES stop the job by default.
+
+**REST verbs:** download run logs = `GET .../runs/{id}/logs`; create-or-update a secret = `PUT .../secrets/{name}` (idempotent, not POST).
+
+**Actions cleanup hooks:** JavaScript action → `runs.post`; Docker container action → `runs.post-entrypoint`.
+
+**Self-hosted runners:** attach at repository / organization / enterprise. Validate connectivity with the runner app's `config.sh`/`run.sh --check`; connectivity logs in the runner's `_diag` folder. Definition: a machine you deploy & manage to run Actions jobs.
+
+**GHES + GitHub.com actions:** GitHub Connect = AUTO access; `actions-sync` = MANUAL (air-gapped); none by default.
+
+**Misc keepers:** scheduled workflows → LATEST commit on the DEFAULT branch · re-run uses the ORIGINAL commit SHA (not the fixed commit) · re-running workflows + deleting logs both need WRITE · default job timeout = 360 min · cron weekdays = `0 0 * * 1-5` · custom action metadata always in `action.yml`/`action.yaml` (required even if private) · `concurrency` limits concurrent runs / `max-parallel` throttles matrix · env-var names are case-sensitive regardless of OS/shell.
+
+**Correction to earlier keeper (artifact scope):** "ARTIFACT scope = the RUN" is the DEFAULT reach, not a hard wall — with `actions: read` + `run-id` (+`repository`), `download-artifact` v4+ pulls from OTHER runs and repos. Cache's branch scope IS a hard isolation boundary; artifact's run scope is a soft default permissions can open.
+
+**Matrix-include counting (settles §8#1 partially):** base = product of axes; each `include` entry merges into an existing combination only if it doesn't OVERWRITE an original matrix value, else it adds a NEW combination. (Q073: 2×2 + 1 unmergeable include = 5.)

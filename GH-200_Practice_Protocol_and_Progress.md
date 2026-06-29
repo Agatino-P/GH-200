@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-06-28 22:05 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
+**Last updated: 2026-06-29 15:38 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Session log (§6)**, **Coverage ledger (§6b)**, and **Miss ledger (§7)** at the end of every session, then re-syncs all three sources (project + repo + HD).*
 
@@ -78,6 +78,7 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | 1 | 2026-06-25 | GHCertified (verified bank, shuffled, one-at-a-time) — *passed-IDs unlogged, see caveat above* | **20/35 = 57% raw** · **20/25 = 80% adjusted** | spans D1–D5 | 15 | (b)×9 (c)×5 (d)×1 |
 | — | 2026-06-28 | GHCertified Q001–Q020 — **RESULTS VOIDED** (see analysis) | *not counted* | D1 | — | — |
 | 2 | 2026-06-28 | GHCertified **Q001–Q031** (clean restart, shuffled, one-at-a-time, drill-log audited) | **28/31 = 90% raw** · **28/29 = 97% adjusted** | D1 (triggers, jobs/needs, reusable wf, matrix, concurrency, defaults) | 3 | (b)×1 (c)×1 (d)×1 |
+| 3 | 2026-06-29 | GHCertified **Q032–Q122** (present.py/grade.py pipeline; answer-leak fixed mid-session) | **66/87 = 76% raw** · **66/74 = 89% adjusted** | D1–D5 (artifacts/cache, actions, runners, secrets, REST, enterprise/GHES) | 21 | (a)×3 (b)×12 (c)×5 (d)×1 |
 
 **2026-06-28 session — VOIDED, gaps kept.** Ran GHCertified Q001–Q020 but the session hit three integrity failures: (1) Q003–Q014 were initially **fabricated from memory** instead of pulled from the bank file; (2) redacted-pull receipts twice **leaked the answer** (source-order echo; a `grep` hint that included the answer line); (3) a **grading inversion** on Q019 (presented `A=regex / B=glob`; learner answered `A`; graded "correct — A, glob" by fusing the bank's original-answer *word* to the shuffled *letter*). Because the shuffle→content map was never persisted, the other ✓ grades can't be re-audited either. **Decision (learner): void the entire question log for this session, reset Pass 1 to Q000, and keep only the validated gaps (→ §7).** Fixes added same day: §4.15 drill log (exact shuffled question + Q-ID + answer-in-shuffled-frame + grade, written at presentation time; mechanical letter-vs-letter grading; no memory grading).
 
@@ -85,12 +86,14 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 **Session 2 analysis (2026-06-28, clean restart).** First fully clean drill under the §4.15 drill-log + mechanical-grading regime: **Q001–Q031, raw 28/31 (90%), adjusted 28/29 (97%)**. Three misses: **Q014 (d)** the known loose-wording matrix-over-workflows item (excluded); **Q027 (b)** `defaults` supports only `run` (shell/working-directory) — no `defaults.env` — a thin-coverage course gap, verified vs live docs (excluded); **Q022 (c)** `workflow_dispatch` IS triggerable via REST API/CLI/UI — the one genuine retention miss (counts). All studied material answered correctly. Process note: the session surfaced and fixed several presenter bugs early (Q015 duplicate-entry phantom, A–G option support, code-block/`>`-annotation parsing) — all now codified in §4.16/§4.17. Q021 (`number` is a valid `workflow_dispatch` input type) and Q027 both verified against `docs.github.com`. Coverage is D1-heavy (the bank's opening band); D4/D5 depth still ahead.
 
+**Session 3 analysis (2026-06-29, Q032–Q122 — 91 drawn).** Raw **66/87 = 76%**, adjusted **66/74 = 89%** (adjusted excludes (b)+(d) per §4.17). Miss profile: **(a)×3 (b)×12 (c)×5 (d)×1** — overwhelmingly **(b) breadth/enterprise detail**, not core authoring. **Seven Attempt-1 gaps RESOLVED** this session: Q050 (no cross-repo env), Q061 (GITHUB_TOKEN not a default env var), Q076 (reusable cap 50/file), Q096 (RUNNER_ family), Q100 (status-fn family), Q106 (restore-keys), Q118 (skip-ci keywords). **Two confirmed course gaps → §7b** (Q064 GitHub Connect/actions-sync for GHES; Q065/Q066 runner `--check` + `_diag` connectivity logs) — verified absent from recaps/cheats. **Excluded (5):** Q042 (answer LEAKED by Claude during a mid-session cache refresh — knowledge intact, score voided), Q043 (VOID — presenter double-lettering bug), Q064 & Q066 (course gaps, not scored). **Process:** mid-session the answer-key was leaking via shuffle stdout + heredoc commands; fixed by building `present.py` (reads key from bank at runtime, logs correct letter to disk, prints only the question) + `grade.py` (mechanical compare, reveal post-answer). Also fixed: 8-option (A–H) support, the Q070 grade-write that silently failed (corrected to ✗), and removed the unanswered Q123 stub. Recurring theme to drill: **implicit `if: success()` gate + status functions** (Q101, ties §7b#1/#9).
+
 
 
 ## 6b. Coverage ledger (per-question record — the system of record)
 *(Updated every session per §4.12/§4.14. This — not chat history — is how we know what has been answered (§0). In-order draw (§4.13) means the GHCertified line is effectively a high-water mark; the table records the detail. The audit trail behind each pass/fail is the drill log `gh-200-drill-log.md`, §4.15.)*
 
-**▶ Pass 1 high-water mark:** **GHCertified — through Q031** (next question to draw = **Q032**). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 VOIDED session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset. The clean Q001–Q031 below ARE counted.)*
+**▶ Pass 1 high-water mark:** **GHCertified — through Q122** (next question to draw = **Q123**). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 VOIDED session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset. The clean Q001–Q031 below ARE counted.)*
 
 **How to read/maintain this:** one row per question actually drawn, appended live during the session and saved at session end. `Result` = ✓ pass / ✗ miss. On a miss, `Bucket` is the §4.4 triage and the item also goes to §7. `Obj` = the objective it really maps to (§4.12 background check). When resuming, the next question = the lowest un-drawn Q-ID in bank order (§4.13).
 
@@ -127,6 +130,97 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | Q029 | ✓ | — | 1.x concurrency + cancel-in-progress | S2 |
 | Q030 | ✓ | — | 1.5/1.11 always() + needs | S2 |
 | Q031 | ✓ | — | 1.10/1.11 github.repository / if: (${{}} optional) | S2 |
+| Q032 | ✓ | — | What GitHub-hosted runner types are available to use? | S3 |
+| Q033 | ✓ | — | Is this statement true? `Not all steps run actions, but | S3 |
+| Q034 | ✓ | — | For any Marketplace action usable in multiple versions, | S3 |
+| Q035 | ✓ | — | To prevent a job from failing when one step fails, you  | S3 |
+| Q036 | ✓ | — | Given matrix job example_matrix (version[10,12,14] x os | S3 |
+| Q037 | ✓ | — | Proper way to set output parameter PET=DOG in a step? | S3 |
+| Q038 | ✓ | — | step_one writes action_state=yellow to $GITHUB_ENV; how | S3 |
+| Q039 | ✓ | — | True? "Workflows can be reused, but a reusable workflow | S3 |
+| Q040 | ✗ | c | A passes secrets:inherit to B; B calls C without inheri | S3 |
+| Q041 | ✗ | a | When should you use caching? | S3 |
+| Q042 | ✓(leaked·excl) | — | When should you use artifacts? | S3 |
+| Q043 | VOID | — | Workflow on feature-a branch — can it restore caches cr | S3 |
+| Q044 | ✓ | — | To access an artifact created in another, previously tr | S3 |
+| Q045 | ✓ | — | What to use to store coverage reports/screenshots from  | S3 |
+| Q046 | ✗ | b | True/False: "You can only upload a single file at a tim | S3 |
+| Q047 | ✓ | — | Job deploy needs binaries created in job build — how? | S3 |
+| Q048 | ✓ | — | job2 uses artifacts from job1 — ensure job1 finishes fi | S3 |
+| Q049 | ✓ | — | Which is true about Starter Workflows? | S3 |
+| Q050 | ✓ | — | Secrets and configuration variables can be scoped to: | S3 |
+| Q051 | ✓ | — | What are the three types of Actions? | S3 |
+| Q052 | ✓ | — | True? "Docker container actions are usually slower than | S3 |
+| Q053 | ✓ | — | True/False: custom action source must be in .github/wor | S3 |
+| Q054 | ✓ | — | Custom action metadata must be defined in which file? | S3 |
+| Q055 | ✓ | — | Workflow ran on commit A (failed), fixed in commit B; r | S3 |
+| Q056 | ✓ | — | How to require manual maintainer approval when targetin | S3 |
+| Q057 | ✓ | — | Which is true about environments? | S3 |
+| Q058 | ✓ | — | Safest/recommended way to authenticate to cloud (AWS/Az | S3 |
+| Q059 | ✗ | c | Public repo, pull_request workflow — how to require app | S3 |
+| Q060 | ✓ | — | Which default env var = name of person/app that initiat | S3 |
+| Q061 | ✓ | — | Which are default environment variables in GitHub Actio | S3 |
+| Q062 | ✓ | — | Org secret SomeSecret gives unexpected value via secret | S3 |
+| Q063 | ✓ | — | Which is a correct way to print a debug message? | S3 |
+| Q064 | gap(course→§7b) | — | How can organizations which are using GitHub Enterprise | S3 |
+| Q065 | ✗ | b | Where can you find network connectivity logs for a GitH | S3 |
+| Q066 | gap(course→§7b) | — | How can you validate that your GitHub self-hosted-runne | S3 |
+| Q067 | ✗ | b | Which is the correct way of triggering a job only if co | S3 |
+| Q068 | ✓ | — | To run a `step` only if the secret `MY_SECRET` has been | S3 |
+| Q069 | ✓ | — | How can you use the GitHub API to download workflow run | S3 |
+| Q070 | ✗ | b | How can you use the GitHub API to create or update a re | S3 |
+| Q071 | ✓ | — | How can you override an organization-level GitHub Secre | S3 |
+| Q072 | ✗ | c | What components can be reused within a GitHub Organizat | S3 |
+| Q073 | ✓ | — | How many jobs will be executed in the following workflo | S3 |
+| Q074 | ✓ | — | Which of the following default environment variables co | S3 |
+| Q075 | ✓ | — | In a workflow that has multiple jobs, all running on Gi | S3 |
+| Q076 | ✓ | — | What's the maximum amount of reusable workflows that ca | S3 |
+| Q077 | ✓ | — | What is a self-hosted runner? | S3 |
+| Q078 | ✓ | — | Which of the following is a correct statement about Git | S3 |
+| Q079 | ✓ | — | On which commit and branch do scheduled workflows run i | S3 |
+| Q080 | ✓ | — | What is the correct syntax for setting the directory fo | S3 |
+| Q081 | ✗ | a | How can you reuse a defined workflow in multiple reposi | S3 |
+| Q082 | ✓ | — | How can you ensure a job runs only on a specific branch | S3 |
+| Q083 | ✓ | — | What does the `needs` keyword do in a GitHub Actions wo | S3 |
+| Q084 | ✓ | — | Which keyword allows you to define environment variable | S3 |
+| Q085 | ✓ | — | What is the purpose of the `with` keyword in a GitHub A | S3 |
+| Q086 | ✗ | d | Which of the following GitHub Actions syntax is used to | S3 |
+| Q087 | ✓ | — | How can you cache dependencies to speed up workflow exe | S3 |
+| Q088 | ✓ | — | What does the `matrix` keyword do in a GitHub Actions w | S3 |
+| Q089 | ✗ | b | Which of the following can be used to limit the number  | S3 |
+| Q090 | ✓ | — | What is the default timeout for a GitHub Actions job? | S3 |
+| Q091 | ✓ | — | How can you specify the operating system for a job in G | S3 |
+| Q092 | ✓ | — | In a GitHub Actions workflow, how do you specify a spec | S3 |
+| Q093 | ✗ | a | How do you reference a secret stored in GitHub Secrets  | S3 |
+| Q094 | ✓ | — | What is the default shell used by GitHub Actions on Win | S3 |
+| Q095 | ✗ | b | Which of the following statements are true about adding | S3 |
+| Q096 | ✓ | — | Select the default environment variable that contains t | S3 |
+| Q097 | ✓ | — | How does the `actions/cache` action in GitHub Actions h | S3 |
+| Q098 | ✗ | b | How can you specify the schedule of a GitHub actions wo | S3 |
+| Q099 | ✓ | — | What is the recommended approach for storing secrets la | S3 |
+| Q100 | ✓ | — | Select status check functions in GitHub Actions | S3 |
+| Q101 | ✗ | c | How do you ensure that `Upload Failure test report` ste | S3 |
+| Q102 | ✓ | — | Which context holds information about the event that tr | S3 |
+| Q103 | ✓ | — | In GitHub Actions, if you define both branches and path | S3 |
+| Q104 | ✗ | b | What is the recommended practice for treating environme | S3 |
+| Q105 | ✓ | — | Which of the following statements accurately describes  | S3 |
+| Q106 | ✓ | — | What is the purpose of the `restore-keys` parameter in  | S3 |
+| Q107 | ✓ | — | Which variable would you set to `true` in order to enab | S3 |
+| Q108 | ✗ | b | Which configuration is appropriate for triggering a wor | S3 |
+| Q109 | ✓ | — | What is the purpose of the `timeout-minutes` keyword in | S3 |
+| Q110 | ✓ | — | Dave is creating a templated workflow for his organizat | S3 |
+| Q111 | ✓ | — | Dave wants to be notified when a comment is created on  | S3 |
+| Q112 | ✓ | — | What level of access is required on a GitHub repository | S3 |
+| Q113 | ✓ | — | What is true about the following workflow configuration | S3 |
+| Q114 | ✓ | — | How can you access the current values of variables in a | S3 |
+| Q115 | ✗ | b | What level of permission is required to re-run the work | S3 |
+| Q116 | ✓ | — | When can you delete workflow runs? | S3 |
+| Q117 | ✓ | — | Who can bypass configured deployment protection rules t | S3 |
+| Q118 | ✓ | — | How can you skip the following workflow run when you co | S3 |
+| Q119 | ✓ | — | How can you determine if an action is a container actio | S3 |
+| Q120 | ✗ | b | What is the correct syntax for specifying a cleanup scr | S3 |
+| Q121 | ✗ | b | What’s true about default variables? | S3 |
+| Q122 | ✗ | c | What are the scopes defined for custom variables in a w | S3 |
 
 ## 7. Miss ledger (running gap feedback → review)
 *(Confirmed weak spots harvested from attempts, with the bucket and the review action. Bucket (a)/(d) items are recorded for awareness but don't drive review.)*
@@ -149,6 +243,24 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | A1·Q061 | default env-var list; GITHUB_TOKEN is a SECRET not a default env var | (c) | 1.6 | Cheat (1B/5A) |
 | S2·Q022 | `workflow_dispatch` IS triggerable via REST API (`POST .../dispatches`) / `gh` CLI / UI — not UI-only | (c) | 1.1/3.x | Cheat (1A) + contexts/triggers ref; verified vs live docs |
 | S2·Q027 | `defaults` supports ONLY `run` (shell + working-directory); there is NO `defaults.env` (env vars use `env:`); `defaults` is workflow/job level, never step | (b) | 1.6/2.x | Cheat keeper; verified vs live docs |
+| S3·Q040 | `secrets: inherit` passes ALL secrets available to the CALLER (source-agnostic); chain stops at a non-inheriting callee | (c) | 1.3/4.7 | learner's ambiguity-instinct was right but applied inverted |
+| S3·Q046 | `upload-artifact` accepts a file, a directory, OR multiple files/dirs + wildcards (not single-file-only) | (b) | 1.x art | Cheat keeper |
+| S3·Q059 | fork-PR approval = repo/org Actions setting "Require approval for fork pull request workflows" — NOT environment deployment protection rules | (c) | 4.x/5.x | distinguish from Q056 env rules |
+| S3·Q065 | self-hosted runner network-connectivity logs = `_diag` folder ON the runner machine (not job logs) | (b) | 3.3/4.x | also →§7b runner-diag |
+| S3·Q067 | config vars usable in job-level `if`; correct `if: ${{ vars.X == 'Y' }}` (whole comparison INSIDE braces) | (b) | 1.11 | Cheat keeper |
+| S3·Q070 | create/update repo secret via REST = `PUT` (idempotent), not `POST`; download logs = `GET` | (b) | 3.x REST | REST-verb pattern |
+| S3·Q072 | org-reusable = Secrets + Configuration Variables + Self-hosted Runners + Workflow Templates (env vars NOT org-reusable) — RECONFIRMS A1·Q072 | (c) | 4.1/4.7 | env-vars vs config-vars AGAIN |
+| S3·Q089 | limit concurrent workflow/group runs = `concurrency`; matrix throttle = `max-parallel`; `parallelism` is not a keyword | (b) | 1.x | Cheat keeper |
+| S3·Q095 | self-hosted runner attach levels = repository + organization + enterprise | (b) | 4.5 | Cheat keeper |
+| S3·Q098 | weekdays schedule via cron day-of-week `cron: '0 0 * * 1-5'`; no `weekdays` keyword | (b) | 1.1 | →§7b#2 schedule |
+| S3·Q101 | implicit `if: success()` gate SKIPS post-failure steps unless a status fn lifts it; need `failure() && steps.<id>.outcome == 'failure'` — **HIGH VALUE** | (c) | 1.11/1.4 | ties §7b#1/#9; learner asked the right Q |
+| S3·Q104 | treat env-var NAMES as case-sensitive regardless of OS/shell (recommended practice) | (b) | 1.6 | Cheat keeper |
+| S3·Q108 | activity-types keyword = `types:` (not filter/type); check_run types = created/rerequested/completed/requested_action | (b) | 1.1 | →§7b#2 |
+| S3·Q115 | re-run workflows requires WRITE access (cf. Q112 delete logs = write) | (b) | 5.x | perms |
+| S3·Q120 | container-action cleanup = `post-entrypoint`; JS-action cleanup = `post` | (b) | 2.x | Cheat keeper |
+| S3·Q121 | default env vars read via `github` context / directly, NOT the `env` context; `CI` var currently overwritable | (b) | 1.6/1.10 | learner-flagged future study |
+| S3·Q122 | `env:` key scopes = workflow / job / step ONLY; environment-scoped vars are a SEPARATE feature (`vars`/`secrets` contexts) | (c) | 1.6 | learner-flagged gap |
+| S3·(a)/(d) | Awareness-only (no review): Q041 cache do/don't, Q081 missed multi-select, Q086 ambiguous (&&/;/| all valid), Q093 secrets-singular slip | (a)/(d) | — | pacing/question-quality, not gaps |
 
 **Standing watch-items (not yet triggered by a miss, but where the studied material is most likely to be tested by harder banks):** Domain 4 (highest weight; runner networking / images / variables / REST) and Domain 5 (OIDC, attestations, enforcement, optimization). Watch their per-section scores closely as GHCertified drill batches are run.
 
@@ -174,6 +286,10 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 8.  **[1.10 contexts — DEEP-DIVE, expands items 2 & 5; from S2 Q029/Q031]** `github.ref` value varies BY EVENT (verified vs live docs): push branch = `refs/heads/<branch>`; push tag / release = `refs/tags/<tag>`; `pull_request` (active) = `refs/pull/<n>/merge`; `pull_request` closed+MERGED = `refs/heads/<base>`; `pull_request_target` = `refs/heads/<base_branch>`; `workflow_dispatch`/`schedule` = `refs/heads/<branch the run is on>`. TRAP: on a PR `github.ref`/`github.ref_name` is the **merge ref** (e.g. `42/merge`), NOT the branch — use `github.head_ref` (source/head, PR-only) and `github.base_ref` (target/base, PR-only). Trio: `github.ref` (full) vs `github.ref_name` (short) vs `github.sha`.
 9.  **[1.11 / 1.4 `if:` — EMPHASIS, reconfirms item 1; learner-flagged S2]** STUDY `if:` + status-function COMBINATIONS deeper: `success()`/`failure()`/`always()`/`cancelled()` × `needs`; implicit `if: success()` on needed jobs; how `always()`+`needs` runs regardless of upstream result; `${{ }}` optional in `if:`.
 10. **[1.x concurrency — from S2 Q028/Q029]** `concurrency.group` is a label string scoping mutual-exclusion; `cancel-in-progress: true` cancels older in-progress runs in the **same** group. `group: ${{ github.workflow }}-${{ github.ref }}` = one group per (workflow, ref/PR) → a new commit cancels that PR's run only, never a different PR's. (Ties to item 8: `github.ref`.)
+11. **BUILD TASK [5.x GHES — CONFIRMED course gap, S3·Q064]** Managing access to GitHub.com actions from a **GitHub Enterprise Server** instance: **GitHub Connect** = enables GHES to **automatically** access/use GitHub.com-hosted actions; **`actions-sync`** tool = the **manual** alternative (air-gapped/individual repos); GHES has **no** access to GitHub.com/Marketplace actions **by default**. Verified vs `docs.github.com`; NOT in recaps/cheats.
+12. **[3.3 / 4.x self-hosted runner troubleshooting — CONFIRMED course gap, S3·Q065/Q066]** Validate a self-hosted runner can reach required GitHub services using the runner application's **`config.sh`/`run.sh --check`** option; runner **network-connectivity logs live in the `_diag` folder ON the runner machine** (not in job logs; debug logging only enriches job logs). Verified vs docs; NOT in course material.
+13. **[1.x cleanup hooks — S3·Q120]** Action cleanup: JavaScript action → `runs.post`; **Docker container action → `runs.post-entrypoint`** (distinct keys). 
+14. **[1.6 env-var conventions — S3·Q104]** Treat environment-variable **names as case-sensitive** regardless of OS/shell (recommended practice).
 
 ## 8. Parked calibration flags (carried from the teaching phase — resolve against real practice questions)
 *(Confirm or refute each as it surfaces in a bank; update the relevant cheat/recap if a question settles it.)*
@@ -254,14 +370,14 @@ GH-200_Combined_Cheat_Sheets.md                   # all 14 cheats
 
 ## ▶ RESUME POINT (start here next session)
 
-**STATUS:** Testing phase active — **Pass 1 in progress, through GHCertified Q031 (next = Q032).** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). Session 2 (2026-06-28) ran a clean **Q001–Q031** under the §4.15 drill-log + mechanical-grading regime: **raw 28/31 (90%), adjusted 28/29 (97%)** — see §6/§6b. New conventions added 2026-06-28: **§4.16 combined grade-and-present turn**, **§4.17 N-option/code-block/annotation handling + unique-entry grading + bucket-aware tally**. Earlier 2026-06-28 conventions stand: session vs pass (§0), no-data-loss (§0), in-order draw (§4.13), durable logging (§4.14 → §6b). *(Manifest note: the `/mnt/project` mirror showed `GH-200_Study_Protocol_and_Progress.md` absent, but the claude.ai UI confirms it present — mirror was stale; no manifest change needed.)*
+**STATUS:** Testing phase active — **Pass 1 in progress, through GHCertified Q122 (next = Q123).** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). Session 2 (2026-06-28) ran a clean **Q001–Q031** under the §4.15 drill-log + mechanical-grading regime: **raw 28/31 (90%), adjusted 28/29 (97%)** — see §6/§6b. New conventions added 2026-06-28: **§4.16 combined grade-and-present turn**, **§4.17 N-option/code-block/annotation handling + unique-entry grading + bucket-aware tally**. Earlier 2026-06-28 conventions stand: session vs pass (§0), no-data-loss (§0), in-order draw (§4.13), durable logging (§4.14 → §6b). *(Manifest note: the `/mnt/project` mirror showed `GH-200_Study_Protocol_and_Progress.md` absent, but the claude.ai UI confirms it present — mirror was stale; no manifest change needed.)*
 
 **Do this first:**
 1. **Verify project contents against the §11 manifest** (the learner asks for this on every restart): list the actual project files, diff against §11, and report missing/extra. Remember the `/mnt/project` view is only a cross-check — confirm against the claude.ai project UI; if they disagree, the UI wins. If files were added/removed, update the §11 manifest in the same session.
 2. Read the rest of this protocol to reload state — especially **§0 (definitions + no-data-loss rule)** and the **§6b coverage ledger** (the high-water mark = where to resume). Recaps/cheats are in `Study material/` (repo + HD) — ask the learner to upload any needed for a targeted review.
 
 **Next decisions / actions:**
-1. **Drill the verified GHCertified bank IN ORDER — resume at Q032** (lowest un-drawn Q-ID per the §6b high-water mark). **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)**; **combined grade-and-present turn (§4.16)**; presenter handles A–G / code-block / `>`-annotation options (§4.17). Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
+1. **Drill the verified GHCertified bank IN ORDER — resume at Q123** (lowest un-drawn Q-ID per the §6b high-water mark). **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)**; **combined grade-and-present turn (§4.16)**; presenter handles A–G / code-block / `>`-annotation options (§4.17). Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
 2. **Per question:** record it in §6b *as you go* (Q-ID, ✓/✗, bucket on a miss, mapped objective); roll confirmed (b)/(c) gaps into §7. Report each session's raw **and** adjusted score (§5) — readiness itself is judged on the completed pass, not the session.
 3. **At session end (NO-DATA-LOSS — §0):** write §6 (session row) + §6b (every Q-ID drawn) + §7 (new gaps), bump the timestamp, and re-sync project + repo + HD. Never leave progress only in chat.
 4. **Gap study is for AFTER Pass 1 completes (§7b)** — keep accumulating gaps during the pass; don't stop to study mid-pass.
