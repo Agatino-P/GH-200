@@ -88,12 +88,14 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 
 **Session 3 analysis (2026-06-29, Q032–Q122 — 91 drawn).** Raw **66/87 = 76%**, adjusted **66/74 = 89%** (adjusted excludes (b)+(d) per §4.17). Miss profile: **(a)×3 (b)×12 (c)×5 (d)×1** — overwhelmingly **(b) breadth/enterprise detail**, not core authoring. **Seven Attempt-1 gaps RESOLVED** this session: Q050 (no cross-repo env), Q061 (GITHUB_TOKEN not a default env var), Q076 (reusable cap 50/file), Q096 (RUNNER_ family), Q100 (status-fn family), Q106 (restore-keys), Q118 (skip-ci keywords). **Two confirmed course gaps → §7b** (Q064 GitHub Connect/actions-sync for GHES; Q065/Q066 runner `--check` + `_diag` connectivity logs) — verified absent from recaps/cheats. **Excluded (5):** Q042 (answer LEAKED by Claude during a mid-session cache refresh — knowledge intact, score voided), Q043 (VOID — presenter double-lettering bug), Q064 & Q066 (course gaps, not scored). **Process:** mid-session the answer-key was leaking via shuffle stdout + heredoc commands; fixed by building `present.py` (reads key from bank at runtime, logs correct letter to disk, prints only the question) + `grade.py` (mechanical compare, reveal post-answer). Also fixed: 8-option (A–H) support, the Q070 grade-write that silently failed (corrected to ✗), and removed the unanswered Q123 stub. Recurring theme to drill: **implicit `if: success()` gate + status functions** (Q101, ties §7b#1/#9).
 
+**Session 3 continued (2026-06-29, Q123–Q179 — 56 drawn; GHCertified bank COMPLETE).** Breadth-heavy back third: raw **34/54 = 63%** (2 gaps not scored — Q142 installation-access-tokens [retention; concept was in recaps], Q159 pull_request_target security). Misses overwhelmingly **(b)/(c) breadth**: GitHub Packages publishing (Q163), dispatch endpoints (Q165), runner labels/groups (Q170/Q172), `github.ref` by event (Q146/Q148 — §7b#8 reinforced twice), artifact retention/deletion (Q144/Q156), required reviewers (Q178), action.yml required keys (Q168), `if:` levels (Q164), checkout-required (Q175). **§8 flag #1 RESOLVED** (matrix-`include` 3/3: Q073/Q124/Q137). Reusable-workflow permissions solid (Q174 downgrade-only). **Six new learner-requested §7b study topics** added (items 15–20) + consolidated keeper list (item 21). **Full Session 3 (Q032–Q179, 145 drawn):** command of authored material solid; gap = uncovered breadth, now fully captured.
+
 
 
 ## 6b. Coverage ledger (per-question record — the system of record)
 *(Updated every session per §4.12/§4.14. This — not chat history — is how we know what has been answered (§0). In-order draw (§4.13) means the GHCertified line is effectively a high-water mark; the table records the detail. The audit trail behind each pass/fail is the drill log `gh-200-drill-log.md`, §4.15.)*
 
-**▶ Pass 1 high-water mark:** **GHCertified — through Q122** (next question to draw = **Q123**). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 VOIDED session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset. The clean Q001–Q031 below ARE counted.)*
+**▶ Pass 1 high-water mark:** **GHCertified — COMPLETE** (Q001–Q179 drawn; **Q157 absent from bank** → 178 questions). Next = **Tutorials Dojo sampler Q1** (skip off-syllabus Q26). **TD — 0 / 29.** *(Excluded from the count: A1's ~35 questions — passed-IDs unrecoverable, see §6 caveat; AND the 2026-06-28 VOIDED session's Q001–Q020 — grades VOIDED for integrity failures, see §6 row. The valid **gaps** from both are preserved in §7; only the question results were reset. The clean Q001–Q031 below ARE counted.)*
 
 **How to read/maintain this:** one row per question actually drawn, appended live during the session and saved at session end. `Result` = ✓ pass / ✗ miss. On a miss, `Bucket` is the §4.4 triage and the item also goes to §7. `Obj` = the objective it really maps to (§4.12 background check). When resuming, the next question = the lowest un-drawn Q-ID in bank order (§4.13).
 
@@ -221,6 +223,62 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | Q120 | ✗ | b | What is the correct syntax for specifying a cleanup scr | S3 |
 | Q121 | ✗ | b | What’s true about default variables? | S3 |
 | Q122 | ✗ | c | What are the scopes defined for custom variables in a w | S3 |
+| Q123 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q124 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q125 | ✗ | (c) | bucket (c) RECONFIRMS Q122: env: scopes = workflow/job/STEP. | S3 |
+| Q126 | ✓ | — | ✓  (correct B vs learner B) | S3 |
+| Q127 | ✓ | — | ✓  (correct C vs learner C) | S3 |
+| Q128 | ✓ | — | ✓  (correct A,B vs learner A,B) | S3 |
+| Q129 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q130 | ✗ | (c) | bucket (c): `value:` key is WORKFLOW-LEVEL (workflow_call) o | S3 |
+| Q131 | ✗ | (c) | bucket (c) KEEPER: composite action = STEP in a job, caller' | S3 |
+| Q132 | ✓ | — | ✓  (correct A,C,E vs learner A,C,E) | S3 |
+| Q133 | ✓ | — | ✓  (correct B,C,D vs learner B,C,D) | S3 |
+| Q134 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q135 | ✓ | — | ✓  (correct B vs learner B) | S3 |
+| Q136 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q137 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q138 | ✓ | — | ✓  (correct B vs learner B) | S3 |
+| Q139 | ✗ | (b) | bucket (b): runner diag logging enabled via ACTIONS_RUNNER_D | S3 |
+| Q140 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q141 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q142 | gap | (c) | bucket (c) RETENTION (concept IS in recaps L1852/1879: GITHU | S3 |
+| Q143 | ✓ | — | ✓  (correct C vs learner C) | S3 |
+| Q144 | ✗ | (b) | bucket (b)/(c): per-workflow artifact retention = `retention | S3 |
+| Q145 | ✓ | — | ✓  (correct A,C,D vs learner A,C,D) | S3 |
+| Q146 | ✗ | (c) | bucket (c) REINFORCES §7b#8 github.ref: PR unmerged=refs/pul | S3 |
+| Q147 | ✗ | (c) | bucket (c) KEEPER: auto-masking covers the registered secret | S3 |
+| Q148 | ✗ | (c) | bucket (c) REINFORCES §7b#8: push | S3 |
+| Q149 | ✗ | (b) | bucket (b)/(c): writing to $GITHUB_STEP_SUMMARY adds markdow | S3 |
+| Q150 | ✓ | — | ✓  (correct C vs learner C) | S3 |
+| Q151 | ✓ | — | ✓  (correct C vs learner C) | S3 |
+| Q152 | ✓ | — | ✓  (correct B vs learner B) | S3 |
+| Q153 | ✗ | (c) | bucket (c) KEEPER (learner-confirmed gap): ONLY push & pull_ | S3 |
+| Q154 | ✓ | — | ✓  (correct E vs learner E) | S3 |
+| Q155 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q156 | ✗ | (b) | bucket (b)/(c): delete artifacts via API (D) / delete the ru | S3 |
+| Q158 | ✓ | — | ✓  (correct E vs learner E) | S3 |
+| Q159 | gap(→§7b) | (b) | bucket (b) study area. Correct A,C,D. pull_request=merge com | S3 |
+| Q160 | ✗ | (c) | bucket (c): OIDC reasons = no long-lived secrets (D) + short | S3 |
+| Q161 | ✓ | — | ✓ EXPLANATION-PRIMED (Claude just walked the mechanism) — re | S3 |
+| Q162 | ✓ | — | ✓  (correct B,C vs learner B,C) | S3 |
+| Q163 | ✗ | (b) | bucket (b)/(c) learner-flagged shaky area: PUBLISH a package | S3 |
+| Q164 | ✗ | (c) | bucket (c) KEEPER: if: = JOB + STEP only (no workflow-level  | S3 |
+| Q165 | ✗ | (b) | bucket (b)/(c): repository_dispatch = POST /repos/O/R/dispat | S3 |
+| Q166 | ✓ | — | ✓  (correct A,D,E vs learner A,D,E) | S3 |
+| Q167 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q168 | ✗ | (b) | bucket (b)/(c): action.yml REQUIRED keys = name + descriptio | S3 |
+| Q169 | ✗ | (b) | bucket (b)/(c): self-hosted runners + restrictive IP allow l | S3 |
+| Q170 | ✗ | (b) | bucket (b)/(c) KEEPER: runs-on label ARRAY = runner must hav | S3 |
+| Q171 | ✓ | — | ✓  (correct D,E,F vs learner D,E,F) | S3 |
+| Q172 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q173 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q174 | ✓ | — | ✓  (correct D vs learner D) | S3 |
+| Q175 | ✗ | (c) | bucket (c) KEEPER: no actions/checkout | S3 |
+| Q176 | ✓ | — | ✓  (correct A vs learner A) | S3 |
+| Q177 | ✓ | — | ✓  (correct C vs learner C) | S3 |
+| Q178 | ✗ | (c) | bucket (c) KEEPER (verified vs GitHub docs): environment req | S3 |
+| Q179 | ✓ | — | ✓  (correct A,E vs learner A,E) | S3 |
 
 ## 7. Miss ledger (running gap feedback → review)
 *(Confirmed weak spots harvested from attempts, with the bucket and the review action. Bucket (a)/(d) items are recorded for awareness but don't drive review.)*
@@ -260,6 +318,28 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 | S3·Q120 | container-action cleanup = `post-entrypoint`; JS-action cleanup = `post` | (b) | 2.x | Cheat keeper |
 | S3·Q121 | default env vars read via `github` context / directly, NOT the `env` context; `CI` var currently overwritable | (b) | 1.6/1.10 | learner-flagged future study |
 | S3·Q122 | `env:` key scopes = workflow / job / step ONLY; environment-scoped vars are a SEPARATE feature (`vars`/`secrets` contexts) | (c) | 1.6 | learner-flagged gap |
+| S3·Q125 | bucket (c) RECONFIRMS Q122: env: scopes = workflow/job/STEP. Missed STEP level AGAIN (spec | (c) | — | from drill log |
+| S3·Q130 | bucket (c): `value:` key is WORKFLOW-LEVEL (workflow_call) outputs ONLY. Job-level outputs | (c) | — | from drill log |
+| S3·Q131 | bucket (c) KEEPER: composite action = STEP in a job, caller's runner, NO secrets block (se | (c) | — | from drill log |
+| S3·Q139 | bucket (b): runner diag logging enabled via ACTIONS_RUNNER_DEBUG (secret OR variable)=true | (b) | — | from drill log |
+| S3·Q142 | bucket (c) RETENTION (concept IS in recaps L1852/1879: GITHUB_TOKEN=installation access to | (c) | — | from drill log |
+| S3·Q144 | bucket (b)/(c): per-workflow artifact retention = `retention-days` input on actions/upload | (b) | — | from drill log |
+| S3·Q146 | bucket (c) REINFORCES §7b#8 github.ref: PR unmerged=refs/pull/<n>/merge (C); PR merged=ref | (c) | — | from drill log |
+| S3·Q147 | bucket (c) KEEPER: auto-masking covers the registered secret AND common ENCODINGS of it (i | (c) | — | from drill log |
+| S3·Q148 | bucket (c) REINFORCES §7b#8: push | (c) | — | from drill log |
+| S3·Q149 | bucket (b)/(c): writing to $GITHUB_STEP_SUMMARY adds markdown to the JOB SUMMARY (run summ | (b) | — | from drill log |
+| S3·Q153 | bucket (c) KEEPER (learner-confirmed gap): ONLY push & pull_request run the workflow file  | (c) | — | from drill log |
+| S3·Q156 | bucket (b)/(c): delete artifacts via API (D) / delete the run (E) / per-artifact UI delete | (b) | — | from drill log |
+| S3·Q159 | bucket (b) study area. Correct A,C,D. pull_request=merge commit, NO fork secrets, blocked  | (b) | — | from drill log |
+| S3·Q160 | bucket (c): OIDC reasons = no long-lived secrets (D) + short-lived tokens/more secure (F). | (c) | — | from drill log |
+| S3·Q163 | bucket (b)/(c) learner-flagged shaky area: PUBLISH a package = write:packages token + regi | (b) | — | from drill log |
+| S3·Q164 | bucket (c) KEEPER: if: = JOB + STEP only (no workflow-level if). Contrast env: = workflow/ | (c) | — | from drill log |
+| S3·Q165 | bucket (b)/(c): repository_dispatch = POST /repos/O/R/dispatches (external event_type, fil | (b) | — | from drill log |
+| S3·Q168 | bucket (b)/(c): action.yml REQUIRED keys = name + description + runs (missed description). | (b) | — | from drill log |
+| S3·Q169 | bucket (b)/(c): self-hosted runners + restrictive IP allow list | (b) | — | from drill log |
+| S3·Q170 | bucket (b)/(c) KEEPER: runs-on label ARRAY = runner must have ALL labels (AND), not any. | (b) | — | from drill log |
+| S3·Q175 | bucket (c) KEEPER: no actions/checkout | (c) | — | from drill log |
+| S3·Q178 | bucket (c) KEEPER (verified vs GitHub docs): environment required reviewers = up to 6 user | (c) | — | from drill log |
 | S3·(a)/(d) | Awareness-only (no review): Q041 cache do/don't, Q081 missed multi-select, Q086 ambiguous (&&/;/| all valid), Q093 secrets-singular slip | (a)/(d) | — | pacing/question-quality, not gaps |
 
 **Standing watch-items (not yet triggered by a miss, but where the studied material is most likely to be tested by harder banks):** Domain 4 (highest weight; runner networking / images / variables / REST) and Domain 5 (OIDC, attestations, enforcement, optimization). Watch their per-section scores closely as GHCertified drill batches are run.
@@ -291,9 +371,17 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 13. **[1.x cleanup hooks — S3·Q120]** Action cleanup: JavaScript action → `runs.post`; **Docker container action → `runs.post-entrypoint`** (distinct keys). 
 14. **[1.6 env-var conventions — S3·Q104]** Treat environment-variable **names as case-sensitive** regardless of OS/shell (recommended practice).
 
+15. **BUILD/STUDY TASK [5.4 / GitHub Apps — learner-requested deeper study, S3·Q142/Q143]** GitHub Apps + installation access tokens. App **registration** vs **installation**; an **installation access token** is short-lived (~1 h), scoped per-installation, **not user-bound**; `actions/create-github-app-token` mints one **in-workflow** for immediate use that run. `GITHUB_TOKEN` is itself an installation token (for the App Actions auto-installs). Escalation order: `GITHUB_TOKEN` → App installation token → fine-grained PAT (w/ expiry) last. Read docs "Authenticating with a GitHub App". Cheat keeper queued.
+16. **STUDY TASK [5.3 fork security — learner-flagged gap, S3·Q159]** `pull_request` vs `pull_request_target`: `pull_request` = **merge-commit** context, **no fork secrets**, blocked by a merge conflict → **SAFE** for running PR code (CI/tests). `pull_request_target` = **base-branch** context, **full secrets incl. for fork PRs**, not blocked by conflict → **DANGEROUS** to run untrusted PR code (the classic "pwn request"). Both default types: opened/synchronize/reopened. Read GitHub "Preventing pwn requests". Ties 5.3 script injection.
+17. **STUDY TASK [5.x GitHub Packages — learner-flagged shaky, S3·Q163]** Publishing a package = token with **`write:packages`** + **registry config** (e.g. `npm.pkg.github.com`) + **publish logic** in the workflow. `admin:packages` is more than needed. The **`registry_package`** event **reacts to** a publish — it does NOT perform one.
+18. **STUDY TASK [4.5 self-hosted runner labels & groups — learner-flagged unknown, S3·Q170/Q172]** Default labels (`self-hosted`, OS e.g. `linux`, arch e.g. `x64`); custom labels; **`runs-on` array = runner must match ALL labels (AND)**. **Runner GROUPS = access control** (which repos/orgs may USE a set of runners); **labels = job routing** only. IP-allow-list + self-hosted: add runner egress IPs (caveat: ephemeral/autoscaled runners need a fixed NAT/proxy IP).
+19. **REVIEW [5.x OIDC — learner forgot temp-creds, S3·Q160/Q161]** OIDC **two-token** flow: a job requests a short-lived **identity JWT** from GitHub's OIDC provider → presents it to the cloud provider → provider validates against the trust policy and returns **separate, short-lived cloud credentials**. Neither is a stored long-lived secret. (Learner consistently forgets the *second* token = the temporary cloud creds.)
+20. **[1.1 dispatch endpoints — S3·Q165]** Both are `POST`. `repository_dispatch` → `POST /repos/{owner}/{repo}/dispatches` (external/custom `event_type`, filtered by `on.repository_dispatch.types`). `workflow_dispatch` → `POST /repos/{owner}/{repo}/actions/workflows/{id}/dispatches` (manually run a SPECIFIC workflow). Concept + verb + level matter; not rote path memorization.
+21. **Consolidated S3 cheat keepers (queued for Combined Cheat Sheets):** `if:` = **job + step only** (no workflow-level); `env:` = workflow/job/step. · `runs-on` label array = **ALL labels**. · **reusable wf** = job-level `uses:`/own runner/`secrets:` block vs **composite** = step/caller's runner/no secrets block. · **workflow-level outputs use the `value:` key; job-level outputs do NOT**. · **`::add-mask::` for DERIVED values** (auto-mask covers the registered secret + its common encodings incl. **base64**, but it's **best-effort/brittle** — `base64(secret+suffix)`, splitting, JSON embedding defeat it). · **only `push` & `pull_request`** run a workflow from a non-default branch; **all other events use the default-branch version** (incl. `schedule`, `repository_dispatch`, `star`). · `GITHUB_STEP_SUMMARY` (markdown) = **job summary** on the run page. · **no `actions/checkout` ⇒ empty workspace** (repo files absent). · **environment required reviewers**: ≥**read** access suffices, **1** approval, self-review preventable, teams allowed (verified vs docs). · **no official `actions/delete-artifact`** — delete via API / delete the run / per-artifact UI. · per-workflow artifact retention = **`retention-days`** on `upload-artifact`. · `action.yml` required keys = **name + description + runs**. · GHE: **GHEC** = hosted SaaS, **GHES** = self-hosted (Connect auto / actions-sync manual; no Marketplace by default). · `star` event = repo starred/unstarred (created/deleted), default-branch.
+
 ## 8. Parked calibration flags (carried from the teaching phase — resolve against real practice questions)
 *(Confirm or refute each as it surfaces in a bank; update the relevant cheat/recap if a question settles it.)*
-1. **`fromJSON` dynamic-matrix exam weight** — open since Topic 1C; gauge frequency. *(GHCertified note: no `fromJSON` dynamic-matrix items, but matrix-`include` counting is tested 3× — Q073, Q124, Q137. Drill the include algorithm.)*
+1. **`fromJSON` dynamic-matrix exam weight** — open since Topic 1C; gauge frequency. *(GHCertified note: no `fromJSON` dynamic-matrix items. matrix-`include` counting tested 3× — Q073, Q124, Q137 — **all correct → RESOLVED 2026-06-29**. Include algorithm: merge into all combos when no axis-key collision, else new standalone combo.)*
 2. **Immutable-action *publishing* GA status** (3A/5C) — README "not for public use" vs a GA-labeled roadmap card.
 3. **SLSA baseline level + exact per-level wording** (5C) — stated unverified.
 4. **Exact per-plan concurrency numbers + matrix-combination cap** (5D) — secondary-sourced. *(GHCertified verification corroborated the **256 matrix-combination cap** and **360-min/6-h default job timeout**; reusable-workflow cap = **50/file**, nesting depth = **10 levels** (was 4). Per-plan concurrency numbers still not independently confirmed.)*
@@ -370,17 +458,20 @@ GH-200_Combined_Cheat_Sheets.md                   # all 14 cheats
 
 ## ▶ RESUME POINT (start here next session)
 
-**STATUS:** Testing phase active — **Pass 1 in progress, through GHCertified Q122 (next = Q123).** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). Session 2 (2026-06-28) ran a clean **Q001–Q031** under the §4.15 drill-log + mechanical-grading regime: **raw 28/31 (90%), adjusted 28/29 (97%)** — see §6/§6b. New conventions added 2026-06-28: **§4.16 combined grade-and-present turn**, **§4.17 N-option/code-block/annotation handling + unique-entry grading + bucket-aware tally**. Earlier 2026-06-28 conventions stand: session vs pass (§0), no-data-loss (§0), in-order draw (§4.13), durable logging (§4.14 → §6b). *(Manifest note: the `/mnt/project` mirror showed `GH-200_Study_Protocol_and_Progress.md` absent, but the claude.ai UI confirms it present — mirror was stale; no manifest change needed.)*
+**STATUS:** Testing phase active — **Pass 1 in progress; GHCertified bank COMPLETE (Q001–Q179 drawn, Q157 absent = 178 Q). Next = Tutorials Dojo sampler Q1 (29 usable, skip Q26).** GHCertified bank captured + fully verified (178 Q, 0 wrong keys); TD sampler verified (29 usable, Q26 off-syllabus). Session 2 (2026-06-28) ran a clean **Q001–Q031** under the §4.15 drill-log + mechanical-grading regime: **raw 28/31 (90%), adjusted 28/29 (97%)** — see §6/§6b. New conventions added 2026-06-28: **§4.16 combined grade-and-present turn**, **§4.17 N-option/code-block/annotation handling + unique-entry grading + bucket-aware tally**. Earlier 2026-06-28 conventions stand: session vs pass (§0), no-data-loss (§0), in-order draw (§4.13), durable logging (§4.14 → §6b). *(Manifest note: the `/mnt/project` mirror showed `GH-200_Study_Protocol_and_Progress.md` absent, but the claude.ai UI confirms it present — mirror was stale; no manifest change needed.)*
 
 **Do this first:**
 1. **Verify project contents against the §11 manifest** (the learner asks for this on every restart): list the actual project files, diff against §11, and report missing/extra. Remember the `/mnt/project` view is only a cross-check — confirm against the claude.ai project UI; if they disagree, the UI wins. If files were added/removed, update the §11 manifest in the same session.
 2. Read the rest of this protocol to reload state — especially **§0 (definitions + no-data-loss rule)** and the **§6b coverage ledger** (the high-water mark = where to resume). Recaps/cheats are in `Study material/` (repo + HD) — ask the learner to upload any needed for a targeted review.
 
 **Next decisions / actions:**
-1. **Drill the verified GHCertified bank IN ORDER — resume at Q123** (lowest un-drawn Q-ID per the §6b high-water mark). **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)**; **combined grade-and-present turn (§4.16)**; presenter handles A–G / code-block / `>`-annotation options (§4.17). Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
+1. **GHCertified bank COMPLETE — resume Pass 1 at the Tutorials Dojo sampler, Q1** (skip off-syllabus Q26; 29 usable). Same regime: `present.py`/`grade.py` (point them at the TD bank/key files), shuffle per question (§4.10), mechanical letter-vs-letter grading, one at a time (§4.16). The TD bank + verified key are `gh-200-tutorialsdojo-sampler-bank-2026-06-24.md` / `...-verified-2026-06-24.md`. **Shuffle option order per question (§4.10)**; sequencing is question-order only. **One question at a time (§4.12)**; **combined grade-and-present turn (§4.16)**; presenter handles A–G / code-block / `>`-annotation options (§4.17). Source-answer accuracy is settled (0 wrong keys); residual mild-doubt items (Q116, Q174, Q178, Q066) are flagged in the verified file if a question bites.
 2. **Per question:** record it in §6b *as you go* (Q-ID, ✓/✗, bucket on a miss, mapped objective); roll confirmed (b)/(c) gaps into §7. Report each session's raw **and** adjusted score (§5) — readiness itself is judged on the completed pass, not the session.
 3. **At session end (NO-DATA-LOSS — §0):** write §6 (session row) + §6b (every Q-ID drawn) + §7 (new gaps), bump the timestamp, and re-sync project + repo + HD. Never leave progress only in chat.
 4. **Gap study is for AFTER Pass 1 completes (§7b)** — keep accumulating gaps during the pass; don't stop to study mid-pass.
 5. **Settle parked flags (§8)** opportunistically as questions surface them.
 
 *(Filename `GH-200_Practice_Protocol_and_Progress.md` mirrors the study protocol.)*
+
+---
+*Hand-off #2 — 2026-06-29: GHCertified bank completed (Q123–Q179 added to §6b/§7); high-water → TD sampler Q1; §7b items 15–21 added; §8#1 resolved. Drill log (178 entries) is the audit trail. Synced: project + repo + HD.*

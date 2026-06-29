@@ -765,3 +765,29 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 **Correction to earlier keeper (artifact scope):** "ARTIFACT scope = the RUN" is the DEFAULT reach, not a hard wall — with `actions: read` + `run-id` (+`repository`), `download-artifact` v4+ pulls from OTHER runs and repos. Cache's branch scope IS a hard isolation boundary; artifact's run scope is a soft default permissions can open.
 
 **Matrix-include counting (settles §8#1 partially):** base = product of axes; each `include` entry merges into an existing combination only if it doesn't OVERWRITE an original matrix value, else it adds a NEW combination. (Q073: 2×2 + 1 unmergeable include = 5.)
+
+### Drill-Surfaced Keepers — Pass 1, Session 3 cont. (Q123–Q179, added 2026-06-29)
+
+**Installation access tokens & GitHub Apps (dedicated — learner-requested).** A GitHub App authenticates to a repo/org as an *installation* via a short-lived **installation access token** (~1 h, not tied to any user). `GITHUB_TOKEN` is the special case: the installation token for the App that Actions auto-installs (per-job, repo-scoped). For your *own* automation needing cross-repo reach or to trigger downstream workflows, register a GitHub App, install it, and mint a token in-workflow with **`actions/create-github-app-token`** — usable immediately in that run. Prefer it over a PAT (short-lived, not user-bound). Escalation order: `GITHUB_TOKEN` → App installation token → fine-grained PAT (with expiry) last. *(Deeper study queued in §7b#15.)*
+
+**OIDC two-token flow.** Job requests a short-lived **identity JWT** from GitHub's OIDC provider → presents it to the cloud provider → provider validates against its trust policy → returns **separate, short-lived cloud credentials**. Neither is a stored long-lived secret. (The second token — the temp cloud creds — is the easily-forgotten half.)
+
+**`pull_request` vs `pull_request_target` (security).** `pull_request` = merge-commit context, **no fork secrets**, blocked by merge conflict → SAFE for running PR code. `pull_request_target` = base-branch context, **full secrets incl. fork PRs**, not blocked by conflict → DANGEROUS for untrusted PR code ("pwn request"). Both default types: opened/synchronize/reopened.
+
+**Event ⇒ which branch's workflow file runs.** Only **`push` & `pull_request`** run the workflow from the event's (possibly non-default) branch — so only they can fire a not-yet-merged workflow. **All other events** (`schedule`, `repository_dispatch`, `workflow_dispatch`, `star`, `issues`, …) use the **default-branch** version.
+
+**`github.ref` by event (reinforce §7b#8).** push → `refs/heads/<branch>` (NOT the SHA — that's `github.sha`); push tag → `refs/tags/<tag>`; PR unmerged → `refs/pull/<n>/merge`; PR merged → `refs/heads/<base>`. `github.ref_type` (branch/tag) is a *different* value from `github.ref`.
+
+**Scopes & levels.** `if:` = **job + step only** (no workflow-level `if:`); `env:` = workflow/job/step. `runs-on` label **array = runner must match ALL labels (AND)**. Runner **GROUPS = access control** (which repos/orgs may use runners); **labels = routing**.
+
+**Reusable wf vs composite action.** Reusable = **job-level** `uses:`, own runner, has a `secrets:` block. Composite = a **step** in a job, caller's runner, **no** secrets block (secrets come in as `with:`/env).
+
+**Outputs.** Workflow-level (reusable `workflow_call`) outputs use the **`value:`** key; **job-level outputs do NOT** (`<name>: ${{ steps... }}` directly).
+
+**Masking derived values.** Auto-mask covers the registered secret **and its common encodings (incl. base64)** — but it's **best-effort/brittle** (`base64(secret+suffix)`, splitting, JSON embedding defeat it). A freshly **decoded/derived** value isn't covered → register it with **`::add-mask::`**.
+
+**Artifacts & summaries.** No official **`actions/delete-artifact`** — delete via API / delete the run / per-artifact UI. Per-workflow retention = **`retention-days`** on `upload-artifact` (override, capped by repo/org max). `GITHUB_STEP_SUMMARY` (markdown) → **job summary** on the run page.
+
+**Environment required reviewers (verified vs docs).** Up to 6 users/teams; **at least read** access suffices (NOT write); **one** approval is enough; self-review can be prevented; teams allowed.
+
+**Misc.** No `actions/checkout` ⇒ **empty workspace** (repo files absent). `action.yml` required keys = **name + description + runs**. Publishing a package = **`write:packages`** + registry config + publish logic (`registry_package` event only *reacts to* a publish). Dispatch endpoints (both POST): `repository_dispatch` → `/repos/O/R/dispatches`; `workflow_dispatch` → `/repos/O/R/actions/workflows/<id>/dispatches`. **GHEC** = hosted SaaS; **GHES** = self-hosted (GitHub Connect auto / `actions-sync` manual; no Marketplace by default). `star` event = repo starred/unstarred (created/deleted). **Matrix-include §8#1 RESOLVED** (Q073/Q124/Q137 all correct).

@@ -1150,3 +1150,529 @@ learner answer: B,D   grade: OK-correct
   - `${{ vars.X }}` → **configuration variables** (set in settings UI; scopes: enterprise / org / repo / environment).
   - Cross-step sharing of env values is NOT via sibling reference → use `$GITHUB_ENV` (later steps) or step outputs (`$GITHUB_OUTPUT` → `steps.<id>.outputs.X`).
   - DEST: GH-200_Combined_Cheat_Sheets.md → 'Drill-Surfaced Keepers — Pass 1'.
+
+### GHCertified Q123  (presented 2026-06-29T16:44Z) [single]
+- **Stem:** What must be added to `actions/checkout` if `my-org/my-private-repo` is a private repository differing from the one containing the current workflow? ```yaml name: deploy-workflow on: [push] jobs: my-job: runs-on: ubuntu-latest steps: - name: "Checkout GitHub Action" uses: actions/checkout@v4 with: repository: my-org/my-private-repo path: ./.github/actions/my-org/my-private-repo ```
+- **Presented (shuffled):** A. Leave as is since access tokens will be passed automatically ```yaml with: repos · B. The environmental variable `GITHUB_TOKEN` ```yaml with: repository: my-org/my-pr · C. Create an input `MY_ACCESS_TOKEN` ```yaml with: repository: my-org/my-private-re · D. Create a GitHub secret `MY_ACCESS_TOKEN` ```yaml with: repository: my-org/my-pri
+- **Source Q-ID:** GHCertified Q123
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-D  B<-C  C<-B  D<-A
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q124  (presented 2026-06-29T16:47Z) [single]
+- **Stem:** Given the following configuration, how many jobs will GitHub Actions run when this matrix is evaluated? ```yaml strategy: matrix: os: [ubuntu-latest, windows-latest] node: [14, 16] include: - os: macos-latest node: 18 - os: ubuntu-latest node: 14 ```
+- **Presented (shuffled):** A. 5 jobs · B. 7 jobs · C. 4 jobs · D. 6 jobs · E. No jobs will run because the syntax is invalid.
+- **Source Q-ID:** GHCertified Q124
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-B  B<-D  C<-A  D<-C  E<-E
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q125  (presented 2026-06-29T16:48Z) [multi]
+- **Stem:** At what levels can environment variables be defined ?
+- **Presented (shuffled):** A. Step level · B. Action level · C. Workflow level · D. Job level
+- **Source Q-ID:** GHCertified Q125
+- **Correct (shuffled frame):** A, C, D
+- **shuffle->orig map:** A<-C  B<-D  C<-A  D<-B
+- **Learner answer:** C, D
+- **Grade:** ✗  (correct A,C,D vs learner C,D) — bucket (c) RECONFIRMS Q122: env: scopes = workflow/job/STEP. Missed STEP level AGAIN (specific recurring piece). NOT action level. → §7 (pinpoint: step-level env)
+
+### GHCertified Q126  (presented 2026-06-29T16:48Z) [single]
+- **Stem:** How should a dependent job reference the `output1` value produced by a job named `job1` earlier in the same workflow?
+- **Presented (shuffled):** A. `${{job1.outputs.output1}}` · B. `${{needs.job1.outputs.output1}}` · C. `${{depends.job1.output1}}` · D. `${{needs.job1.output1}}`
+- **Source Q-ID:** GHCertified Q126
+- **Correct (shuffled frame):** B
+- **shuffle->orig map:** A<-B  B<-A  C<-D  D<-C
+- **Learner answer:** B
+- **Grade:** ✓  (correct B vs learner B)
+
+### GHCertified Q127  (presented 2026-06-29T16:49Z) [single]
+- **Stem:** Which workflow command syntax correctly sets an environment variable named 'API_VERSION' with the value '2.1' for subsequent steps in a GitHub Actions job?
+- **Presented (shuffled):** A. `set-env name=API_VERSION value=2.1` · B. `echo "API_VERSION=2.1" >> "$GITHUB_OUTPUT"` · C. `echo "API_VERSION=2.1" >> "$GITHUB_ENV"` · D. `export API_VERSION=2.1 >> "$GITHUB_ENV"`
+- **Source Q-ID:** GHCertified Q127
+- **Correct (shuffled frame):** C
+- **shuffle->orig map:** A<-D  B<-B  C<-A  D<-C
+- **Learner answer:** C
+- **Grade:** ✓  (correct C vs learner C)
+
+### GHCertified Q128  (presented 2026-06-29T16:50Z) [multi]
+- **Stem:** A workflow is triggered when pull requests are reopened. Why might this be the cause?
+- **Presented (shuffled):** A. No activity types are defined under the `pull_request` event. · B. `types: [reopened]` is defined under the `pull_request` event. · C. Branch protection rules were improperly configured. · D. `on: schedule` was configured with `pull_requests: [reopened]`
+- **Source Q-ID:** GHCertified Q128
+- **Correct (shuffled frame):** A, B
+- **shuffle->orig map:** A<-C  B<-A  C<-B  D<-D
+- **Learner answer:** A, B
+- **Grade:** ✓  (correct A,B vs learner A,B)
+
+### GHCertified Q129  (presented 2026-06-29T16:51Z) [single]
+- **Stem:** `GITHUB_TOKEN` can be used to check out any repository.
+- **Presented (shuffled):** A. False · B. True · C. Only with elevated permissions
+- **Source Q-ID:** GHCertified Q129
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-C  B<-A  C<-B
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q130  (presented 2026-06-29T16:51Z) [multi]
+- **Stem:** Which of the following are true regarding workflow-level vs. job-level outputs blocks?
+- **Presented (shuffled):** A. A workflow-level `outputs` block must have the following structure: ``` outputs: · B. A reusable workflow can have both workflow-level and job-level `outputs` blocks. · C. A workflow-level `outputs` block should only be used in reusable workflows, not  · D. Job-level `outputs` blocks should only be used in caller workflows, not reusable · E. A job-level `outputs` block must have the following structure: ``` outputs: <out
+- **Source Q-ID:** GHCertified Q130
+- **Correct (shuffled frame):** A, B, C
+- **shuffle->orig map:** A<-E  B<-C  C<-B  D<-A  E<-D
+- **Learner answer:** A, B, C, E
+- **Grade:** ✗  (correct A,B,C vs learner A,B,C,E) — bucket (c): `value:` key is WORKFLOW-LEVEL (workflow_call) outputs ONLY. Job-level outputs map directly `<name>: ${{ steps... }}` (no value:). Learner added E. → §7 (cheat keeper) 
+
+### GHCertified Q131  (presented 2026-06-29T16:53Z) [multi]
+- **Stem:** Which of the following are true regarding calling reusable workflows versus calling composite actions?
+- **Presented (shuffled):** A. Composite actions must be called as a step within a job · B. Reusable workflows are called via referencing the folder that contains their `ac · C. Composite actions are called via referencing the folder that contains their `act · D. Secrets can be passed to both reusable workflows and calling composite actions v · E. Only reusable workflows can accept inputs. · F. Reusable workflows can use a different runner type than the caller workflow, whi · G. Reusable workflows must be called on workflow job level (not from step-level).
+- **Source Q-ID:** GHCertified Q131
+- **Correct (shuffled frame):** A, C, F, G
+- **shuffle->orig map:** A<-C  B<-B  C<-A  D<-E  E<-F  F<-G  G<-D
+- **Learner answer:** A, C, D, F
+- **Grade:** ✗  (correct A,C,F,G vs learner A,C,D,F) — bucket (c) KEEPER: composite action = STEP in a job, caller's runner, NO secrets block (secrets via with:/env). Reusable wf = JOB-level uses:, own runner, secrets: block. Learner added D (composite has no uses.secrets) and missed G (job-level). → §7 cheat keeper
+
+### GHCertified Q132  (presented 2026-06-29T16:56Z) [multi]
+- **Stem:** Which of the following are true regarding GitHub Enterprise Server (GHES)?
+- **Presented (shuffled):** A. GHES workflows cannot access GitHub.com nor GitHub Marketplace actions by defaul · B. Using GitHub Connect, users can follow a manual process to access GitHub.com act · C. GitHub Enterprise Server instances are self-hosted, compared to GitHub Enterpris · D. GHES is allowed to use enhanced versions of GitHub-hosted runners. · E. `actions/actions-sync` is primarily devoted to moving GitHub.com actions to a GH
+- **Source Q-ID:** GHCertified Q132
+- **Correct (shuffled frame):** A, C, E
+- **shuffle->orig map:** A<-A  B<-D  C<-E  D<-C  E<-B
+- **Learner answer:** A, C, E
+- **Grade:** ✓  (correct A,C,E vs learner A,C,E)
+- **Note:** ⚑ LEARNER-FLAGGED: GHEC vs GHES / enterprise hosting = giant training gap → §7b study area (GHEC=hosted SaaS; GHES=self-hosted; Connect auto / actions-sync manual; no Marketplace by default).
+
+### GHCertified Q133  (presented 2026-06-29T16:58Z) [multi]
+- **Stem:** Why use a commit SHA versus a tag to pin an action?
+- **Presented (shuffled):** A. Commit SHAs are more difficult to trace in an audit, making it difficult for bad · B. Commit SHAs are immutable, whereas tags have the potential to be changed · C. Commit SHAs are more secure · D. Commit SHAs are guaranteed to point to the exact same code every time, tags are  · E. Commit SHAs are more convenient to use as opposed to tags
+- **Source Q-ID:** GHCertified Q133
+- **Correct (shuffled frame):** B, C, D
+- **shuffle->orig map:** A<-E  B<-B  C<-A  D<-D  E<-C
+- **Learner answer:** B, C, D
+- **Grade:** ✓  (correct B,C,D vs learner B,C,D)
+
+### GHCertified Q134  (presented 2026-06-29T16:59Z) [single]
+- **Stem:** How do you run custom JavaScript scripts directly in a GitHub Actions workflow?
+- **Presented (shuffled):** A. Via the `actions/github-script` action · B. By enabling the 'Allow custom JavaScript scripts' configuration in the Actions s · C. Write the contents of a script block to the `GITHUB_SCRIPT` environmental variab · D. By enabling the 'Allow custom JavaScript scripts' configuration in the Actions s · E. In a JavaScript Action, set the `using` key to `'github-script'`
+- **Source Q-ID:** GHCertified Q134
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-C  C<-D  D<-B  E<-E
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q135  (presented 2026-06-29T16:59Z) [single]
+- **Stem:** You have forked a repository to enhance a workflow that uses a secret to access a third-party application. You trigger the workflow before editing its code to get a baseline result, but find that the workflow fails. Why would this occur?
+- **Presented (shuffled):** A. Forked repositories only inherit repository secrets, so the secret being used in · B. Forked repositories do not inherit secrets from the original repository · C. The inherited secret had a size larger than 48 KB · D. When inheriting the secret from the original repository, there was an error duri
+- **Source Q-ID:** GHCertified Q135
+- **Correct (shuffled frame):** B
+- **shuffle->orig map:** A<-D  B<-A  C<-C  D<-B
+- **Learner answer:** B
+- **Grade:** ✓  (correct B vs learner B)
+
+### GHCertified Q136  (presented 2026-06-29T17:00Z) [single]
+- **Stem:** You have a workflow that uses the matrix below. If a job in the matrix fails, how can you ensure other in-progress and queued jobs in the matrix are not cancelled? ```yaml jobs: deploy: strategy: matrix: version: ["1", "1.2", "1.3"] os: [ubuntu-latest, windows-latest] ```
+- **Presented (shuffled):** A. Nothing needs to be done, since `jobs.<job_id>.strategy.fail-fast` has a default · B. Set `jobs.<job_id>.strategy.matrix.fail-fast` to `false` · C. Nothing needs to be done, since `jobs.<job_id>.strategy.matrix.fail-fast` has a  · D. Set `jobs.<job_id>.strategy.fail-fast` to `false` · E. There is no way to enforce this behavior, it cannot be worked around.
+- **Source Q-ID:** GHCertified Q136
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-B  B<-C  C<-D  D<-A  E<-E
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q137  (presented 2026-06-29T17:01Z) [single]
+- **Stem:** How many jobs will run in the following matrix? ```yaml jobs: test_deploy: strategy: matrix: os: [ubuntu-latest, windows-latest] version: [1, 2] include: - comment-color: "green" - error-color: "red" - os: "ubuntu-latest" comment-color: "blue" - os: "macos-latest" comment-color: "yellow" ```
+- **Presented (shuffled):** A. 7 · B. 10 · C. 6 · D. 5
+- **Source Q-ID:** GHCertified Q137
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-C  B<-D  C<-B  D<-A
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+- **Note:** §8 calibration flag #1 RESOLVED — matrix-include counting correct 3/3 (Q073/Q124/Q137).
+
+### GHCertified Q138  (presented 2026-06-29T17:04Z) [single]
+- **Stem:** You want to create a workflow `Post-Deploy` that performs post-deploy related activity. What event trigger should the `Post-Deploy` workflow use so it runs automatically after a specified workflow is completed?
+- **Presented (shuffled):** A. `workflow_trigger` · B. `workflow_run` · C. `workflow_dispatch` · D. `workflow_call`
+- **Source Q-ID:** GHCertified Q138
+- **Correct (shuffled frame):** B
+- **shuffle->orig map:** A<-B  B<-A  C<-C  D<-D
+- **Learner answer:** B
+- **Grade:** ✓  (correct B vs learner B)
+
+### GHCertified Q139  (presented 2026-06-29T17:05Z) [multi]
+- **Stem:** In what ways can you enable runner diagnostic logging?
+- **Presented (shuffled):** A. Renaming the `_diag` directory of a self-hosted runner to `runner-diagnostic-log · B. Re-running a workflow with `Enable debug logging enabled` · C. Setting a secret or variable named `ACTIONS_RUNNER_DEBUG` to `true` · D. By adding a `ACTIONS_RUNNER_DEBUG` top-level folder to the workflow's repository · E. By adding a `runner-diagnostic-logs` subfolder to the `_diag` directory of the s
+- **Source Q-ID:** GHCertified Q139
+- **Correct (shuffled frame):** B, C
+- **shuffle->orig map:** A<-E  B<-B  C<-A  D<-C  E<-D
+- **Learner answer:** B, C, E
+- **Grade:** ✗  (correct B,C vs learner B,C,E) — bucket (b): runner diag logging enabled via ACTIONS_RUNNER_DEBUG (secret OR variable)=true, or re-run 'Enable debug logging'. Logs auto-land in runner `_diag`. E (manual _diag subfolder) invented. Learner-flagged self-hosted-diag training gap → reinforces §7b runner-diag. → §7
+
+### GHCertified Q140  (presented 2026-06-29T17:07Z) [single]
+- **Stem:** You are writing a reusable workflow which has `branch-name` as an input. How can you conditionally run a step in that workflow if the branch name begins with 'smoke-test'?
+- **Presented (shuffled):** A. Use the `branches` filter under `workflow_call` ```yaml on: workflow_call: branc · B. Use the built-in `startsWith` method in combination with `jobs.<job_id>.steps[*] · C. Use shell conditionals in combination with `jobs.<job_id>.steps[*].if` ```yaml i · D. Use the built-in `startsWith` method in combination with `jobs.<job_id>.steps[*]
+- **Source Q-ID:** GHCertified Q140
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-C  B<-B  C<-D  D<-A
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q141  (presented 2026-06-29T17:30Z) [single]
+- **Stem:** Why might you use `hashFiles` when utilizing `actions/cache`? ```yaml - uses: actions/cache@v5 with: path: ~/.npm key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }} ```
+- **Presented (shuffled):** A. If a cache key contains the dependencies file wrapped in `hashFiles`, the key ch · B. When using `hashFiles` as part of a cache key, an additional step will be genera · C. `hashFiles` is required for compatibility with Windows runners. · D. When using `hashFiles` as part of a cache key, if there is a cache miss, `hashFi
+- **Source Q-ID:** GHCertified Q141
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-D  C<-B  D<-C
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q142  (presented 2026-06-29T17:30Z) [multi]
+- **Stem:** Which of the following answers is correct regarding installation access tokens?
+- **Presented (shuffled):** A. `GITHUB_TOKEN` is a type of installation access token. · B. The `actions/create-github-app-token` can be called within workflows to create a · C. Installation access tokens are short-lived tokens ideal for automation activitie · D. The `actions/create-github-app-token` can be called within workflows to create a · E. Installation access tokens cannot be configured to act on behalf of their associ
+- **Source Q-ID:** GHCertified Q142
+- **Correct (shuffled frame):** A, B, C
+- **shuffle->orig map:** A<-B  B<-C  C<-A  D<-D  E<-E
+- **Learner answer:** (none — learner: first time reading about installation access tokens)
+- **Grade:** GAP (not scored) — bucket (c) RETENTION (concept IS in recaps L1852/1879: GITHUB_TOKEN=installation access token, App tokens short-lived/not user-bound). Correct A,B,C. New detail = `actions/create-github-app-token` (immediate use). → §7 study (revisit App-token recap section)
+
+### GHCertified Q143  (presented 2026-06-29T17:31Z) [single]
+- **Stem:** Your organization wants to lower the retention period for stored artifacts, citing storage concerns. How can this be done at an organizational level?
+- **Presented (shuffled):** A. This cannot be done: artifacts are strictly stored for 90 days across all system · B. This cannot be done at an organizational level. All workflows that utilize `acti · C. By navigating to the organization's Actions settings and editing the value of th · D. By using self-hosted runners, creating a `.github/retention-policy.yml` file, an
+- **Source Q-ID:** GHCertified Q143
+- **Correct (shuffled frame):** C
+- **shuffle->orig map:** A<-D  B<-C  C<-A  D<-B
+- **Learner answer:** C
+- **Grade:** ✓  (correct C vs learner C)
+
+### KEEPER (cheat-sheet) — added 2026-06-29, learner-requested (installation access tokens)
+- **DEST:** GH-200_Combined_Cheat_Sheets.md → new dedicated paragraph (currently only embedded in recap "GITHUB_TOKEN vs PAT 5.4").
+- Installation access token = short-lived (~1h), not user-bound, used by a GitHub App authenticating as an *installation*.
+- GITHUB_TOKEN = the installation token for the App that Actions auto-installs (per-job, repo-scoped).
+- `actions/create-github-app-token` mints an App installation token in-workflow for immediate use in that run. (NOT currently in recaps — new detail from Q142.)
+- Escalation order: GITHUB_TOKEN → GitHub App installation token → fine-grained PAT (w/ expiry) last. Prefer App token over PAT (short-lived, not user-bound).
+
+### §7b STUDY TOPIC (learner-requested deeper study) — added 2026-06-29
+- **GitHub Apps + installation access tokens** — under-covered in course material; study for exam AND general knowledge.
+  Read: GitHub docs "Authenticating with a GitHub App" / "Making authenticated API requests with a GitHub App installation".
+  Cover: App registration vs installation, installation access tokens (short-lived, per-installation), permissions/events model, `actions/create-github-app-token`, App token vs PAT vs GITHUB_TOKEN.
+
+### GHCertified Q144  (presented 2026-06-29T17:37Z) [single]
+- **Stem:** How can you change the retention period for artifacts generated by a certain workflow?
+- **Presented (shuffled):** A. In the workflow's repository, navigate to the Actions settings and editing the v · B. By navigating to the organization's Actions settings and editing the value of th · C. By utilizing the `retention-days` input in `actions/download-artifact` · D. By utilizing the `retention-days` input in `actions/upload-artifact`
+- **Source Q-ID:** GHCertified Q144
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-C  B<-D  C<-B  D<-A
+- **Learner answer:** A
+- **Grade:** ✗  (correct D vs learner A) — bucket (b)/(c): per-workflow artifact retention = `retention-days` input on actions/upload-artifact (override, capped by repo/org max). Settings = default/ceiling only; no per-workflow UI. → §7
+
+### GHCertified Q145  (presented 2026-06-29T17:37Z) [multi]
+- **Stem:** In what ways can you download an artifact?
+- **Presented (shuffled):** A. By downloading artifacts from the Github Actions UI workflow run · B. By remotely accessing self-hosted runners via SSH and accessing the `.github/art · C. By using the `actions/download-artifact` action in a workflow · D. By using a specific GitHub API endpoint · E. By using the `actions/upload-artifact` action in a workflow
+- **Source Q-ID:** GHCertified Q145
+- **Correct (shuffled frame):** A, C, D
+- **shuffle->orig map:** A<-B  B<-E  C<-A  D<-C  E<-D
+- **Learner answer:** A, C, D
+- **Grade:** ✓  (correct A,C,D vs learner A,C,D)
+
+### GHCertified Q146  (presented 2026-06-29T17:38Z) [multi]
+- **Stem:** Which statements are true regarding `github.ref` when the workflow is triggered by a `pull_request` event?
+- **Presented (shuffled):** A. In pull requests that have not been merged, `github.ref` is the fully-formed ref · B. In pull requests (regardless of merge status), `github.ref` refers to the pull r · C. In pull requests that have not been merged, `github.ref` refers to the fully-for · D. In pull requests that have been merged, `github.ref` refers to the fully-formed  · E. In pull requests that have been merged, `github.ref` is the type of fully-formed · F. In pull requests (regardless of merge status), `github.ref` is the SHA of the la
+- **Source Q-ID:** GHCertified Q146
+- **Correct (shuffled frame):** C, D
+- **shuffle->orig map:** A<-E  B<-C  C<-A  D<-B  E<-F  F<-D
+- **Learner answer:** C, E
+- **Grade:** ✗  (correct C,D vs learner C,E) — bucket (c) REINFORCES §7b#8 github.ref: PR unmerged=refs/pull/<n>/merge (C); PR merged=refs/heads/<base> (D). E confuses github.ref with github.ref_type (branch/tag/null). Learner-confirmed unstudied gap. → §7/§7b#8
+
+### GHCertified Q147  (presented 2026-06-29T17:41Z) [single]
+- **Stem:** You have a base-64 encoded secret that you decode in a GitHub Actions workflow. How can you make sure the decoded secret does not show up in the workflow log accidentally?
+- **Presented (shuffled):** A. Using the built-in `maskSecret` function to redact the decoded secret in instanc · B. Avoiding the usage of print statements that contain the decoded secret, since th · C. Nothing needs to be done since Github Actions infrastructure automatically redac · D. Using `add-mask` workflow command in jobs where the decoded secret may be utiliz
+- **Source Q-ID:** GHCertified Q147
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-D  B<-C  C<-B  D<-A
+- **Learner answer:** C
+- **Grade:** ✗  (correct D vs learner C) — bucket (c) KEEPER: auto-masking covers the registered secret AND common ENCODINGS of it (incl. base64 — best-effort, brittle; base64(secret+suffix) can slip); a decoded/derived value is a NEW string → NOT auto-masked → use `::add-mask::` to register it. → §7 cheat keeper
+
+### GHCertified Q148  (presented 2026-06-29T17:44Z) [single]
+- **Stem:** Which statement is true regarding `github.ref` when the workflow is triggered by a push event?
+- **Presented (shuffled):** A. In push events, `github.ref` is the type of fully-formed ref that triggered the  · B. In push events, `github.ref` is the description of the commit that triggered the · C. In push events, `github.ref` is the message of the commit that triggered the wor · D. In push events, `github.ref` is the fully-formed ref of the branch or tag ref th · E. In push events, `github.ref` is SHA of the commit that triggered the workflow.
+- **Source Q-ID:** GHCertified Q148
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-E  B<-D  C<-B  D<-A  E<-C
+- **Learner answer:** E
+- **Grade:** ✗  (correct D vs learner E) — bucket (c) REINFORCES §7b#8: push → github.ref = refs/heads/<branch> or refs/tags/<tag> (fully-formed ref). E=SHA is github.sha, not github.ref. ref-vs-SHA confusion (cf Q146). → §7/§7b#8
+
+### GHCertified Q149  (presented 2026-06-29T17:47Z) [single]
+- **Stem:** What does writing to `GITHUB_STEP_SUMMARY` do? ```yaml - name: "Write results of test suite" run: | echo "The results of the testing suite are:" >> $GITHUB_STEP_SUMMARY ```
+- **Presented (shuffled):** A. Adds this line to the built-in artifact `github-steps-summary.md` · B. Adds this line to the job summary · C. Adds this line as a subtitle to the step name in the GitHub Actions UI · D. Prints this line as a step-level debug message
+- **Source Q-ID:** GHCertified Q149
+- **Correct (shuffled frame):** B
+- **shuffle->orig map:** A<-C  B<-A  C<-B  D<-D
+- **Learner answer:** C
+- **Grade:** ✗  (correct B vs learner C) — bucket (b)/(c): writing to $GITHUB_STEP_SUMMARY adds markdown to the JOB SUMMARY (run summary page). Thin-coverage area (1.14 job summaries). → §7
+
+### GHCertified Q150  (presented 2026-06-29T17:49Z) [single]
+- **Stem:** Dorothea is troubleshooting a workflow triggered by a push event and is interested in seeing details about the webhook. How can she view the entire payload of the webhook that triggered the workflow?
+- **Presented (shuffled):** A. Checking the "Show event webhook payload" checkbox under the workflow run option · B. Navigating to the "Webhooks" section of the repository settings · C. Printing the contents of the `github.event` object in a step · D. Setting a secret or variable named `SHOW_EVENT_PAYLOAD` to `true`
+- **Source Q-ID:** GHCertified Q150
+- **Correct (shuffled frame):** C
+- **shuffle->orig map:** A<-B  B<-D  C<-A  D<-C
+- **Learner answer:** C
+- **Grade:** ✓  (correct C vs learner C)
+
+### GHCertified Q151  (presented 2026-06-29T17:50Z) [single]
+- **Stem:** Which should you use when passing information between jobs: job outputs or `GITHUB_ENV`?
+- **Presented (shuffled):** A. `GITHUB_ENV`, because using it to set environmental variables puts significantly · B. `GITHUB_ENV`, because job outputs can only be set and referenced within the same · C. Job outputs, because the value of environmental variables set via writing to `GI · D. Job outputs, because they are simpler to set up
+- **Source Q-ID:** GHCertified Q151
+- **Correct (shuffled frame):** C
+- **shuffle->orig map:** A<-D  B<-B  C<-A  D<-C
+- **Learner answer:** C
+- **Grade:** ✓  (correct C vs learner C)
+
+### GHCertified Q152  (presented 2026-06-29T17:50Z) [single]
+- **Stem:** Fill in the blank: When using self-hosted runners, the tool cache ___
+- **Presented (shuffled):** A. cannot be populated · B. starts off empty and must be populated in order to save tools between runs · C. starts with the same tools GitHub-hosted runners do, as well as a selected assor · D. starts off the same as GitHub-hosted runners in that it is pre-populated with ce
+- **Source Q-ID:** GHCertified Q152
+- **Correct (shuffled frame):** B
+- **shuffle->orig map:** A<-D  B<-A  C<-C  D<-B
+- **Learner answer:** B
+- **Grade:** ✓  (correct B vs learner B)
+
+### GHCertified Q153  (presented 2026-06-29T17:51Z) [multi]
+- **Stem:** Which of the following events can trigger a workflow that has not been merged to the default branch?
+- **Presented (shuffled):** A. `star` · B. `push` · C. `issues` · D. `repository_dispatch` · E. `pull_request` · F. `issue_comment`
+- **Source Q-ID:** GHCertified Q153
+- **Correct (shuffled frame):** B, E
+- **shuffle->orig map:** A<-D  B<-A  C<-E  D<-C  E<-B  F<-F
+- **Learner answer:** B, D, E
+- **Grade:** ✗  (correct B,E vs learner B,D,E) — bucket (c) KEEPER (learner-confirmed gap): ONLY push & pull_request run the workflow file from the event's branch → can trigger a not-yet-merged (feature-branch) workflow. ALL other events (repository_dispatch, star, issues, issue_comment, schedule, workflow_dispatch) use the DEFAULT-branch version. Learner added D (repository_dispatch) wrongly. → §7 cheat keeper
+
+### GHCertified Q154  (presented 2026-06-29T17:54Z) [single]
+- **Stem:** When would you build a Docker container action to share in the GitHub Actions marketplace?
+- **Presented (shuffled):** A. Docker container actions have fast startup speed on Windows and macOS runners · B. Docker container actions allow you to utilize Docker without requiring an `actio · C. Docker container actions are a bundle of steps within other workflows that run w · D. Docker container actions are an out-of-the-box, low-overhead action · E. Docker container actions ensure a consistent runtime environment and specific de
+- **Source Q-ID:** GHCertified Q154
+- **Correct (shuffled frame):** E
+- **shuffle->orig map:** A<-C  B<-E  C<-D  D<-B  E<-A
+- **Learner answer:** E
+- **Grade:** ✓  (correct E vs learner E)
+
+### NOTE (triggers reference, §7b#2) — added 2026-06-29 (learner-requested)
+- `star` event = fires when a repo is starred/unstarred (activity types: created, deleted). Runs from DEFAULT-branch workflow (like all events except push/pull_request). Niche (thank-you bots, star-milestone tracking).
+
+### GHCertified Q155  (presented 2026-06-29T17:55Z) [single]
+- **Stem:** Marianne has a feature branch that contains her new workflow file, which is set to be triggered at 2 AM every day, using the syntax seen below. However, the next day, the workflow does not trigger. Why might this be the case? ```yaml on: schedule: cron: "0 2 * * *" ```
+- **Presented (shuffled):** A. The private repository containing the workflow has not had any repository activi · B. The `@daily` syntax was not used · C. `schedule` cannot be the only event in the workflow. It must be paired with a re · D. The workflow file must exist on the default branch in order to be triggered by t · E. The `cron` syntax is not scheduled correctly
+- **Source Q-ID:** GHCertified Q155
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-E  B<-D  C<-C  D<-A  E<-B
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q156  (presented 2026-06-29T17:56Z) [multi]
+- **Stem:** In what ways can you delete workflow artifacts?
+- **Presented (shuffled):** A. By setting the artifact retention period to 0 days · B. By using the `actions/delete-artifact` action in a workflow · C. By remotely accessing self-hosted runners via SSH, navigating to the `.github/ar · D. By using a specific GitHub API endpoint · E. By using the Github Actions UI to delete the workflow run that generated the art · F. By using the Github Actions UI to navigate to a workflow run and delete the arti
+- **Source Q-ID:** GHCertified Q156
+- **Correct (shuffled frame):** D, E, F
+- **shuffle->orig map:** A<-F  B<-D  C<-E  D<-C  E<-B  F<-A
+- **Learner answer:** B, D, E, F
+- **Grade:** ✗  (correct D,E,F vs learner B,D,E,F) — bucket (b)/(c): delete artifacts via API (D) / delete the run (E) / per-artifact UI delete (F). NO official actions/delete-artifact (B wrong; only upload/download official). retention min=1 (A '0 days' invalid). → §7
+
+### GHCertified Q158  (presented 2026-06-29T17:58Z) [single]
+- **Stem:** Petra is building a workflow whose sole job is named `post-merge`. How can she set up the job to be triggered upon a merged pull request?
+- **Presented (shuffled):** A. Specify the the `pull_request` activity type as `closed` (no need for a job-leve · B. Specify the the `pull_request` activity type as `closed` and use a job-level con · C. Specify the `pull_request` activity type as `merged` (no need for a job-level co · D. Specify the `pull_request` activity type as `merged`, and use a job-level condit · E. Specify the `pull_request` activity type as `closed`, and use a job-level condit
+- **Source Q-ID:** GHCertified Q158
+- **Correct (shuffled frame):** E
+- **shuffle->orig map:** A<-D  B<-E  C<-C  D<-B  E<-A
+- **Learner answer:** E
+- **Grade:** ✓  (correct E vs learner E)
+
+### GHCertified Q159  (presented 2026-06-29T18:00Z) [multi]
+- **Stem:** Which of the following are true when comparing the pull_request and pull_request_target events?
+- **Presented (shuffled):** A. The `pull_request` event runs within the context of the merge commit, while `pul · B. Workflows will not run on `pull_request_target` activity if there is a merge con · C. Both `pull_request` and `pull_request_target` events have default activity types · D. Workflows will not run on `pull_request` activity if there is a merge conflict · E. `pull_request` should be used with caution, since PRs from forks will allow the  · F. The `pull_request_target` event should be used when you want to run code contain
+- **Source Q-ID:** GHCertified Q159
+- **Correct (shuffled frame):** A, C, D
+- **shuffle->orig map:** A<-A  B<-E  C<-C  D<-B  E<-D  F<-F
+- **Learner answer:** (none — declined to guess)
+- **Grade:** GAP (not scored) — bucket (b) study area. Correct A,C,D. pull_request=merge commit, NO fork secrets, blocked by merge conflict, SAFE for PR code. pull_request_target=base branch context, FULL secrets incl forks, not blocked by conflict, DANGEROUS for untrusted PR code. Both default types opened/synchronize/reopened. → §7b SECURITY study area (ties 5.3 script injection)
+
+### GHCertified Q160  (presented 2026-06-29T18:09Z) [multi]
+- **Stem:** Why should you use OIDC when connecting a workflow to cloud providers?
+- **Presented (shuffled):** A. Cloud providers require the use of OIDC. · B. OIDC generates JSON web tokens (JWTs) that can be used across workflow jobs · C. Using OIDC allows you to circumvent setting up trust policies with cloud provide · D. OIDC prevents you from having to keep cloud credentials as long-lived GitHub sec · E. Using OIDC within a workflow will automatically save that workflow's logs in clo · F. OIDC involves the generation and use of short-lived tokens, which is more secure
+- **Source Q-ID:** GHCertified Q160
+- **Correct (shuffled frame):** D, F
+- **shuffle->orig map:** A<-C  B<-E  C<-D  D<-A  E<-F  F<-B
+- **Learner answer:** B, D, F
+- **Grade:** ✗  (correct D,F vs learner B,D,F) — bucket (c): OIDC reasons = no long-lived secrets (D) + short-lived tokens/more secure (F). The JWT is exchanged WITH the cloud provider for temp creds, not 'across jobs' (B distractor). → §7
+
+### GHCertified Q161  (presented 2026-06-29T18:12Z) [single]
+- **Stem:** How do workflows integrate with OIDC after a trust relationship has been established?
+- **Presented (shuffled):** A. After adding a workflow to the "OIDC-allowed workflows" list in the repository s · B. The `on: OIDC_request` event trigger requests an OIDC token from GitHub's OIDC p · C. The `on: OIDC_request` event trigger requests a cloud access token from GitHub's · D. A workflow job requests an OIDC token from GitHub's OIDC provider. The OIDC toke · E. A workflow job requests an cloud access token from GitHub's cloud access provide
+- **Source Q-ID:** GHCertified Q161
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-E  B<-D  C<-C  D<-A  E<-B
+- **Learner answer:** D
+- **Grade:** ✓ EXPLANATION-PRIMED (Claude just walked the mechanism) — reinforced, not cold recall. ⚑ REVIEW: OIDC two-token flow — JWT (identity) exchanged with cloud provider for TEMPORARY cloud credentials. Learner forgot temp-creds; ties prior OIDC gap. → §7 review
+
+### GHCertified Q162  (presented 2026-06-29T18:16Z) [multi]
+- **Stem:** Mercedes wants to publish a Docker container action she has created to the GitHub Actions Marketplace. What files does she need at a minimum to do so?
+- **Presented (shuffled):** A. `.dockerignore` · B. `action.yml` · C. A `Dockerfile`, if the image is built as part of the action during the workflow  · D. `CONTRIBUTING.md` · E. A `Dockerfile`, if the image is to be referenced from an image registry · F. `README.md`
+- **Source Q-ID:** GHCertified Q162
+- **Correct (shuffled frame):** B, C
+- **shuffle->orig map:** A<-E  B<-A  C<-B  D<-F  E<-C  F<-D
+- **Learner answer:** B, C
+- **Grade:** ✓  (correct B,C vs learner B,C)
+
+### GHCertified Q163  (presented 2026-06-29T18:17Z) [multi]
+- **Stem:** Annette needs to write a workflow to publish a custom `npm` package that only members in her private organization will use. What should her workflow include?
+- **Presented (shuffled):** A. An `on:registry_package` event with `types:[published]` · B. A token with `admin:packages` permissions · C. An `on:registry_package` event with no activity types specified · D. A token with `write:packages` permissions · E. Communication logic with the corresponding GitHub Packages registry `https://npm · F. Logic to publish to GitHub Packages
+- **Source Q-ID:** GHCertified Q163
+- **Correct (shuffled frame):** D, E, F
+- **shuffle->orig map:** A<-F  B<-E  C<-D  D<-B  E<-C  F<-A
+- **Learner answer:** C, D
+- **Grade:** ✗  (correct D,E,F vs learner C,D) — bucket (b)/(c) learner-flagged shaky area: PUBLISH a package = write:packages token + registry config (npm.pkg.github.com) + publish logic (D,E,F). registry_package event (A/C) = react TO a publish, not do one. admin:packages (B) too much. → §7 + §7b GitHub Packages study area
+
+### GHCertified Q164  (presented 2026-06-29T18:19Z) [multi]
+- **Stem:** At what levels can `if:` be used in workflows?
+- **Presented (shuffled):** A. Organization-level · B. Workflow-level · C. Environment-level · D. Job-level · E. Step-level
+- **Source Q-ID:** GHCertified Q164
+- **Correct (shuffled frame):** D, E
+- **shuffle->orig map:** A<-E  B<-C  C<-D  D<-A  E<-B
+- **Learner answer:** B, D, E
+- **Grade:** ✗  (correct D,E vs learner B,D,E) — bucket (c) KEEPER: if: = JOB + STEP only (no workflow-level if). Contrast env: = workflow/job/step. Learner over-extended to workflow level. → §7 cheat keeper
+
+### GHCertified Q165  (presented 2026-06-29T18:20Z) [multi]
+- **Stem:** How does `repository_dispatch` enable systems outside of GitHub to trigger a workflow?
+- **Presented (shuffled):** A. The external system makes a PUT request to the GitHub API to create a repository · B. The external system makes a POST request to the GitHub API to create a repositor · C. The workflow is triggered by a POST request to the workflow using the following  · D. The `on.repository_dispatch.types` workflow key corresponds to the `event_type`  · E. The workflow is triggered by the creation of a repository dispatch event · F. The `on.repository_dispatch.event_types` workflow key corresponds to the `event_
+- **Source Q-ID:** GHCertified Q165
+- **Correct (shuffled frame):** B, D, E
+- **shuffle->orig map:** A<-D  B<-A  C<-E  D<-C  E<-B  F<-F
+- **Learner answer:** B, C, D, E
+- **Grade:** ✗  (correct B,D,E vs learner B,C,D,E) — bucket (b)/(c): repository_dispatch = POST /repos/O/R/dispatches (external event_type, filtered by on.repository_dispatch.types). workflow_dispatch = POST /repos/O/R/actions/workflows/<id>/dispatches (manual run of a specific wf). C conflated the two. Both POST. → §7b (workflow_dispatch vs repository_dispatch). NOT rote-path memorization.
+
+### GHCertified Q166  (presented 2026-06-29T18:24Z) [multi]
+- **Stem:** JavaScript actions and `actions/github-script` both use JavaScript. Why should you use `actions/github-script` versus creating your own JavaScript action?
+- **Presented (shuffled):** A. `actions/github-script` should be used for short inline scripts · B. `actions/github-script` should be used when you need to utilize a fine-tuned Nod · C. JavaScript actions should be used when you want a low-overhead solution to makin · D. JavaScript actions should be used when you want a custom reusable action to be u · E. `actions/github-script` should be used when you want to use a pre-authenticated  · F. JavaScript actions should be used for short inline scripts
+- **Source Q-ID:** GHCertified Q166
+- **Correct (shuffled frame):** A, D, E
+- **shuffle->orig map:** A<-A  B<-E  C<-F  D<-C  E<-B  F<-D
+- **Learner answer:** A, D, E
+- **Grade:** ✓  (correct A,D,E vs learner A,D,E)
+
+### GHCertified Q167  (presented 2026-06-29T18:25Z) [single]
+- **Stem:** Hilda needs access to an artifact generated by a recent workflow run, but the workflow file itself has since been deleted. Will she still be able to recover the artifact?
+- **Presented (shuffled):** A. Yes, because deleting a workflow does not automatically delete its runs and gene · B. Yes, but only if she has administrator privileges · C. No, because while workflow runs will remain after a workflow is deleted, generat · D. No, because deleting a workflow automatically deletes its runs and generated art
+- **Source Q-ID:** GHCertified Q167
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-C  C<-D  D<-B
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q168  (presented 2026-06-29T18:26Z) [multi]
+- **Stem:** Which keys are required when making an `action.yml` file?
+- **Presented (shuffled):** A. `outputs` · B. `author` · C. `inputs` · D. `description` · E. `runs` · F. `name`
+- **Source Q-ID:** GHCertified Q168
+- **Correct (shuffled frame):** D, E, F
+- **shuffle->orig map:** A<-F  B<-D  C<-E  D<-B  E<-C  F<-A
+- **Learner answer:** E, F
+- **Grade:** ✗  (correct D,E,F vs learner E,F) — bucket (b)/(c): action.yml REQUIRED keys = name + description + runs (missed description). author/inputs/outputs/branding optional. → §7
+
+### GHCertified Q169  (presented 2026-06-29T18:26Z) [single]
+- **Stem:** Manuela is setting up self-hosted runners for her organization, which has heavily restricted communication with IP addresses. How can she ensure the self-hosted runners can communicate with GitHub?
+- **Presented (shuffled):** A. Adding the `.ip-exception` file to the top-level of the self-hosted runner's dir · B. Selecting the 'Allow access from self-hosted runners' checkbox in the organizati · C. Switch to GitHub-hosted standard runners, since self-hosted runners will be bloc · D. Adding the self-hosted runners' operating system to the organization's operating · E. Adding the self-hosted runners' IP address(es) to the organization's IP allow li
+- **Source Q-ID:** GHCertified Q169
+- **Correct (shuffled frame):** E
+- **shuffle->orig map:** A<-C  B<-E  C<-D  D<-B  E<-A
+- **Learner answer:** C
+- **Grade:** ✗  (correct E vs learner C) — bucket (b)/(c): self-hosted runners + restrictive IP allow list → add runner IPs to org IP allow list (E). Thin area 4.4 IP allow lists. → §7
+- **Real-world caveat (learner Q):** self-hosted runner IPs are stable only if infra gives them static/reserved IPs; ephemeral/autoscaled runners change IP → route egress through a fixed NAT/proxy IP and allow-list that. Exam answer (E) assumes known egress IPs.
+
+### GHCertified Q170  (presented 2026-06-29T18:28Z) [single]
+- **Stem:** Observe the values in `runs-on` key as seen in the below workflow job. Which is true regarding how the the job will run? ```yaml jobs: fire_emblem_deploy: name: "Deploy the 'Fire Emblem' application" runs-on: [self-hosted,nes,linux] ```
+- **Presented (shuffled):** A. The job will run on a self-hosted runner that has all the labels applied. · B. The job will still be able to run on GitHub-hosted runners, since they can have  · C. The job will run on a self-hosted runner that has any of the labels applied. · D. The job will run on a runner (self-hosted or GitHub-hosted, whichever is first a
+- **Source Q-ID:** GHCertified Q170
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-C  C<-B  D<-D
+- **Learner answer:** C
+- **Grade:** ✗  (correct A vs learner C) — bucket (b)/(c) KEEPER: runs-on label ARRAY = runner must have ALL labels (AND), not any. → §7 cheat keeper
+
+### GHCertified Q171  (presented 2026-06-29T18:32Z) [multi]
+- **Stem:** Why would you re-run a workflow versus generating a new workflow run?
+- **Presented (shuffled):** A. Re-running a workflow overwrites the failing job runs, making runs appear more s · B. Re-running a workflow ensures `GITHUB_TRIGGERING_ACTOR` remains unchanged, so it · C. Re-running a workflow ensures `GITHUB_ACTOR` is updated, so it is unambiguous as · D. Re-running a workflow means the workflow jobs run in the same context of the com · E. Re-running a workflow allows you to enable extra debug logging for the selected  · F. Re-running a workflow lets you re-run failed workflow jobs, as opposed to genera
+- **Source Q-ID:** GHCertified Q171
+- **Correct (shuffled frame):** D, E, F
+- **shuffle->orig map:** A<-F  B<-D  C<-E  D<-B  E<-C  F<-A
+- **Learner answer:** D, E, F
+- **Grade:** ✓  (correct D,E,F vs learner D,E,F)
+
+### §7b STUDY TOPIC (learner-requested) — added 2026-06-29
+- **Self-hosted runner labels** — learner-flagged unknown. Cover: default labels (`self-hosted`, OS e.g. `linux`, arch e.g. `x64`), custom labels, `runs-on` array = runner must match ALL labels (AND), label-based routing, and runner GROUPS (ties thin area 4.5). Read GitHub docs "Using labels with self-hosted runners" + "Managing access to self-hosted runners using groups".
+
+### GHCertified Q172  (presented 2026-06-29T18:34Z) [single]
+- **Stem:** Ingrid's organization has a subset of self-hosted Linux runners that should only be used by certain repositories. What is the best approach for her to enforce this behavior?
+- **Presented (shuffled):** A. Create a new runner group, add the runners to the group, then select which repos · B. Create a new runner label, add the labels to the runners, then select which repo · C. Create a new runner group, select "Linux" as the OS, and use glob patterns to de · D. Create a new runner label, add the labels to the runners, then make sure all wor
+- **Source Q-ID:** GHCertified Q172
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-B  C<-D  D<-C
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+- **Note:** KEEPER — runner GROUPS = access control (which repos/orgs may use runners); LABELS = job routing only. Reinforces §7b 4.5.
+
+### GHCertified Q173  (presented 2026-06-29T18:35Z) [single]
+- **Stem:** An organization has several repositories that share a specialized Node.js environment hosted on a private network. The organization's next objective involves the setup of node-locking software within that network. Which of the following would best suit the organization's needs when it comes to executing workflows?
+- **Presented (shuffled):** A. One self-hosted runner per repository, set up at the repository level · B. GitHub-hosted runners, with all workflows utilizing `actions/setup-node` · C. GitHub-hosted runners, using `runs-on: [node<version>]` (`<version>` being the d · D. Self-hosted runners set up at the organization-level · E. GitHub-hosted runners set up at the organization-level
+- **Source Q-ID:** GHCertified Q173
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-B  B<-C  C<-E  D<-A  E<-D
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q174  (presented 2026-06-29T18:36Z) [single]
+- **Stem:** The following workflow that calls a reusable workflows in one of its jobs. The reusable workflow has `permissions` defined at workflow level as seen below. What will be the result of calling the reusable workflow? ```yaml # caller workflow on: issues: types: [opened] permissions: contents: write jobs: issue_creator: permissions: contents: read uses: ./.github/workflows/issue-creator.yml # reusable
+- **Presented (shuffled):** A. Both the caller and reusable workflow will not get called, because `issues` is n · B. The reusable workflow will create an issue in the repository titled `"Issue Repo · C. The reusable workflow will not be called, since reusable workflows must be in a  · D. The reusable workflow will return an error, since the job that called it only ha
+- **Source Q-ID:** GHCertified Q174
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-D  B<-B  C<-C  D<-A
+- **Learner answer:** D
+- **Grade:** ✓  (correct D vs learner D)
+
+### GHCertified Q175  (presented 2026-06-29T18:39Z) [single]
+- **Stem:** Catherine writes the following workflow job below. What will be the result of the job? ```yaml jobs: doc-generate: name: "Generate Scaffold Doc" runs-on: ubuntu-latest steps: - name: Setup Python 3.13 uses: actions/setup-python@v6 with: python-version: '3.13' - name: Grant Execute Permission to Scaffolding Python Script run: chmod +x ./scripts/scaffold-doc.py - name: Execute Scaffolding Python Scr
+- **Presented (shuffled):** A. The Python script will not run, because `runs-on` does not have a value of `pyth · B. The Python script will not run, because `actions/python-setup` is not the correc · C. The Python script will run successfully, because the `chmod` command grants exec · D. The Python script will not run, because `actions/checkout` is not included in th
+- **Source Q-ID:** GHCertified Q175
+- **Correct (shuffled frame):** D
+- **shuffle->orig map:** A<-C  B<-D  C<-B  D<-A
+- **Learner answer:** C
+- **Grade:** ✗  (correct D vs learner C) — bucket (c) KEEPER: no actions/checkout → repo files (the script) NOT on runner → chmod fails. Python is a red herring. Always need checkout to access repo files. → §7 cheat keeper
+
+### GHCertified Q176  (presented 2026-06-29T18:42Z) [single]
+- **Stem:** Judith has a workflow that should be triggered every time a commit is made to the repository. The repository is not always that active, so Judith desires the workflow to programmatically run once a week as a failsafe. What combination of events should she use to enforce this behavior?
+- **Presented (shuffled):** A. `push` and `schedule` · B. This is not possible: `schedule` cannot be combined with other events · C. `push` and `workflow_dispatch` · D. `push` and `weekly` · E. `pull_request` (with `types:[closed]`) and `schedule`
+- **Source Q-ID:** GHCertified Q176
+- **Correct (shuffled frame):** A
+- **shuffle->orig map:** A<-A  B<-E  C<-C  D<-D  E<-B
+- **Learner answer:** A
+- **Grade:** ✓  (correct A vs learner A)
+
+### GHCertified Q177  (presented 2026-06-29T18:44Z) [single]
+- **Stem:** Your workflow must fire off at 12:00 AM every Monday and Friday. Which of the following snippets correlates to this behavior?
+- **Presented (shuffled):** A. ```yaml on: workflow_schedule: - cron: '1,5 * * 0 0' ``` · B. ```yaml on: workflow_schedule: - cron: '0 0 * * 1,5' ``` · C. ```yaml on: schedule: - cron: '0 0 * * 1,5' ``` · D. ```yaml on: schedule: - cron: '0 12 * * Mon,Fri' ``` · E. ```yaml on: workflow_call: - days: [Mon,Fri] - times: [00] ```
+- **Source Q-ID:** GHCertified Q177
+- **Correct (shuffled frame):** C
+- **shuffle->orig map:** A<-D  B<-C  C<-A  D<-B  E<-E
+- **Learner answer:** C
+- **Grade:** ✓  (correct C vs learner C)
+
+### GHCertified Q178  (presented 2026-06-29T18:48Z) [multi]
+- **Stem:** You need to ensure that your `prod` environment requires manual approvals before deploys can proceed. Out of the following options, which are true regarding how this is set up?
+- **Presented (shuffled):** A. If you list required reviewers, only one of them needs to approve to continue wi · B. Required reviewers need at least `write` access to the repository in order to ap · C. You can prevent self-reviews in the event the person who wants to deploy is also · D. You cannot prevent self-reviews, but you can set up alerts to see who triggered  · E. Only individual users can be assigned as required reviewers, not teams. · F. If you list required reviewers, all of them need to approve to continue with the
+- **Source Q-ID:** GHCertified Q178
+- **Correct (shuffled frame):** A, C
+- **shuffle->orig map:** A<-A  B<-F  C<-B  D<-D  E<-E  F<-C
+- **Learner answer:** A, B, C
+- **Grade:** ✗  (correct A,C vs learner A,B,C) — bucket (c) KEEPER (verified vs GitHub docs): environment required reviewers = up to 6 users/teams, at least READ access (NOT write — B's trap), ONE approval suffices (not all), self-review preventable, teams allowed. → §7 cheat keeper
+
+### GHCertified Q179  (presented 2026-06-29T18:52Z) [multi]
+- **Stem:** You are considering a Marketplace action to utilize in your workflow. What are some aspects you can look for that indicate the action is trustworthy?
+- **Presented (shuffled):** A. A 'Verified Creator' badge on the Marketplace page for the action · B. The `action.yml` is very brief · C. The source code for the action has not been updated in a long time, indicating d · D. The amount of Stars is low on the Marketplace page for the action · E. The README is thorough in defining the purpose of the action and how it works
+- **Source Q-ID:** GHCertified Q179
+- **Correct (shuffled frame):** A, E
+- **shuffle->orig map:** A<-A  B<-C  C<-E  D<-D  E<-B
+- **Learner answer:** A, E
+- **Grade:** ✓  (correct A,E vs learner A,E)
