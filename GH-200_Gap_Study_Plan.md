@@ -129,19 +129,29 @@ Phase 1-C — Untested blind-spots (real objectives, no error/flag signal)
 [ ] U2  YAML anchors / aliases / merge keys
 [ ] U3  Editor tooling + static-vs-runtime expressions (light)
 
+>>> CHECKPOINT: read through the full cheat sheet before Phase 2 <<<
+
 Phase 2 — Error re-drill (verbatim missed questions)
 [ ] E1  Reusable vs composite + permissions
 [ ] E2  Secrets & masking
 [ ] E3  Environments
 [ ] E4  Concurrency & re-run
 [ ] E5  Cache / artifacts / retention / checkout
+
+Then:
+[ ] Pass 2 — full verbatim re-drill of GHCertified Q001-Q179
 ```
 
 *Per topic, one line on completion: date + result (pass / keeper added / new gap). Enough to resume across sessions.*
 
-## §4 Exit -> Pass 2
+## §4 End-to-end flow
 
-Done when every R/U topic has a recap + passed checks and every E topic's re-drawn questions pass clean, with keepers folded into the cheat sheet. **Then Pass 2** — fresh verbatim re-drill of GHCertified Q001->Q179 (Q157 absent), same regime; readiness judged on the full-pass per-domain breakdown.
+1. **Phase 1** (R1-R8, U1-U3) — build broad understanding. Each topic: recap + passed checks; keepers folded into `GH-200_Combined_Cheat_Sheets.md` as we go.
+2. **Cheat-sheet review** — you read through the full cheat sheet (now enriched with every Phase-1 keeper) to consolidate before drilling. *Self-study checkpoint, no questions from me.*
+3. **Phase 2** (E1-E5) — error re-drill, **errors first**. Re-draw the actual missed GHCertified questions verbatim until they pass clean.
+4. **Pass 2** — fresh **full verbatim re-drill** of GHCertified Q001->Q179 (Q157 absent), same regime; readiness judged on the full-pass per-domain breakdown.
+
+Each stage gates the next: don't start Phase 2 before the cheat review, don't start Pass 2 before Phase 2 is clean.
 
 ---
-*Suggested order: R1 -> R2 -> R3 (catalogs unlock the rest and are the most error-dense), then R4-R8, then U1-U3, then Phase 2. U1 (attestations) can jump earlier if you'd rather front-load the one total blind spot. No gap-study Q-log; sync state to project + repo + HD at session end.*
+*Full sequence: Phase 1 (R1->R2->R3, then R4-R8, then U1-U3) -> cheat-sheet review -> Phase 2 (E1-E5, errors first) -> Pass 2 (full re-drill). U1 (attestations) can jump earlier if you'd rather front-load the one total blind spot. No gap-study Q-log; sync state to project + repo + HD at session end.*
