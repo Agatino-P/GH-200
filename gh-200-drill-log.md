@@ -183,7 +183,6 @@ shuffle map (presented<-original): A<-C B<-B C<-A D<-D
 correct (shuffled frame): C   [single]
 learner answer: B   grade: X-wrong  bucket:(d) loose wording — known flag §8#1/gap#5
 
-
 ### GHCertified Q015  (presented 2026-06-28T21:28Z) [code-block options]
 Stem: Which matrix job definition is syntactically correct?
 shuffle map (presented<-original): A<-D B<-C C<-B D<-A 
@@ -227,7 +226,6 @@ shuffle map (presented<-original): A<-D B<-B C<-C D<-A
 correct (shuffled frame): D   [single]
 learner answer: D   grade: OK-correct
 
-
 ### GHCertified Q021  (presented 2026-06-28T21:39Z)
 Stem: What are the possible types of an input variable for a manually triggered workflow?
 shuffle map (presented<-original): A<-A B<-C C<-D D<-B E<-E F<-F G<-G 
@@ -251,7 +249,6 @@ Stem: What are `activity types` of an event used for ?
 shuffle map (presented<-original): A<-C B<-A C<-B 
 correct (shuffled frame): B   [single]
 learner answer: B   grade: OK-correct
-
 
 ### GHCertified Q025  (presented 2026-06-28T21:46Z)
 Stem: You want to create a reusable workflow `CI` that runs some quality checks, linting and tests on code changes. What event trigger should the `CI` workflow define to allow reusing it in other workflows?
