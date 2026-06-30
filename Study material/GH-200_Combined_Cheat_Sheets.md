@@ -753,6 +753,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 - Cross-step data sharing is NOT a sibling reference → write `$GITHUB_ENV` (later steps) or step outputs `$GITHUB_OUTPUT` → `steps.<id>.outputs.X`.
 
 **if: + status functions (HIGH VALUE — bit repeatedly):** every step/job carries an implicit `if: success()`. After a failure, later steps are SKIPPED unless their `if:` contains a status fn (`failure()` / `always()` / `cancelled()`). To run a step only when a specific prior step failed: `if: failure() && steps.<id>.outcome == 'failure'` (the bare outcome check alone gets skipped). A failing step DOES stop the job by default.
+- **Where the gate lives + what `success()` is scoped to (BUSINESS-CRITICAL):** the implicit `success()` rides on **every step and job**, even with **NO `if:` at all** (it's why a job halts at the first failing step, and why a `needs:` job won't start if its dependency failed). `if:` exists at **job + step level only** — no workflow-level `if:`. Scope by level: **STEP-level `success()`** = "no **earlier step in this same job** failed/cancelled"; **JOB-level `success()`** = "no job in my **`needs:`** failed/cancelled". Putting **any** status fn (`always()` / `failure()` / `cancelled()` / `!cancelled()`) into the `if:` **removes the default `success()` entirely** — so at job level you must re-add the safety check yourself, e.g. `if: ${{ !cancelled() && needs.build.result == 'success' }}`.
 
 **REST verbs:** download run logs = `GET .../runs/{id}/logs`; create-or-update a secret = `PUT .../secrets/{name}` (idempotent, not POST).
 
@@ -778,7 +779,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 
 **Event ⇒ which branch's workflow file runs.** Only **`push` & `pull_request`** run the workflow from the event's (possibly non-default) branch — so only they can fire a not-yet-merged workflow. **All other events** (`schedule`, `repository_dispatch`, `workflow_dispatch`, `star`, `issues`, …) use the **default-branch** version.
 
-**`github.ref` by event (reinforce §7b#8).** push → `refs/heads/<branch>` (NOT the SHA — that's `github.sha`); push tag → `refs/tags/<tag>`; PR unmerged → `refs/pull/<n>/merge`; PR merged → `refs/heads/<base>`. `github.ref_type` (branch/tag) is a *different* value from `github.ref`.
+**`github.ref` by event (reinforce §7b#8).** push → `refs/heads/<branch>` (NOT the SHA — that's `github.sha`); push tag → `refs/tags/<tag>`; PR unmerged → `refs/pull/<n>/merge`; PR merged → `refs/heads/<base>`. `github.ref_type` (branch/tag) is a *different* value from `github.ref`. **`github.head_ref`** = PR **source/head** branch (short, e.g. `feature-x`); **`github.base_ref`** = PR **base/target** branch (e.g. `main`) — **both PR-only, empty string on every non-PR event**. On `pull_request`, `github.ref_name` = `<n>/merge` (not checkout-able) → use `head_ref` for the source branch.
 
 **Scopes & levels.** `if:` = **job + step only** (no workflow-level `if:`); `env:` = workflow/job/step. `runs-on` label **array = runner must match ALL labels (AND)**. Runner **GROUPS = access control** (which repos/orgs may use runners); **labels = routing**.
 
