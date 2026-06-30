@@ -1,6 +1,6 @@
 # GH-200 Gap-Study Plan — Pass 1 → Pass 2 bridge
 
-**Last updated: 2026-06-30 13:13 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
+**Last updated: 2026-06-30 20:48 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
 
 *Created 2026-06-29. Companion to `GH-200_Practice_Protocol_and_Progress.md`. Pass 1 (GHCertified, 178 Q) is COMPLETE; the Tutorials Dojo sampler was retired. This plan governs the **gap-study phase** before Pass 2.*
 
@@ -120,11 +120,11 @@ Phase 1-A — Reference catalogs
 [x] R3  Contexts & default variables (github.ref family, env scopes)
 
 Phase 1-B — Flagged-unknown topics
-[ ] R4  GHEC vs GHES / GitHub Connect / actions-sync
-[ ] R5  GitHub Apps + installation tokens + OIDC two-token
-[ ] R6  Self-hosted runners (labels/groups/_diag/IP/service containers)
-[ ] R7  pull_request vs pull_request_target + script injection
-[ ] R8  GitHub Packages publishing
+[x] R4  GHEC vs GHES / GitHub Connect / actions-sync
+[x] R5  GitHub Apps + installation tokens + OIDC two-token
+[x] R6  Self-hosted runners (labels/groups/_diag/IP/service containers)
+[x] R7  pull_request vs pull_request_target + script injection
+[x] R8  GitHub Packages publishing
 
 Phase 1-C — Untested blind-spots (real objectives, no error/flag signal)
 [ ] U1  Artifact attestations / provenance / SLSA   (highest blind-spot risk)
@@ -150,6 +150,11 @@ Then:
 - **R1** (2026-06-30) — done. 5/5 checks clean (incl. curveball). Keepers added: `types:` replaces-not-extends + `synchronize` meaning; corrected `workflow_dispatch` input cap 10→25 (verified vs docs). No new gaps.
 - **R2** (2026-06-30) — done. Status-function gate drilled (3/3 clean). Keeper added: implicit `success()` gate scope-by-level (step→earlier steps; job→`needs`; any status fn removes default). Non-status fns/operators left to bank (already covered). No new gaps.
 - **R3** (2026-06-30) — done. 3/3 clean (`github.ref` by event; `base_ref` target; `defaults` only `run`). Keeper added: `head_ref`/`base_ref` = source/target, PR-only. No new gaps.
+- **R4** (2026-06-30) — done. 3/3 clean. GHEC (cloud) vs GHES (self-hosted); GitHub Connect (auto, outbound-only) vs `actions-sync` (air-gapped); GHES = self-hosted runners only; runner axes clarified. Keeper added: Connect networking + namespace retirement. No new gaps.
+- **R5** (2026-06-30) — done. 3/3 clean. Three identities/token lifetimes (JWT 10-min → installation 1-hr → user 8-hr); JWT→installation flow; App over PAT/OAuth/`GITHUB_TOKEN`. Keeper added: token-lifetime ladder + flow. Also clarified `GITHUB_TOKEN` triggering rule + `workflow_run` chaining (keeper added). No new gaps.
+- **R6** (2026-06-30) — CORE done. 3/3 clean (scope levels; runner groups org/ent-only + private-by-default; no self-hosted on public repos). Keeper added: labels (cumulative, `--labels`), groups, ephemeral/JIT, 24h queue-fail. NOT covered: service containers (1.7), IP allow lists (4.4) — deferred to thin-coverage / authored-Q pass.
+- **R7** (2026-06-30) — CORE done. R7.1/R7.2 clean. Three-trigger trust model; pwn request = executing (not checking out) fork code in a privileged job; safe split `pull_request`→`workflow_run`; `checkout` v7 guard. Keepers added: pwn nuance, permissions scope→action map. NOT covered: script injection (5.3) — deferred to thin-coverage / authored-Q pass.
+- **R8** (2026-06-30) — done. R8.1 clean. `GITHUB_TOKEN` read-only for packages by default → `packages: write` to publish; PAT classic scopes; GHCR anonymous public pull; repo↔package linking; `registry_package` reacts (doesn't publish). Keeper added: package facts. Honesty flag recorded re: GHCR `registry_package` edge cases (verify if drilled). No new gaps.
 
 ## §4 End-to-end flow
 
