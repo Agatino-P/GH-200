@@ -1,6 +1,6 @@
 # GH-200 Gap-Study Plan — Pass 1 → Pass 2 bridge
 
-**Last updated: 2026-06-30 09:30 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
+**Last updated: 2026-06-30 13:13 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
 
 *Created 2026-06-29. Companion to `GH-200_Practice_Protocol_and_Progress.md`. Pass 1 (GHCertified, 178 Q) is COMPLETE; the Tutorials Dojo sampler was retired. This plan governs the **gap-study phase** before Pass 2.*
 
@@ -115,9 +115,9 @@ Editor tooling (VS Code Actions extension, schema completion); static-vs-runtime
 
 ```
 Phase 1-A — Reference catalogs
-[ ] R1  Triggers & events (full list + types + payloads)
-[ ] R2  Expression functions & operators (full list + status fns)
-[ ] R3  Contexts & default variables (github.ref family, env scopes)
+[x] R1  Triggers & events (full list + types + payloads)
+[x] R2  Expression functions & operators (full list + status fns)
+[x] R3  Contexts & default variables (github.ref family, env scopes)
 
 Phase 1-B — Flagged-unknown topics
 [ ] R4  GHEC vs GHES / GitHub Connect / actions-sync
@@ -145,6 +145,11 @@ Then:
 ```
 
 *Per topic, one line on completion: date + result (pass / keeper added / new gap). Enough to resume across sessions.*
+
+**Completion log**
+- **R1** (2026-06-30) — done. 5/5 checks clean (incl. curveball). Keepers added: `types:` replaces-not-extends + `synchronize` meaning; corrected `workflow_dispatch` input cap 10→25 (verified vs docs). No new gaps.
+- **R2** (2026-06-30) — done. Status-function gate drilled (3/3 clean). Keeper added: implicit `success()` gate scope-by-level (step→earlier steps; job→`needs`; any status fn removes default). Non-status fns/operators left to bank (already covered). No new gaps.
+- **R3** (2026-06-30) — done. 3/3 clean (`github.ref` by event; `base_ref` target; `defaults` only `run`). Keeper added: `head_ref`/`base_ref` = source/target, PR-only. No new gaps.
 
 ## §4 End-to-end flow
 
