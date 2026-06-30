@@ -42,6 +42,8 @@
 - `workflow_dispatch` = **internal** (UI / `gh` CLI / API; typed inputs). `repository_dispatch` = **external** POST to dispatches endpoint with custom `event_type`.
 - `schedule`: **min 5 min**, **default branch only**, best-effort (delayed under load; avoid top-of-hour).
 - Narrow events with: `types:`, `branches:`/`branches-ignore:`, `paths:`/`paths-ignore:`, `tags:`. `tags:` is for `push`, not `pull_request`.
+- **`types:` REPLACES the default set, doesn't extend it** — to keep the defaults *and* add more, re-list them all: `types: [opened, synchronize, reopened, labeled]`. Most events default to **all** activity types; `pull_request`/`pull_request_target` are the exception (default = `opened`/`synchronize`/`reopened`).
+- `synchronize` (a `pull_request` type) = **new commits pushed to the PR head/source branch** — the activity that re-runs CI on every push to an already-open PR.
 
 #### permissions / GITHUB_TOKEN
 - Token is **per-job + ephemeral** (expires when the job ends).
@@ -58,7 +60,7 @@
 - `description`: **required** in `action.yml` inputs; **NOT** required in `workflow_dispatch` inputs.
 - `github.event.inputs.*` = **always strings** (`"false"` is truthy!). `inputs.*` = **typed**.
 - `type: environment` = **picker only**; protection + env-secrets apply **only when a job sets `environment:`**.
-- dispatch limits: **10 inputs max**, **65,535-char** payload.
+- dispatch limits: **25 inputs max** (raised from 10; verified 2026-06-30 vs docs), **65,535-char** payload.
 - `workflow_call` unset defaults: **`false` / `0` / `""`**.
 
 #### Reusable workflows (`workflow_call`)
