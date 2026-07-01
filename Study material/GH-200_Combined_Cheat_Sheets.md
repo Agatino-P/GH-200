@@ -165,7 +165,7 @@ preserved throughout.*
 - ⚠️ **secrets masked / vars NOT masked** ← the whole exam point. A sensitive value in `vars` = leak.
 - `env:` blocks **don't self-reference** (one entry can't use another from the same block).
 - Env-var **names are case-sensitive** regardless of OS/shell.
-<!-- IMPORTANT Here-->
+
 ### github ref family — by event
 - `github.ref`:
   - push (branch) → `refs/heads/<branch>` (**NOT** the SHA — that's `github.sha`)
@@ -185,8 +185,7 @@ preserved throughout.*
 
 ### Matrix (primer)
 - `strategy.matrix` is **per JOB**; runs the job once per **cross-product** combo, **parallel** by default.
-- Throttle with **`max-parallel`** (1 = sequential). It caps a **count**, not an "axis." Combo order = don't rely on it.
-- `needs: <matrix-job>` waits for **ALL** combos — a matrix job = **one graph node**.
+- Throttle with **`max-parallel`** (1 = sequential). Order is non deterministic
 - **Matrix outputs:** all combos write the **same** output names → overwrite (**last wins, unreliable**). Fix: unique names via `matrix` context, e.g. `result_${{ matrix.x }}`.
 
 ### Expression evaluation — two phases
@@ -194,17 +193,20 @@ preserved throughout.*
 - **Execution phase** (on runner): `if:`, `run:`, `with:`, env interpolation, step/job outputs.
 - **Context availability by location:** top-of-file = ~nothing · job-level `if:`/`strategy` = `github`/`needs`/`vars` (**NO `steps`, NO `runner`**) · step-level = **everything**.
 - ❌ `jobs.x.if: ${{ steps.y.outputs.z }}` fails — `steps` not available at job level.
-- Matrix is **fixed at setup** → dynamic matrix = **`fromJSON(needs.<prior>.outputs.list)`**, never from a same-job step. (`fromJSON` = real built-in.)
+- Matrix is **fixed at setup** → dynamic matrix = **`fromJSON(needs.<prior>.outputs.list)`**, never from a same-job step. 
 
 ### Status functions & implicit `success()`
-- Status-check functions (used in `if:`): `success()` (**implicit default**), `failure()`, `always()`, `cancelled()`, `!cancelled()`. NOT functions: `completed` / `state` / `status`.
-- ⚠️ **Every step and job carries an implicit `if: success()`** — even with **no `if:` at all**. It's why a job halts at the first failing step, and why a `needs:` job won't start if its dependency failed. A failing step **does** stop the job by default.
+- Status-check functions used in `if:` conditions  `success()` (**implicit default**), `failure()`, `always()`, `cancelled()`, `!cancelled()`. NOT functions: `completed` / `state` / `status`.
+- ⚠️ **Every step and job carries an implicit `if: success()`** — even with **no `if:` at all**
+  - It's why a job halts at the first failing step, and why a `needs:` job won't start if its dependency failed. 
+- A failing step **does** stop the job by default. to avoid it add ` continue-on-error: true` inside the step (as one of the properties)
 - **`if:` exists at job + step level ONLY** — there is **no workflow-level `if:`**.
 - **Scope of the implicit `success()` by level:**
   - **STEP-level** = "no **earlier step in this same job** failed/cancelled."
   - **JOB-level** = "no job in my **`needs:`** failed/cancelled."
-- ⚠️ Putting **any** status function (`always()` / `failure()` / `cancelled()` / `!cancelled()`) into an `if:` **removes the default `success()` entirely** — so at job level you must re-add the safety check yourself, e.g. `if: ${{ !cancelled() && needs.build.result == 'success' }}`.
-- Run a step only when a specific prior step failed: `if: failure() && steps.<id>.outcome == 'failure'` (a bare `outcome` check alone would be skipped).
+- ⚠️ Putting **any** status function (`always()` / `failure()` / `cancelled()` / `!cancelled()`) into an `if:` **removes the default `success()` entirely** — so at job level you must re-add the safety check yourself
+  - E.g. `if: ${{ !cancelled() && needs.build.result == 'success' }}`.
+- To run a step only when a specific prior step failed: `if: failure() && steps.<id>.outcome == 'failure'` (a bare `outcome` check alone would be skipped).
 - The surrounding `${{ }}` is **optional** in `if:` (`if: success()` == `if: ${{ success() }}`).
 - ⚠️ **Secrets are NOT usable in `if:`** (job or step) — validation error. To gate on a secret: map it to a job-level `env:` var, then `if: ${{ env.X != '' }}` (an unset secret → empty string).
 
@@ -227,29 +229,29 @@ preserved throughout.*
 ## Topic 1C — Matrix Strategy In Depth
 
 ### Where keys live ⚠️ (don't confuse levels)
-- `matrix` / `fail-fast` / `max-parallel` → **only under `strategy:`**.
+- `matrix` / `fail-fast` (default true) / `max-parallel` → **only under `strategy:`**.
 - `continue-on-error` → on a **JOB** or a **STEP** (NOT under `strategy:`).
 - `runs-on` / `needs` → **JOB** level.
 
 ### Resolution order
-- **EXPAND → EXCLUDE → INCLUDE.** `include` runs **last** and can **re-add** an excluded combo. (A common blog states this backwards — it's wrong.)
+- **EXPAND → EXCLUDE → INCLUDE.** `include` runs **last** and can **re-add** an excluded combo
 - `exclude`/`include` entries **don't accept arrays** — one scalar set per list item.
 
 ### include behavior
 - Entry's matrix keys **match** an existing combo → **AUGMENT** (add extra keys).
 - Keys **don't match** any combo → **NEW combo**.
-- **Original axis values never overwritten**; include-added keys **can** be overwritten by a later include.
+- **Original axis values never overwritten** by an include with the same axis values, always enriched; include-added keys **can** be overwritten by a later include.
 - **include-only** (no base axes) = explicit hand-picked combo list.
 - **Counting rule:** base = product of the axes; each `include` entry merges into an existing combination **only if it doesn't overwrite an original matrix value**, else it adds a **NEW** combination. Worked example: `2×2` base `+ 1` unmergeable include = **5** jobs.
 
 ### fail-fast / max-parallel / continue-on-error
 - **`fail-fast` default = `true`** → first failing combo **cancels** all in-progress + queued. Set `false` for full reports.
-- `max-parallel` = cap on **simultaneous** combos (default = max allowed). A **count**, not an axis.
-- ⚠️ **`concurrency` ≠ `max-parallel`:** `concurrency` limits **concurrent workflow runs** (and can `cancel-in-progress`); `max-parallel` throttles **matrix legs within one run**.
+- `max-parallel` = cap on **simultaneous** combos (default = max allowed)
+- ⚠️ **`concurrency` is NOT a matrix property** — separate workflow-/job-level feature, unrelated to `max-parallel`, which throttles matrix legs within one run.
 - ⚠️ **Swallow vs preserve** (THE distinction):
   - `continue-on-error: true` → **SWALLOWS** failure: run not failed, **downstream `needs:` sees SUCCESS**.
   - `fail-fast: false` → **PRESERVES** failure (still counts, blocks `needs:`), just doesn't cancel siblings.
-- ⚠️ `fail-fast: true` + **flat** `continue-on-error: true` = **pointless** (fail-fast inert). Meaningful only as `continue-on-error: ${{ matrix.experimental }}` (per-combo carve-out).
+- **Per-combo carve-out:** `continue-on-error: ${{ matrix.experimental }}` inside an `include:` lets flagged combos fail without failing the build, while other combos still trigger `fail-fast`.
 
 ### Dynamic matrix via fromJSON
 - Matrix is fixed at **setup** → can't build from a **same-job** step output. Use a **PRIOR job** + `needs:` + `fromJSON`.
@@ -267,15 +269,36 @@ preserved throughout.*
 - ⚠️ **Pinning stops silent migration, NOT deprecation** — a pinned old label still dies when the image is retired.
 - (Newer, likely post-exam: `ubuntu-26.04` = public preview; `windows-latest` moving to "Server 2025 + VS 2026" toolset, June 2026.)
 
+### Reading matrix job labels
+- Auto-label = `<job_name> (val1, val2, ...)`, values in **matrix-key DECLARATION order**, comma-separated.
+- e.g. `matrix: {arch:[x64,arm64], node:[18,20]}` → `arch=arm64,node=18` shows as `build (arm64, 18)`.
+- Decode a label using the YAML's key order — NOT by finish order (**run order is not guaranteed**).
+- Custom label: `jobs.<job_id>.name` (job attribute, sibling of `runs-on`/`strategy`/`steps`), can use `${{ matrix.* }}`.
+
+### fail-fast: cancelled ≠ failed ⚠️
+- Default `fail-fast: true` → one failed leg **cancels** all other in-progress/queued legs.
+- Cancelled legs are **collateral**, true result UNKNOWN — the culprit is the leg that actually FAILED.
+- `fail-fast: false` + re-run = clean per-variant pass/fail map (is the failure one combo or broad?).
+
+### Concurrency (NOT a matrix key, lives on `workflow:` or `job:`)
+- **Purpose:** at most **one** thing per **group** runs at a time. A `group` is just a **resolved string** — same string = contend, different string = independent. 
+  - Grouping cares **only** about the string, not workflow identity, branch, or level.
+- **Two levels** (same mechanic, different unit):
+  - **Workflow-level** (top of file) → groups whole **workflow RUNS**. Typical: cancel stale CI → `group: ${{ github.workflow }}-${{ github.ref }}` + `cancel-in-progress: true`.
+  - **Job-level** (under a job) → groups a single **JOB**; other jobs unaffected. Typical: serialize deploys → `group: production-deploy` + `cancel-in-progress: false`.
+- **Capacity per group = 1 running + 1 pending** (2 max). A **3rd** arrival:
+  - `cancel-in-progress: false` (default) → **oldest PENDING is cancelled**, newest takes the pending slot; the **running one finishes** untouched (newest-wins queue, never grows past 1).
+  - `cancel-in-progress: true` → the **RUNNING one is cancelled**, newest takes over.
+- ⚠️ `concurrency` ≠ `max-parallel`: concurrency caps runs/jobs **in a named group** (cross-run); `max-parallel` throttles **matrix legs within one run**.
+- ⚠️ On a **matrix job**, a **static** `group` string is shared by **all combos** → they serialize/cancel each other. Bake matrix values into the key (e.g.: `group: build-${{ matrix.os }}`) to keep combos independent.
+
 
 ---
 
 ## Topic 1D — YAML Anchors, Aliases & Merge Keys
 
-### Support matrix ⚠️ THE whole topic
 - `&` anchor + `*` alias → **SUPPORTED** (shipped **2025-09-18**, auto-enabled all repos). Before that: errored.
 - `<<` **merge key → NOT SUPPORTED.** GitHub shipped "half the feature." Official docs document only `&`/`*`.
-- ⚠️ Don't generalize: "anchors supported" ≠ "merge keys supported." They are **not** the same feature.
 
 ### Anchors / aliases mechanics
 - Alias copies the **WHOLE node** — **all-or-nothing**, NO partial override.
@@ -284,30 +307,20 @@ preserved throughout.*
 - Can anchor any node: scalar, sequence (e.g. shared `paths:` across triggers), mapping, or a whole job.
 
 ### Merge keys — the trap
-- ⚠️ `<<: *base` in a workflow = **broken/invalid**, not inherit-and-override. (Exact failure mode — hard error vs literal `<<` key — unverified; either way the merge does NOT happen.)
+- ⚠️ `<<: *base` in a workflow = **broken/invalid**, not inherit-and-override.
 - Want **base + override one key**? → **composite action or reusable workflow.** Anchors = exact duplication only.
-- `<<: *base` is a classic **"spot the mistake"** distractor (objective 2.3 reading/analysis).
-- Trivia: merge keys are a YAML **1.1** optional type, never in core 1.2 → inconsistent parser support generally.
-
-### Exam weight ⚠️ uncertain
-- Feature shipped Sept 2025, exam reworded Jan 2026 → weight/form **not verified**. Likely tested as *read-and-analyze* / *spot-invalid-`<<`* rather than authoring. Calibrate vs practice exams.
-
+- `<<: *base` is a classic **"spot the mistake"** distractor
 
 ---
 
 ## Topic 1E — Outputs, Summaries & Retention
 
 ### Job summaries — `GITHUB_STEP_SUMMARY`
-- It's an **environment FILE** (the variable = a file path). Append **GFM Markdown**; renders as the **job summary** on the run summary page.
-- `>>` appends (auto-newline each append); `>` overwrites **the current step's** buffer only.
+- **Environment FILE** (the variable = a file path), **one SEPARATE file per STEP** (steps isolated). Append **GFM** (GitHub Flavored Markdown, GitHub's superset of CommonMark); renders as the **job summary** on the run summary page.
+- `>>` appends to the current step's file (auto-newline each append); `>` overwrites **only the current step's** buffer — it can **NEVER** wipe another step's summary. (Trap: assuming `>` in a later step clears the whole job summary — it doesn't.)
+- At **job end** all step files are grouped into **one** job summary. Across jobs, summaries are ordered by **job completion time**, not definition order.
 - ⚠️ **1 MiB per step** limit → exceeding it **aborts** that step's summary (error "1024k"), not silent truncation.
 - Renders GFM: tables, Mermaid, alerts (`> [!NOTE]`). `<details>` must stay within ONE step (isolation breaks cross-step tags).
-
-### Job summaries — step isolation
-- `GITHUB_STEP_SUMMARY` is a **SEPARATE file PER STEP**. Steps are isolated.
-- `>>` appends to the CURRENT step's file; `>` overwrites ONLY the current step's buffer.
-- ⚠️ `>` can **NEVER** wipe another step's summary. At job end all step files are grouped into one job summary. (Trap: assuming `>` in a later step clears the whole job summary — it doesn't.)
-- Across jobs: summaries ordered by **job completion time**, not definition order.
 
 ### The four environment-file siblings (all use `>>`)
 
@@ -318,7 +331,7 @@ preserved throughout.*
 | `GITHUB_ENV` | env var for **later steps** | `$NAME` |
 | `::warning::` / `::error::` | annotations (inline highlights) | — (not rich content) |
 
-- Cross-step data sharing is **not** a sibling reference: write `$GITHUB_ENV` (for later steps) or step outputs via `$GITHUB_OUTPUT` → `steps.<id>.outputs.X`.
+- ⚠️ `GITHUB_STEP_SUMMARY` is **human-only** — **not** a cross-step data channel. To share data between steps use `$GITHUB_OUTPUT` (→ `steps.<id>.outputs.X`) or `$GITHUB_ENV` (→ `$NAME` in later steps).
 
 ### Artifacts vs cache ⚠️
 - **Artifact** = persist a run's OUTPUTS (share between jobs, download, inspect). Reliable & retained.
@@ -341,7 +354,6 @@ preserved throughout.*
 ### Cache vs artifact — access scope
 - ⚠️ **Cache scope is a HARD isolation boundary:** a run can read caches from its **own branch + the default branch (+ PR base)**; **sibling branches are isolated**. Default-branch caches are shared to all.
 - **Artifact scope defaults to the RUN** — but that's a **SOFT** default, not a wall. With `actions: read` + `run-id` (+ optional `repository`), `download-artifact` v4+ pulls artifacts from **other runs and repos**.
-  - *(Reconciles an earlier keeper that called artifact scope a hard "the RUN" boundary — it is the default reach, openable by permissions; only cache's branch scope is hard.)*
 
 ### Retention numbers ⚠️ TWO DIFFERENT SETS (easy to confuse)
 
@@ -365,7 +377,10 @@ DELETE /repos/{o}/{r}/actions/artifacts/{artifact_id}    # delete one  <- retent
 GET    /repos/{o}/{r}/actions/artifacts/{id}/{format}    # download (format=zip; URL expires in 1 MIN)
 DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 ```
-- "Enforce retention" programmatically = **`retention-days` (declarative) + list + DELETE on a schedule** (`gh cache delete` for caches).
+- "Enforce retention" programmatically
+  - `retention-days` (declarative)
+  - list cia GET + DELETE, on a schedule
+  - caches instead use `gh cache delete`
 - ⚠️ **There is NO confirmed REST endpoint to SET the retention period.** `PUT .../actions/retention` is **UNVERIFIED / likely not official** — do NOT trust it. Default-retention config is UI/org-policy. REST does **get / list / delete** only.
 - ⚠️ **Quota recalculation lags** (commonly 6–24h). A "storage quota exceeded" error can persist *after* a successful delete — the deletion didn't fail; just wait + lower retention going forward.
 
@@ -377,18 +392,7 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 
 ---
 
-## Topic 2A — Troubleshooting Matrix Runs
-
-### Reading matrix job labels
-- Auto-label = `<job_name> (val1, val2, ...)`, values in **matrix-key DECLARATION order**, comma-separated.
-- e.g. `matrix: {arch:[x64,arm64], node:[18,20]}` → `arch=arm64,node=18` shows as `build (arm64, 18)`.
-- Decode a label using the YAML's key order — NOT by finish order (**run order is not guaranteed**).
-- Custom label: `jobs.<job_id>.name` (job attribute, sibling of `runs-on`/`strategy`/`steps`), can use `${{ matrix.* }}`.
-
-### fail-fast: cancelled ≠ failed ⚠️
-- Default `fail-fast: true` → one failed leg **cancels** all other in-progress/queued legs.
-- Cancelled legs are **collateral**, true result UNKNOWN — the culprit is the leg that actually FAILED.
-- `fail-fast: false` + re-run = clean per-variant pass/fail map (is the failure one combo or broad?).
+## Topic 2A — Re-runs & Attempts
 
 ### Rerun scopes & surfaces
 - Three scopes: **Re-run all** | **Re-run failed** (failed + downstream dependents) | **Re-run single job** (each matrix leg = its own job).
@@ -396,13 +400,12 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 - CLI: `gh run rerun <id>` | `gh run rerun <id> --failed` | `gh run rerun --job <job_id>` (`--debug` for debug logging).
 - REST: `POST .../runs/{run_id}/rerun` | `.../runs/{run_id}/rerun-failed-jobs` | `.../jobs/{job_id}/rerun`.
 - Re-runs create a **new ATTEMPT:**
-  - old run preserved
-  - attempt navigation
+  - old run preserved and ui allows you to navigate through attemps
   - **reuses the original SHA/ref** (not a fresh checkout of the branch)
 - **Re-run actor split:**
   - `github.actor` / `GITHUB_ACTOR` = the **original** triggerer (unchanged on re-run; the re-run uses its privileges).
   - `github.triggering_actor` / `GITHUB_TRIGGERING_ACTOR` = whoever **re-ran** it (changes).
-- **Permissions:** re-running workflows **and** deleting logs both require **WRITE**. Download run logs = `GET /repos/{o}/{r}/actions/runs/{run_id}/logs`.
+- **Permissions:** re-running workflows **and** deleting logs both require repo **write** (the **`actions: write`** scope) — human role *write* or a token with `actions: write`. Download run logs = `GET /repos/{o}/{r}/actions/runs/{run_id}/logs`.
 
 ### KEEPER GOTCHA — single-job API rerun archives the attempt ⚠️
 - `POST .../actions/jobs/{job_id}/rerun` creates a NEW attempt → remaining old failures are now in the ARCHIVED attempt.
@@ -412,7 +415,6 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 
 ### Edge bug (not the rule)
 - Matrixed **reusable** workflows: "Re-run failed jobs" may restart the failed leg but NOT its downstream dependents inside the reusable workflow. (Documented behavior = failed + dependents; this is a reported bug.)
-
 
 ---
 
@@ -425,7 +427,10 @@ Two independent checks; a tag ref is locked only if **BOTH** pass:
 1. **Is it a release at all?** Bare tag (no release) → movable.
 2. **Is that release _immutable_?** Publishing a release does **NOT** lock it. Immutable **only if** the repo/org had immutable releases **enabled at publish time**. Setting off (or an older release) → **mutable release = still movable** (assets + tag changeable).
 
-Three states of any tag: **bare tag → movable** · **mutable release → still movable** · **immutable release → locked**.
+Three states of any tag:
+  - **bare tag → movable** 
+  - **mutable release → still movable**
+  - **immutable release → locked**.
 
 > ⚠️ **The exam trap:** "it's a Release on a clean `v3.4.0` tag, so it's locked." ❌ WRONG. A Release ≠ an immutable Release. The version string *and even the existence of a release* tell you nothing — only the **immutable** status does.
 >
@@ -435,39 +440,35 @@ Three states of any tag: **bare tag → movable** · **mutable release → still
 - **Release page:** **"Immutable" label** below the title (no label ⇒ not immutable).
 - **REST:** `GET /repos/{o}/{r}/releases/tags/{TAG}` → the release object's **`immutable` boolean** (404 ⇒ no release / bare tag).
 - **CLI:** `gh release verify <tag>` (succeeds + loads attestation ⇒ immutable).
-- *(GitHub's own user-facing "how to check" docs are still an open issue — under-documented.)*
 
 ### ⚠️ Better-safe-than-sorry rule
 **A full commit SHA is immutable by construction** — no audit of the author's release/setting needed. When in doubt, **pin the SHA**.
 
-### Immutable releases — the lock
-- **= assets locked + Git tag locked** (+ tag name unreusable after deletion + auto signed attestation). ← don't drop the **tag** lock.
-- It's a **repo/org setting** (UI or REST API) — **NOT** a workflow-YAML key. No `immutable: true` in YAML. (spot-the-mistake)
-- **Disabling it later does NOT un-freeze** already-immutable releases.
-- Publishing locks instantly → author flow: **draft → attach assets → publish**.
-- Attestation = **Sigstore bundle**; verify with `gh release verify` / `gh release verify-asset`.
-- Immutability attaches to the **release, not a bare tag** → an author keeps a tag movable by **not creating a release** for it.
+### Immutable releases — what "locked" means
+- **Locks four things at publish:**
+  1) release **assets** (can't add/replace/remove)
+  2) the **Git tag** (can't be moved/re-pointed)
+  3) the **tag name** (can't be recreated even after deleting the release)
+  4) an **auto-generated signed attestation**. 
+   
+  ⚠️ Easy to remember only the assets — the **tag** lock counts too.
+- ⚠️ **Enabled as a repo/org setting** (UI or REST API) — **NOT** a workflow-YAML key. There is **no `immutable: true` in YAML** (common spot-the-wrong-answer trap).
+- **One-way:** turning the setting **off later does NOT un-freeze** releases already published as immutable.
+- **Locks instantly on publish**. The flow is:
+- **draft → attach assets → publish** (attach while still a draft; publishing freezes everything).
+- **Attestation = Sigstore bundle;** verify with `gh release verify` (or `gh release verify-asset`).
+- **Attaches to the RELEASE, not a bare tag** → an author keeps a tag movable simply by **not creating a release** for it.
 
 ### Pinning spectrum (consumer)  — least → most safe
 `@main` (branch, worst) → `@v4` (floating major) → `@v4.1.0` (plain version tag) → `@<full 40-char SHA>` (best)
-- Tags = **movable pointers**; full SHA = **content-addressed, can't be re-pointed**.
+- Tags are **movable pointers**; full SHA are **content-addressed, can't be re-pointed**.
 - **Full 40-char SHA** only — short SHAs are ambiguous / not accepted.
-- On an immutable-releases repo: best readable option = a version tag `@v4.1.0` **that is itself a published immutable release** ≈ a SHA.
+- On an immutable-releases repo the most readable option is a version tag `@v4.1.0` **that is itself a published immutable release** ≈ a SHA.
 - **`@v4` floating stays movable as long as no immutable release is published on it** (authors keep it release-free so it can advance). The name `v4` decides nothing.
-
-### ⚠️ Flags (uncertain — calibrate vs practice exams)
-- **OCI/`ghcr.io` publishing** of actions: status conflicting; first-party publish action README says **not for public use**. Treat as **not confirmed GA**.
-- **Dependabot + SHA-pinning alerting** interference: **unverified**. (Updates of SHA-pinned actions = confirmed.)
-
-### ⚠️ Do not confuse
-- **Immutable *subject claims*** = an **OIDC token format** change. **Different feature**, not immutable releases.
-
 
 ---
 
 ## Topic 4A — Runner Networking & Access Boundaries
-
-*(Domain 4 · 4.4)*
 
 ### ⚠️ MASTER DISTINCTION — egress identity vs private reachability
 - **Egress identity** = the predictable *source IP* the runner presents → for **IP allow lists** / target firewalls. Tools: **self-hosted** or **static-IP larger runners**.
@@ -478,8 +479,6 @@ Three states of any tag: **bare tag → movable** · **mutable release → still
 Only two controls exist:
 1. **Enable IP allow list** (enforcement on/off)
 2. **Enable IP allow list configuration for installed GitHub Apps** (auto-imports App-declared IPs; happens even if the list isn't enabled)
-
-Actions is gated **purely by the runner's IP**. Distractor bait: *"...for Actions runners"*, *"...for Actions and Pages."*
 
 ### ⚠️ Static IP and Azure VNET = mutually exclusive
 - VNET runners use **dynamic IPs**; can't also assign a static IP.
@@ -493,39 +492,33 @@ Actions is gated **purely by the runner's IP**. Distractor bait: *"...for Action
 - CIDR notation.
 
 ### Hosted-runner conflict
-- Standard hosted runners = **wide + shared + weekly-rotating Azure IPs** ⇒ can't practically allow-list (and it weakens control).
-- Under an allow list, use **self-hosted** OR **static-IP larger runners**; add the runner IP/range to the list. (Standard runner ⇒ `checkout` 403.)
+- Standard hosted runners are on a **wide + shared + weekly-rotating Azure IPs** ⇒ can't practically allow-list (and it weakens control).
+- Under an allow list, use **self-hosted** OR **static-IP larger runners**; add the runner IP/range to the list. (
 
-### Carve-outs / exemptions (distractors)
-- **Dependabot** = exempt (first-party App).
-- **GitHub App server-to-server installation tokens** = not currently restricted.
-- **Codespaces** = unusable for org repos when an org allow list is set.
+### IP allow list — edge cases (distractors)
+- **Exempt (keep working)**
+  - **Dependabot** (first-party App)
+  - **GitHub App server-to-server installation tokens** (not currently restricted — *verify, may have changed*).
+- **Not working**
+  - Codespaces** for org repos — an org allow list makes them unusable (unpredictable IPs).
 
 ### Private networking paths
 - **Static IP larger runner** → egress identity:
   - fixed range, usable *with* an allow list
-  - dual ranges, scales past 500 concurrency
+  - additional ranges needed if it scales past 500 concurrency (TBC)
 - **Azure VNET** → reachability:
   - **VNET injection** = NIC in your subnet, **VM stays GitHub-side**; inherits NSG / ExpressRoute / VPN.
   - **2–64 vCPU Ubuntu + Windows only.**
-  - Setup order = Azure resources first → network config → runner group; size subnet > max concurrency.
+  - Setup order = Azure resources first → network config → runner group
+  - Size subnet > max concurrency.
 - **API gateway + OIDC** and **WireGuard overlay** → reachability, **work with standard runners** (patterns you build).
 
 ### OS/size exclusions
-- **macOS larger runners** = **no** Azure VNET, **no** static IP.
-
-### ⚠️ Watch-outs (uncertain / evolving — don't over-commit)
-- "Artifacts exempt from allow list" = **community claim, unverified**.
-- GHES docs say hosted runners wholly incompatible (older/absolute); GHEC adds the static-IP exception.
-- VNET NICs moving to a GitHub service subscription; **VNET failover** in public preview.
-- Subnet buffer %: docs ~30% vs GitHub Learn 20% — know the *principle* (size > max concurrency), not the number.
-
+- **macOS larger runners** are a no go. **no** Azure VNET, **no** static IP.
 
 ---
 
-## Topic 4B — Runner Images & Toolcache
-
-*(Domain 4 · 4.6)*
+## Topic 4B — Runner Images & Toolcache - (Domain 4 · 4.6)
 
 ### ⚠️ Three SOURCES + one STORE (don't make the tool-cache a "source")
 - **Preinstalled** (baked) = TWO layers:
@@ -538,15 +531,14 @@ Actions is gated **purely by the runner's IP**. Distractor bait: *"...for Action
 ### ⚠️ Direct installs are INVISIBLE to `setup-*`
 `apt-get install python3.12` → `setup-python` does NOT see it. `setup-python` uses a cached version if present, else downloads into the tool-cache. The apt result is irrelevant in all cases.
 
-### ⚠️ HOSTED = speed, not persistence
+### ⚠️ GitHub HOSTED = speed, not persistence
 - Tool-cache on hosted = **per-VM**, wiped every job. Preinstalled versions give *fast starts*, but nothing you download mid-job survives.
-- ⚠️ What persists across **hosted** jobs = **`actions/cache`** (deps), a *different* cache — don't confuse the two.
+- ⚠️ What persists across hosted **job**s = **`actions/cache`** (deps), a *different* cache — don't confuse the two.
 - **SELF-HOSTED** = same machine ⇒ `_work/_tool` survives ⇒ a `setup-*` download sticks for later jobs (manual installs persist too → drift risk).
 
 ### Custom images ⚠️
 - **LARGER runners ONLY → Team/GHEC.** Not standard runners, not Free. GA ~April 2026 (was preview Oct 2025).
 - ⚠️ **Custom image ≠ self-hosted.** Still **GitHub's infra**. The image lives in the org Actions → **"Custom images"** catalog — **NOT** `ghcr.io`, **NOT** your registry. No cross-CI reuse. Not a general VM pipeline.
-  - Distractor bait: "pushed to ghcr.io", "reuse on CircleCI", "you patch the OS like self-hosted."
 
 ### Custom images — fast facts
 - **3 steps:** image-generation runner → generate via `snapshot` → assign to runner group + `runs-on`.
@@ -561,20 +553,14 @@ Actions is gated **purely by the runner's IP**. Distractor bait: *"...for Action
   - **don't share prod with dev/test** (injection)
   - buildable from **any branch** ⇒ write access = trigger ⇒ least privilege
 
-### Find the exact image software
-Log → **Set up job → Runner Image → "Included Software"** link. Source = `actions/runner-images`, refreshed ~weekly. Don't assume presence/version — pin `setup-*` + explicit version.
-
-### ⚠️ Unverified (calibrate vs practice exams)
-- Hosted tool-cache **path** `/opt/hostedtoolcache` + env var `RUNNER_TOOL_CACHE` — not re-verified (documented default = `_work/_tool`).
-- Custom-image **retention 60-day default / 90-day max** — community-reported, not docs-confirmed.
-- Hook env-var names `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED` — from a community blog.
-
+### Find the exact software on a runner image
+- **UI path:** run **Log → "Set up job" step → "Runner Image" → "Included Software"** link → full tool+version manifest for that image.
+- **Source of truth:** the **`actions/runner-images`** repo, refreshed **~weekly** (contents drift).
+- **Don't assume** a tool is present or at a given version — use **`setup-*` actions with an explicit version** to guarantee your toolchain.
 
 ---
 
-## Topic 4C — Variables & Secrets REST API
-
-*(Domain 4 · 4.7, 4.8)*
+## Topic 4C — Variables & Secrets REST API - (Domain 4 · 4.7, 4.8)
 
 ### ⚠️ Variable precedence — MOST SPECIFIC wins
 `environment > repository > organization`. Docs say "lowest level takes precedence" = closest to the job.
@@ -595,9 +581,6 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
 - **Environment vars don't count** → push overflow into environments.
 - Other per-item limit: **48 KB/var**.
 - Count limits: **1000 org / 500 repo / 100 env**.
-
-### ⚠️ Variables = PLAINTEXT, Secrets = ENCRYPTED
-Variables: visible in settings, **not masked**, for non-sensitive config. Secrets: libsodium-sealed + masked. Never put sensitive data in a variable.
 
 ### Org-level shareable/reusable components
 - **Shareable (4):** Secrets · Configuration Variables · Self-Hosted Runners · Workflow Templates.
@@ -624,22 +607,13 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
 - `gh secret set NAME` (does GET-key → seal → PUT for you)
 - `gh variable set NAME` (plaintext)
 
-### ⚠️ Unverified / version-specific (calibrate vs practice exams)
-- **256 KB** = cloud; **10 MB** = GHES.
-- Variable **creation naming rules** (no spaces, no leading digit, no `GITHUB_` prefix, case-insensitive) — standard rules, not re-pulled verbatim.
-- **Variables REST endpoints** stated from parallel structure (secrets API verified live; variables API page not re-pulled).
-- **gh CLI** commands from knowledge, not re-pulled.
-
-
 ---
 
-## Topic 4D — Self-Hosted Runners
-
-*Registration, groups, labels, security.*
+## Topic 4D — Self-Hosted Runners - Registration, groups, labels, security
 
 ### What it is
 - A machine **you deploy & manage** to run Actions jobs. Full OS/image control, **any distro**, persistent tool-cache, pre/post-job hooks — but you own maintenance/security/drift.
-- **Hosted Linux = Ubuntu ONLY.** Other distros ⇒ Docker, or a self-hosted custom VM.
+- **GitHub-hosted Linux = Ubuntu ONLY** (contrast: self-hosted = any distro). Need another distro on hosted ⇒ run it in **Docker**, or use a **self-hosted custom VM**.
 
 ### Registration & scope
 - Attach at **repository / organization / enterprise**. Scope meaning:
@@ -648,6 +622,7 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
   - **enterprise** = many orgs
 - Validate connectivity with the runner app's `config.sh` / `run.sh --check`; connectivity logs live in the runner's `_diag` folder.
 
+<!-- IMPORTANT Here -->
 ### ⚠️ Groups = access control; Labels = routing (don't merge them)
 - **Runner GROUPS = access control** — *which repos/orgs may use these runners*.
   - Org/enterprise only.
@@ -664,12 +639,9 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
 ### Routing
 - No matching idle runner → the job **stays queued and fails after 24 h**.
 
-
 ---
 
 ## Topic 4E — Custom Actions Authoring
-
-*Authoring the actions themselves.*
 
 ### action.yml metadata
 - Custom-action metadata always lives in **`action.yml` / `action.yaml`** (required even for a private action).
