@@ -1,6 +1,6 @@
 # GH-200 Gap-Study Plan — Pass 1 → Pass 2 bridge
 
-**Last updated: 2026-07-01 09:24 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
+**Last updated: 2026-07-01 10:33 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
 
 *Created 2026-06-29. Companion to `GH-200_Practice_Protocol_and_Progress.md`. Pass 1 (GHCertified, 178 Q) is COMPLETE; the Tutorials Dojo sampler was retired. This plan governs the **gap-study phase** before Pass 2.*
 
@@ -164,7 +164,7 @@ Then:
 ## §4 End-to-end flow
 
 1. **Phase 1** (R1-R8, U1-U3) — build broad understanding. Each topic: recap + passed checks; keepers folded into `GH-200_Combined_Cheat_Sheets.md` as we go.
-2. **Cheat-sheet review** — you read through the full cheat sheet (now enriched with every Phase-1 keeper) to consolidate before drilling. *Self-study checkpoint, no questions from me.*
+2. **Cheat-sheet review** — you read through the full cheat sheet (now enriched with every Phase-1 keeper) to consolidate before drilling. *Self-study checkpoint, no questions from me.* **Prerequisite: the §6 restructure runs first — read the clean version, not the current scattered one.**
 3. **Phase 2** (E1-E5) — error re-drill, **errors first**. Re-draw the actual missed GHCertified questions verbatim until they pass clean.
 4. **Pass 2** — fresh **full verbatim re-drill** of GHCertified Q001->Q179 (Q157 absent), same regime; readiness judged on the full-pass per-domain breakdown.
 
@@ -188,6 +188,18 @@ Each stage gates the next: don't start Phase 2 before the cheat review, don't st
 **Hard guardrails:** every answer key **verified against `docs.github.com`** before use; no key authored from memory; current-state wording (SLSA build levels, immutable actions, runner images) re-verified against live docs at write time.
 
 **Placement in the flow:** TBD — likely a dedicated "gap-bank pass" interleaved with or following Phase 1, slotted relative to Pass 2 once the count sheet is settled. Not yet wired into the §3 checklist (still draft).
+
+---
+
+## §6 — Cheat-sheet restructure *(companion task — added 2026-07-01)*
+
+**Why:** `GH-200_Combined_Cheat_Sheets.md` has grown to ~30 pages and reads poorly. The same concept lives in several places — the topic sections **and** the trailing "Drill-Surfaced Keepers" blocks (the file's own "distribute into the topic sections above" note). Before the §4 read-through is worth doing, the doc needs one coherent structure with **one home per concept**.
+
+**Scope — restructure only, NOT a prune:** consolidate + de-duplicate faithfully (move/merge, **change no facts**, keep every trap callout, calm the notation). The owner then does a **separate** prune pass — deleting now-obvious lines — on the cleaner, low-coupling result. The restructure's job is to make that prune safe, not to do it.
+
+**How:** run in **Claude Code (VS Code)**, new session, fresh clone, on a branch (never in place). Plan mode first (approve structure + merge map before any edit) → consolidate → **re-verify every merged fact against `docs.github.com`** (distractors and asides included; surface any that fail, don't silently fix) → stop for the owner's prune pass. Full spec: `GH-200_Cheatsheet_Restructure_Brief.md`.
+
+**Flow:** slots **before** §4 step 2 (the read-through). Touches only the cheat sheet — not scripts / drill log / this plan.
 
 ---
 *Full sequence: Phase 1 (R1->R2->R3, then R4-R8, then U1-U3) -> cheat-sheet review -> Phase 2 (E1-E5, errors first) -> Pass 2 (full re-drill). U1 (attestations) can jump earlier if you'd rather front-load the one total blind spot. No gap-study Q-log; sync state to project + repo + HD at session end.*
