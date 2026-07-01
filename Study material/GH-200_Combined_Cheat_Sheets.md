@@ -59,21 +59,33 @@ preserved throughout.*
 ## Topic 1A — Triggers, Permissions, Inputs, Reusable Workflows
 
 ### Triggers
-<!-- IMPORTANT -->
-- `workflow_dispatch` = **internal** (UI / `gh` CLI / API; typed inputs). `repository_dispatch` = **external** POST to the dispatches endpoint with a custom `event_type`.
+- `workflow_dispatch` = **internal** (UI / `gh` CLI / API; typed inputs).
+- `repository_dispatch` = **external** POST to the dispatches endpoint with a custom `event_type`.
 - Dispatch endpoints (both POST):
   - `repository_dispatch` → `/repos/{o}/{r}/dispatches`
   - `workflow_dispatch` → `/repos/{o}/{r}/actions/workflows/<id>/dispatches`
-- `schedule`: **min 5 min** spacing, **default branch only**, best-effort (delayed/dropped under load; avoid top-of-hour). Cron weekdays example: `0 0 * * 1-5`.
-- Scheduled runs use the **latest commit on the default branch** (not a fixed/pinned commit).
+- `schedule`:
+  * **min 5 min** spacing
+  * **default branch only**
+  * best-effort (delayed/dropped under load; avoid top-of-hour)
+  * Cron weekdays example: `0 0 * * 1-5`.
+  * Runs use the **latest commit on the default branch** (not a fixed/pinned commit).
 - `star` event = repo **starred/unstarred** (activity types `created` / `deleted`).
-- Narrow events with: `types:`, `branches:`/`branches-ignore:`, `paths:`/`paths-ignore:`, `tags:`. `tags:` is for `push`, **not** `pull_request`.
-- ⚠️ **`types:` REPLACES the default set, doesn't extend it.**
-  - Keep the defaults *and* add more → re-list them all: `types: [opened, synchronize, reopened, labeled]`.
-  - Most events default to **all** activity types; `pull_request`/`pull_request_target` are the exception (default = `opened`/`synchronize`/`reopened`).
+- Narrow events with:
+  * `types:` →  ⚠️ **`types:` REPLACES the default set (opened, synchronize, reopened), doesn't extend it.**
+    - To keep the defaults *and* add more → re-list them all, e.g.: `types: [opened, synchronize, reopened, labeled]`.
+    - Most events default to **all** activity types; `pull_request`/`pull_request_target` are the exception (default = `opened`/`synchronize`/`reopened`).
+  * `branches:`/`branches-ignore:`
+  * `paths:`/`paths-ignore:`
+  * `tags:` → `tags:` is for `push`, **not** `pull_request`.
 - `synchronize` (a `pull_request` type) = **new commits pushed to the PR head/source branch** — the activity that re-runs CI on every push to an already-open PR.
 - `pull_request` `branches:`/`paths:` filters match the **base (target) branch** (where the PR merges INTO), NOT the source/head branch. `!pattern` excludes; a later negative line removes earlier matches.
-- ⚠️ **No `merged` activity type exists.** To run only on a merged PR: `on: pull_request: types: [closed]` + `if: github.event.pull_request.merged == true`.
+- ⚠️ **No `merged` activity type exists.** To run only on a merged PR:
+  ```yaml on: 
+    pull_request: 
+      types: [closed]
+       + `if: github.event.pull_request.merged == true`.
+  ```
 - ⚠️ **Which branch's workflow file runs?**
   - Only **`push` & `pull_request`** run the workflow from the event's (possibly non-default) branch — so only they can fire a not-yet-merged workflow.
   - **All other events** (`schedule`, `repository_dispatch`, `workflow_dispatch`, `star`, `issues`, …) use the **default-branch** version.
@@ -85,44 +97,53 @@ preserved throughout.*
 
 ### permissions / GITHUB_TOKEN
 - Token is **per-job + ephemeral** (expires when the job ends).
-- ⚠️ **Job-level `permissions:` REPLACES workflow-level (not merge).** Any **unlisted scope → `none`**.
+- ⚠️ **Job-level `permissions:` REPLACES workflow-level (DOES NOT MERGE).** Any **unlisted scope → counts as `none`**.
 - `{}` = no access; `read-all` / `write-all` = shortcuts.
 - **Default read-only** for new repos/orgs/enterprises (`contents`+`packages` read). **Repo ← org ← enterprise** inheritance.
 - **Fork PR token = read-only** unless an admin enabled "Send write tokens to workflows from pull requests."
 - `403: Resource not accessible by integration` = missing scope → add it to `permissions:`.
 
 ### Input types  ⚠️ MEMORIZE THE TWO SETS
-- `workflow_dispatch`: **string, boolean, choice, number, environment** (5). `type` **OPTIONAL** (defaults `string`).
-- `workflow_call`: **string, number, boolean** (3). `type` **REQUIRED**. **No `choice`, no `environment`.**
-- `choice` **requires `options:`**.
-- `description`: **required** in `action.yml` inputs; **NOT** required in `workflow_dispatch` inputs.
-- ⚠️ `github.event.inputs.*` = **always strings** (`"false"` is truthy!). `inputs.*` = **typed**.
-- `type: environment` = **picker only**; protection + env-secrets apply **only when a job sets `environment:`**.
+- `workflow_dispatch`: 5 types: **string, boolean, choice, number, environment**. `type` is **OPTIONAL** (defaults `string`).
+- `workflow_call`: 3 types: **string, number, boolean** (no `choice`, no `environment`) `type` is **REQUIRED**. 
+- `choice` **requires `options:`**
+- ⚠️ `description`: **required** in `action.yml` inputs; **NOT** required in `workflow_dispatch` inputs.
+- ⚠️ `github.event.inputs.*` = **always strings** (`"false"` is truthy!). `inputs.*` = **typed**. Therefore inputs context is often preferrable.
+- `type: environment` = **picker only** (environment-protection mechanics → 5C)
 - dispatch limits: **25 inputs max** (raised from 10; verified 2026-06-30 vs docs), **65,535-char** payload.
-- `workflow_call` unset defaults: **`false` / `0` / `""`**.
+- When triggered by `workflow_call` unset fallback to defaults: **`false` / `0` / `""`**.
 
 ### Reusable workflows (`workflow_call`)
 - Called at **JOB level**: `jobs.<id>.uses: owner/repo/.github/workflows/x.yml@REF` (**ref required**).
 - `secrets: inherit` = **all** caller secrets (**org + repo**), **same org/enterprise only**.
-- ⚠️ **Can't** reference `secrets.*` in caller `with:` (**parse-time error**). `with:` = inputs channel; `secrets:` = secrets channel.
+- ⚠️ **Two separate channels when calling a reusable workflow**
+  - `with:` = the **inputs** channel.
+  - `secrets:` = the **secrets** channel (or `secrets: inherit`).
+  - ❌ Putting a secret in `with:` — i.e. referencing `secrets.*` inside the caller's `with:` — is a **parse-time error**. Pass secrets through `secrets:`.
 - Environment secrets **not passable** via `workflow_call`; set `environment:` on the reusable job instead.
 - Nesting allowed; **permissions only reduce down the chain, never elevate.**
 - **Limits** *(verified 2026-07-01 vs docs)*:
   - **max 50** unique reusable workflows callable per file (raised from 20).
   - **nesting depth 10** levels = top-level caller + 9 (raised from 4).
-  - No loops in the tree.
+  - No **loops (cycles)** in the call chain — a reusable workflow can't call itself, directly or indirectly.
 - Workflow-level (`workflow_call`) outputs use the **`value:`** key; **job-level outputs do NOT** (`<name>: ${{ steps... }}` directly). See 1E.
-- **Reusable workflow vs composite action:** reusable = **job-level** `uses:`, own runner, has a `secrets:` block. Composite = a **step** in a job, caller's runner, **no** `secrets:` block (secrets arrive as `with:`/env). Composite-action authoring → 4E.
-
+- **Reusable workflow vs composite action:
+  - Reusable = **job-level** `uses:`, own runner, has a `secrets:` block. 
+  - Composite = a **step** in a job, caller's runner, **no** `secrets:` block (secrets arrive as `with:` or directly in env)
 
 ---
 
 ## Topic 1B — Contexts, Expressions & Secret Leakage
 
 ### Context — what the term means HERE
-- A **context** = a **read-only bag of runtime data**, read via `${{ }}`. NOT the vague English "situation." A named object you index into; only holds data that exists at that moment.
-  - `github` → event/actor/ref/sha/repo · `needs` → upstream job outputs · `matrix` → this job's axis values · `steps` → id'd step outputs in the **same** job · `runner` → runner machine facts.
-- `github.repository` = full **`owner/repo`**; owner alone = `github.repository_owner` (there is **no** `github.org` / `github.organization`).
+- A **context** = a **read-only bag of runtime data**, read via `${{ }}`
+  * Examples: 
+    - `github` → event/actor/ref/sha/repo 
+    - `needs` → upstream job outputs 
+    - `matrix` → this job's axis values 
+    - `steps` → id'd step outputs in the **same** job 
+    - `runner` → runner machine facts.
+- ⚠️ `github.repository` = full **`owner/repo`**; owner alone = `github.repository_owner` (there is **no** `github.org` / `github.organization`).
 
 ### env vs vars vs secrets  ⚠️ THE contrast
 - `env` = **custom environment variables**, inline in YAML:
@@ -133,12 +154,14 @@ preserved throughout.*
 - `vars` = **configuration variables** (UI/API config):
   - **read only via `${{ vars.X }}`**
   - **NOT masked**
-  - **must map to `env:` for the shell**
+  - **must map to `env:` to read it as a shell `$VAR`** (not auto-exposed like `env`)
+    - the same map-to-`env:` + quoted `"$VAR"` pattern also **safeguards against script injection** for **untrusted** `${{ }}` values (PR titles, branch names…)
   - Scopes: **enterprise / org / repo / environment** (precedence + limits → 4C)
 - `secrets` = UI/API sensitive:
   - **read only via `${{ secrets.X }}`**
   - **auto-masked**
-  - must map to `env:` for the shell
+  - **must map to `env:` to read it as a shell `$VAR`** (not auto-exposed like `env`)
+    - here that mapping is **access only, NOT an injection fix** — secrets are maintainer-set (trusted), so the risk isn't injection but **leakage** (masking is best-effort)
 - ⚠️ **secrets masked / vars NOT masked** ← the whole exam point. A sensitive value in `vars` = leak.
 - `env:` blocks **don't self-reference** (one entry can't use another from the same block).
 - Env-var **names are case-sensitive** regardless of OS/shell.
@@ -846,6 +869,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - **one** approval is enough
   - self-review can be prevented
   - teams allowed
+- ⚠️ **Environment protection + environment secrets only activate when a job sets `environment:`** — selecting an environment via a `workflow_dispatch` `environment` **input** is just a picker; it does NOT apply protection rules or expose environment secrets.
 - **Immutable actions:** **consuming = live/transparent** (OCI packages from GitHub Packages, host `pkg.actions.githubusercontent.com` under `*.actions.githubusercontent.com` → 4A allow-list). **Publishing your own = ⚠️ not confidently GA** (README "not for public use" vs roadmap "GA"). Verify on a practice exam.
 
 ### Bit 2 — attestation keepers
