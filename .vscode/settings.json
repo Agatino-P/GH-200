@@ -1,0 +1,43 @@
+{
+  // === Todo Tree config for reviewing the study docs ===
+  // Extension: Gruntfuggly.todo-tree (install from the Marketplace).
+  // Mark content with an HTML comment so it stays INVISIBLE in the rendered
+  // markdown but shows up in the Todo Tree sidebar + highlighted in the editor:
+  //     <!-- CUT -->        take it out                (red)
+  //     <!-- TBC -->        to be confirmed / not sure (yellow)
+  //     <!-- TBD -->        needs more info            (blue)
+  //     <!-- IMPORTANT -->  high relevance, revisit    (green)
+
+  "todo-tree.general.tags": ["CUT", "TBC", "TBD", "IMPORTANT"],
+
+  // Only match tags INSIDE an HTML comment → no false hits on prose that
+  // happens to contain these words. ($TAGS is expanded by the extension.)
+  "todo-tree.regex.regex": "(<!--)\\s*($TAGS)",
+
+  // Whole-line tint at low opacity so the marked text stays readable.
+  // Prefer only the marker highlighted? change "type" to "tag-and-comment".
+  "todo-tree.highlights.defaultHighlight": {
+    "type": "whole-line",
+    "opacity": 35,
+    "gutterIcon": true
+  },
+
+  "todo-tree.highlights.customHighlight": {
+    "CUT":       { "background": "#f44747", "foreground": "#ffffff", "iconColour": "#f44747", "icon": "trash" },
+    "TBC":       { "background": "#e5c07b", "foreground": "#000000", "iconColour": "#e5c07b", "icon": "question" },
+    "TBD":       { "background": "#569cd6", "foreground": "#ffffff", "iconColour": "#569cd6", "icon": "info" },
+    "IMPORTANT": { "background": "#89d185", "foreground": "#000000", "iconColour": "#89d185", "icon": "star" }
+  },
+
+  "todo-tree.tree.showCountsInTree": true,
+  "todo-tree.general.statusBar": "total",
+
+  // Don't scan the legend/config themselves — their example tags aren't real marks.
+  "todo-tree.filtering.excludeGlobs": ["**/.vscode/**", "**/REVIEW-TAGS.md"],
+
+  // Todo Tree searches with ripgrep. VS Code's bundled copy wasn't found on this
+  // machine, so point at a real one: `brew install ripgrep`.
+  // Machine-specific path (Apple Silicon Homebrew). On another PC adjust it —
+  // Intel Mac: /usr/local/bin/rg · Linux: usually /usr/bin/rg (or `which rg`).
+  "todo-tree.ripgrep.ripgrep": "/opt/homebrew/bin/rg"
+}

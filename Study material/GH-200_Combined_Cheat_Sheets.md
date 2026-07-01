@@ -11,6 +11,8 @@ h3 { margin-top: 1.4em; margin-bottom: 0.5em; }
 table { margin: 0.7em 0; }
 </style>
 
+<!-- Review-tag legend & Todo Tree setup → see REVIEW-TAGS.md -->
+
 # GH-200 — Combined Cheat Sheets
 
 *Consolidated study sheet for GH-200 (GitHub Actions). Restructured 2026-07-01: the three trailing
@@ -57,6 +59,7 @@ preserved throughout.*
 ## Topic 1A — Triggers, Permissions, Inputs, Reusable Workflows
 
 ### Triggers
+<!-- IMPORTANT -->
 - `workflow_dispatch` = **internal** (UI / `gh` CLI / API; typed inputs). `repository_dispatch` = **external** POST to the dispatches endpoint with a custom `event_type`.
 - Dispatch endpoints (both POST):
   - `repository_dispatch` → `/repos/{o}/{r}/dispatches`
