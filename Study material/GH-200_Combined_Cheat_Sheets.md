@@ -109,7 +109,7 @@ preserved throughout.*
 - `choice` **requires `options:`**
 - ⚠️ `description`: **required** in `action.yml` inputs; **NOT** required in `workflow_dispatch` inputs.
 - ⚠️ `github.event.inputs.*` = **always strings** (`"false"` is truthy!). `inputs.*` = **typed**. Therefore inputs context is often preferrable.
-- `type: environment` = **picker only** (environment-protection mechanics → 5C)
+- `type: environment` = **picker only**
 - dispatch limits: **25 inputs max** (raised from 10; verified 2026-06-30 vs docs), **65,535-char** payload.
 - When triggered by `workflow_call` unset fallback to defaults: **`false` / `0` / `""`**.
 
@@ -156,7 +156,7 @@ preserved throughout.*
   - **NOT masked**
   - **must map to `env:` to read it as a shell `$VAR`** (not auto-exposed like `env`)
     - the same map-to-`env:` + quoted `"$VAR"` pattern also **safeguards against script injection** for **untrusted** `${{ }}` values (PR titles, branch names…)
-  - Scopes: **enterprise / org / repo / environment** (precedence + limits → 4C)
+  - Scopes: **enterprise / org / repo / environment**
 - `secrets` = UI/API sensitive:
   - **read only via `${{ secrets.X }}`**
   - **auto-masked**
@@ -165,7 +165,7 @@ preserved throughout.*
 - ⚠️ **secrets masked / vars NOT masked** ← the whole exam point. A sensitive value in `vars` = leak.
 - `env:` blocks **don't self-reference** (one entry can't use another from the same block).
 - Env-var **names are case-sensitive** regardless of OS/shell.
-
+<!-- IMPORTANT Here-->
 ### github ref family — by event
 - `github.ref`:
   - push (branch) → `refs/heads/<branch>` (**NOT** the SHA — that's `github.sha`)
@@ -183,7 +183,7 @@ preserved throughout.*
 - **`RUNNER_*`** = runner-machine facts, mirroring the `runner` context (`runner.os` ↔ `RUNNER_OS`): `RUNNER_OS` (Linux/Windows/macOS), `RUNNER_ARCH` (X86/X64/ARM/ARM64), `RUNNER_NAME`, `RUNNER_TEMP`, `RUNNER_TOOL_CACHE`. NOT `GITHUB_RUNNER_OS`.
 - ⚠️ **`GITHUB_TOKEN` is NOT a default env var** — it's a secret (`secrets.GITHUB_TOKEN` / `github.token`); map it to `env:` yourself if the shell needs it.
 
-### Matrix (primer; depth = 1C)
+### Matrix (primer)
 - `strategy.matrix` is **per JOB**; runs the job once per **cross-product** combo, **parallel** by default.
 - Throttle with **`max-parallel`** (1 = sequential). It caps a **count**, not an "axis." Combo order = don't rely on it.
 - `needs: <matrix-job>` waits for **ALL** combos — a matrix job = **one graph node**.
@@ -194,7 +194,7 @@ preserved throughout.*
 - **Execution phase** (on runner): `if:`, `run:`, `with:`, env interpolation, step/job outputs.
 - **Context availability by location:** top-of-file = ~nothing · job-level `if:`/`strategy` = `github`/`needs`/`vars` (**NO `steps`, NO `runner`**) · step-level = **everything**.
 - ❌ `jobs.x.if: ${{ steps.y.outputs.z }}` fails — `steps` not available at job level.
-- Matrix is **fixed at setup** → dynamic matrix = **`fromJSON(needs.<prior>.outputs.list)`**, never from a same-job step. (`fromJSON` = real built-in; full treatment 1C.)
+- Matrix is **fixed at setup** → dynamic matrix = **`fromJSON(needs.<prior>.outputs.list)`**, never from a same-job step. (`fromJSON` = real built-in.)
 
 ### Status functions & implicit `success()`
 - Status-check functions (used in `if:`): `success()` (**implicit default**), `failure()`, `always()`, `cancelled()`, `!cancelled()`. NOT functions: `completed` / `state` / `status`.
@@ -214,7 +214,7 @@ preserved throughout.*
   - Leaks via: **structured/JSON secrets**, splitting/substringing, odd transforms, and the `base64(secret+suffix)` padding edge case.
 - ⚠️ A freshly **decoded/derived** value is **not** covered by auto-mask → register it with **`::add-mask::$VALUE`** (real workflow command). Never store structured data (JSON/XML) as a secret.
 - **Outputs are NOT a secret channel** — they flow to GitHub + downstream as ordinary data. (A real registered secret in an output *is* redacted on the runner; a self-minted value is not.)
-- **Script injection** (also 5A): never interpolate untrusted `${{ }}` (PR title / branch / issue body / commit msg) straight into `run:`. **Bind to `env:`, then use `"$VAR"` quoted.**
+- **Script injection**: never interpolate untrusted `${{ }}` (PR title / branch / issue body / commit msg) straight into `run:`. **Bind to `env:`, then use `"$VAR"` quoted.**
 
 ### Passing secrets — where & how
 - Already a registered secret? → read **`${{ secrets.X }}`** in the later job. Available run-wide; **no passing.**
@@ -245,7 +245,7 @@ preserved throughout.*
 ### fail-fast / max-parallel / continue-on-error
 - **`fail-fast` default = `true`** → first failing combo **cancels** all in-progress + queued. Set `false` for full reports.
 - `max-parallel` = cap on **simultaneous** combos (default = max allowed). A **count**, not an axis.
-- ⚠️ **`concurrency` ≠ `max-parallel`:** `concurrency` limits **concurrent workflow runs** (and can `cancel-in-progress`, see 5D); `max-parallel` throttles **matrix legs within one run**.
+- ⚠️ **`concurrency` ≠ `max-parallel`:** `concurrency` limits **concurrent workflow runs** (and can `cancel-in-progress`); `max-parallel` throttles **matrix legs within one run**.
 - ⚠️ **Swallow vs preserve** (THE distinction):
   - `continue-on-error: true` → **SWALLOWS** failure: run not failed, **downstream `needs:` sees SUCCESS**.
   - `fail-fast: false` → **PRESERVES** failure (still counts, blocks `needs:`), just doesn't cancel siblings.
@@ -418,7 +418,7 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 
 ## Topic 3A — Immutable Releases & Version Pinning
 
-*Objective 3.2. Enforcement specifics → see 5C.*
+*Objective 3.2.*
 
 ### ⚠️ HEADLINE TRAP — a Release is NOT automatically immutable
 Two independent checks; a tag ref is locked only if **BOTH** pass:
@@ -460,7 +460,7 @@ Three states of any tag: **bare tag → movable** · **mutable release → still
 - **Dependabot + SHA-pinning alerting** interference: **unverified**. (Updates of SHA-pinned actions = confirmed.)
 
 ### ⚠️ Do not confuse
-- **Immutable *subject claims*** = an **OIDC token format** change (→ 5B). **Different feature**, not immutable releases.
+- **Immutable *subject claims*** = an **OIDC token format** change. **Different feature**, not immutable releases.
 
 
 ---
@@ -541,7 +541,7 @@ Actions is gated **purely by the runner's IP**. Distractor bait: *"...for Action
 ### ⚠️ HOSTED = speed, not persistence
 - Tool-cache on hosted = **per-VM**, wiped every job. Preinstalled versions give *fast starts*, but nothing you download mid-job survives.
 - ⚠️ What persists across **hosted** jobs = **`actions/cache`** (deps), a *different* cache — don't confuse the two.
-- **SELF-HOSTED** = same machine ⇒ `_work/_tool` survives ⇒ a `setup-*` download sticks for later jobs (manual installs persist too → drift risk). Runner management → 4D.
+- **SELF-HOSTED** = same machine ⇒ `_work/_tool` survives ⇒ a `setup-*` download sticks for later jobs (manual installs persist too → drift risk).
 
 ### Custom images ⚠️
 - **LARGER runners ONLY → Team/GHEC.** Not standard runners, not Free. GA ~April 2026 (was preview Oct 2025).
@@ -567,7 +567,7 @@ Log → **Set up job → Runner Image → "Included Software"** link. Source = `
 ### ⚠️ Unverified (calibrate vs practice exams)
 - Hosted tool-cache **path** `/opt/hostedtoolcache` + env var `RUNNER_TOOL_CACHE` — not re-verified (documented default = `_work/_tool`).
 - Custom-image **retention 60-day default / 90-day max** — community-reported, not docs-confirmed.
-- Hook env-var names `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED` — from a community blog. (Cleanup-hook keys for *actions* → 4E.)
+- Hook env-var names `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED` — from a community blog.
 
 
 ---
@@ -635,7 +635,7 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
 
 ## Topic 4D — Self-Hosted Runners
 
-*Registration, groups, labels, security. Runner **images/toolcache** → 4B; **networking** → 4A.*
+*Registration, groups, labels, security.*
 
 ### What it is
 - A machine **you deploy & manage** to run Actions jobs. Full OS/image control, **any distro**, persistent tool-cache, pre/post-job hooks — but you own maintenance/security/drift.
@@ -669,12 +669,12 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
 
 ## Topic 4E — Custom Actions Authoring
 
-*Authoring the actions themselves. Reusable-workflow specifics → 1A.*
+*Authoring the actions themselves.*
 
 ### action.yml metadata
 - Custom-action metadata always lives in **`action.yml` / `action.yaml`** (required even for a private action).
 - **Required keys:** `name` + `description` + `runs`.
-- `description` is **required** in `action.yml` inputs (contrast: not required in `workflow_dispatch` inputs — see 1A).
+- `description` is **required** in `action.yml` inputs (contrast: not required in `workflow_dispatch` inputs).
 
 ### Composite vs reusable (the distinction)
 - **Composite action:**
@@ -684,7 +684,7 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
 - **Reusable workflow:**
   - **job-level** `uses:`
   - its **own runner**
-  - **has a `secrets:` block** (details in 1A)
+  - **has a `secrets:` block**
 
 ### Cleanup hooks
 - **JavaScript action** → `runs.post`.
@@ -742,7 +742,7 @@ Variables: visible in settings, **not masked**, for non-sensitive config. Secret
   - **Scope → action map:**
     - label/comment a PR = `pull-requests: write` (issue labels = `issues: write`) — **NOT** `contents`
     - `contents: write` = git-repo writes (push commits, tags, releases) — the high-risk scope in a pwn-request context
-    - `packages: write` to publish GHCR (see 4G)
+    - `packages: write` to publish GHCR
     - `id-token: write` for OIDC
 - ⚠️ **Self-hosted lifetime trap.** Job ceiling is 5 days, but `GITHUB_TOKEN` only refreshes up to **24h**. Don't pick "lasts 5 days."
 - ⚠️ **Run vs trigger.** A push/PR via `GITHUB_TOKEN` does **not trigger** a new run — the commit still **lands**, the event is suppressed at the trigger stage (no run created/queued/skipped). It's not "rejected" and not "held."
@@ -870,7 +870,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - self-review can be prevented
   - teams allowed
 - ⚠️ **Environment protection + environment secrets only activate when a job sets `environment:`** — selecting an environment via a `workflow_dispatch` `environment` **input** is just a picker; it does NOT apply protection rules or expose environment secrets.
-- **Immutable actions:** **consuming = live/transparent** (OCI packages from GitHub Packages, host `pkg.actions.githubusercontent.com` under `*.actions.githubusercontent.com` → 4A allow-list). **Publishing your own = ⚠️ not confidently GA** (README "not for public use" vs roadmap "GA"). Verify on a practice exam.
+- **Immutable actions:** **consuming = live/transparent** (OCI packages from GitHub Packages, host `pkg.actions.githubusercontent.com` under `*.actions.githubusercontent.com`). **Publishing your own = ⚠️ not confidently GA** (README "not for public use" vs roadmap "GA"). Verify on a practice exam.
 
 ### Bit 2 — attestation keepers
 - **Attestation = a signed claim binding SUBJECT (name + SHA-256 digest) → PREDICATE (provenance facts) in in-toto format.** Digest = hash of the actual bytes.
@@ -935,5 +935,5 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 - **Range:** artifacts **1–400 days** (private/internal/Enterprise); **public capped at 90**. Cache: public ≤ 90, private/internal ≤ 365.
 - ⚠️ **A period change is NOT retroactive** — it applies to NEW objects only; old artifacts keep their original lifespan (by design, not a bug). To reclaim now → delete explicitly.
 - Per-artifact override: `retention-days:` in `upload-artifact` (capped by repo/org max); `compression-level: 0–9`.
-- ⚠️ **Programmatic retention — precise meaning:** = per-artifact `retention-days` (declarative) + programmatic **deletion** via REST/`gh`. There is **NO confirmed REST endpoint to SET the retention period** (`PUT .../actions/retention` unverified/likely not official). REST does **get / list / delete** only. (Full endpoint list → 1E.)
+- ⚠️ **Programmatic retention — precise meaning:** = per-artifact `retention-days` (declarative) + programmatic **deletion** via REST/`gh`. There is **NO confirmed REST endpoint to SET the retention period** (`PUT .../actions/retention` unverified/likely not official). REST does **get / list / delete** only.
 - ⚠️ **Quota recalculation lags** (commonly 6–24h). A "storage quota exceeded" error persists *after* a successful delete — the deletion didn't fail; just wait + lower retention going forward.
