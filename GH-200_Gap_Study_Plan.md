@@ -1,6 +1,6 @@
 # GH-200 Gap-Study Plan — Pass 1 → Pass 2 bridge
 
-**Last updated: 2026-06-30 20:48 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
+**Last updated: 2026-07-01 09:24 UTC** *(bump this timestamp on every edit — same convention as the protocol files §3.7. Use `date -u`.)*
 
 *Created 2026-06-29. Companion to `GH-200_Practice_Protocol_and_Progress.md`. Pass 1 (GHCertified, 178 Q) is COMPLETE; the Tutorials Dojo sampler was retired. This plan governs the **gap-study phase** before Pass 2.*
 
@@ -127,9 +127,9 @@ Phase 1-B — Flagged-unknown topics
 [x] R8  GitHub Packages publishing
 
 Phase 1-C — Untested blind-spots (real objectives, no error/flag signal)
-[ ] U1  Artifact attestations / provenance / SLSA   (highest blind-spot risk)
-[ ] U2  YAML anchors / aliases / merge keys
-[ ] U3  Editor tooling + static-vs-runtime expressions (light)
+[x] U1  Artifact attestations / provenance / SLSA   (highest blind-spot risk)
+[x] U2  YAML anchors / aliases / merge keys
+[x] U3  Editor tooling + static-vs-runtime expressions (light)
 
 >>> CHECKPOINT: read through the full cheat sheet before Phase 2 <<<
 
@@ -155,6 +155,11 @@ Then:
 - **R6** (2026-06-30) — CORE done. 3/3 clean (scope levels; runner groups org/ent-only + private-by-default; no self-hosted on public repos). Keeper added: labels (cumulative, `--labels`), groups, ephemeral/JIT, 24h queue-fail. NOT covered: service containers (1.7), IP allow lists (4.4) — deferred to thin-coverage / authored-Q pass.
 - **R7** (2026-06-30) — CORE done. R7.1/R7.2 clean. Three-trigger trust model; pwn request = executing (not checking out) fork code in a privileged job; safe split `pull_request`→`workflow_run`; `checkout` v7 guard. Keepers added: pwn nuance, permissions scope→action map. NOT covered: script injection (5.3) — deferred to thin-coverage / authored-Q pass.
 - **R8** (2026-06-30) — done. R8.1 clean. `GITHUB_TOKEN` read-only for packages by default → `packages: write` to publish; PAT classic scopes; GHCR anonymous public pull; repo↔package linking; `registry_package` reacts (doesn't publish). Keeper added: package facts. Honesty flag recorded re: GHCR `registry_package` edge cases (verify if drilled). No new gaps.
+- **U1** (2026-07-01) — done. 3/3 clean (unverified-attestation = no benefit; digest catches swapped bytes vs signature catches forged attestation; reusable-workflow isolation → why L3). All attestation content **re-verified against live docs** — existing cheat-sheet Bit 2 confirmed current. Net-new keepers: availability matrix (public=all plans / private+internal=GHEC only / NOT GHES / not legacy) + verify now prints evaluated policies. SLSA honesty flag retained: L3-via-reusable-workflow doc-stated; plain-inline-attestation level still not doc-stated — do not assert.
+- **U2** (2026-07-01) — done. 3/3 clean (merge-key `<<` diagnosis; cross-file impossible; alias = verbatim, no override). **Verification confirmed the Sept-2025 support flip** — cheat-sheet Topic 1D already current and accurate; no net-new needed. Bonus reusable-workflow facts (10 nesting / 50 unique / downgrade-only / re-run pins first-attempt SHA) verified in passing — relevant to Phase-2 E1/E4.
+- **U3** (2026-07-01) — done. 2/2 clean (`runner` context unavailable in early-evaluated `concurrency` group; extension does NOT run workflows locally = `act`). Existing cheat-sheet entries confirmed: VS Code extension two-halves (2A) + static-vs-runtime two-phase / context-availability (1B) both current. No net-new needed. `${{ }}`=Actions templating-before-shell reconfirmed.
+
+**>>> Phase 1 COMPLETE (R1–R8, U1–U3). Next: cheat-sheet read-through checkpoint, then Phase 2 (E1–E5, errors first). <<<**
 
 ## §4 End-to-end flow
 
