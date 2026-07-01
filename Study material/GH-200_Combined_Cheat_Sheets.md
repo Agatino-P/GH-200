@@ -651,6 +651,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - Container image → `oci://ghcr.io/...` prefix, not a file path.
   - SBOM → must pass `--predicate-type` (else it verifies provenance, not the SBOM).
   - `--signer-workflow` / `--signer-repo` → require a *specific* signing workflow/repo.
+  - Verify **prints every policy it evaluated** (pass/fail transparency; Feb-2025 change).
 
 - **★ CHECK ORDER (Q2 keeper):** verify runs **bytes → signature → identity**.
   - A **plain file-swap fails at step 1 (digest/bytes lookup)** — the swapped bytes hash to a different digest, so **no attestation exists for them**, before any signature is examined.
@@ -664,6 +665,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 
 - **SLSA** = "Supply-chain Levels for Software Artifacts" ("salsa"), industry framework, not a GitHub feature. GitHub provenance is in SLSA build-provenance format. **Attestations + reusable workflows → SLSA v1.0 Build Level 3.** (⚠ baseline level of a plain attestation + exact per-level wording = unverified; objective lists SLSA as an *example* only.)
 - Deploy gate: run `gh attestation verify` before consuming a build output; proceed only on pass. K8s **admission controller** can enforce at the cluster (know it exists).
+- **Availability (verified 2026-07-01):** public repos = **all current plans**; **private/internal = GHEC only**; **NOT on GHES**; not on legacy Bronze/Silver/Gold plans.
 
 
 ---
