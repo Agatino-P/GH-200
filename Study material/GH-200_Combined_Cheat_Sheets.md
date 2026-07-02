@@ -108,7 +108,9 @@ preserved throughout.*
 - `workflow_call`: 3 types: **string, number, boolean** (no `choice`, no `environment`) `type` is **REQUIRED**. 
 - `choice` **requires `options:`**
 - ⚠️ `description`: **required** in `action.yml` inputs; **NOT** required in `workflow_dispatch` inputs.
-- ⚠️ `github.event.inputs.*` = **always strings** (`"false"` is truthy!). `inputs.*` = **typed**. Therefore inputs context is often preferrable.
+- ⚠️ `github.event.inputs.*` are **always strings** (`"false"` is truthy!).
+  - `inputs.*` (the inputs context) are **typed**.
+  - Therefore the `inputs` context is often preferable.
 - `type: environment` = **picker only**
 - dispatch limits: **25 inputs max** (raised from 10; verified 2026-06-30 vs docs), **65,535-char** payload.
 - When triggered by `workflow_call` unset fallback to defaults: **`false` / `0` / `""`**.
@@ -126,7 +128,7 @@ preserved throughout.*
   - **max 50** unique reusable workflows callable per file (raised from 20).
   - **nesting depth 10** levels = top-level caller + 9 (raised from 4).
   - No **loops (cycles)** in the call chain — a reusable workflow can't call itself, directly or indirectly.
-- Workflow-level (`workflow_call`) outputs use the **`value:`** key; **job-level outputs do NOT** (`<name>: ${{ steps... }}` directly). See 1E.
+- Workflow-level (`workflow_call`) outputs use the **`value:`** key; **job-level outputs do NOT** (`<name>: ${{ steps... }}` directly).
 - **Reusable workflow vs composite action:
   - Reusable = **job-level** `uses:`, own runner, has a `secrets:` block. 
   - Composite = a **step** in a job, caller's runner, **no** `secrets:` block (secrets arrive as `with:` or directly in env)
@@ -162,7 +164,7 @@ preserved throughout.*
   - **auto-masked**
   - **must map to `env:` to read it as a shell `$VAR`** (not auto-exposed like `env`)
     - here that mapping is **access only, NOT an injection fix** — secrets are maintainer-set (trusted), so the risk isn't injection but **leakage** (masking is best-effort)
-- ⚠️ **secrets masked / vars NOT masked** ← the whole exam point. A sensitive value in `vars` = leak.
+- ⚠️ **secrets masked / vars NOT masked** — this is the whole exam point. A sensitive value stored in `vars` is a leak.
 - `env:` blocks **don't self-reference** (one entry can't use another from the same block).
 - Env-var **names are case-sensitive** regardless of OS/shell.
 
@@ -185,7 +187,8 @@ preserved throughout.*
 
 ### Matrix (primer)
 - `strategy.matrix` is **per JOB**; runs the job once per **cross-product** combo, **parallel** by default.
-- Throttle with **`max-parallel`** (1 = sequential). Order is non deterministic
+- Throttle with **`max-parallel`** (set to `1` to run legs sequentially).
+- Matrix-leg execution order is **non-deterministic** — don't rely on which combo starts or finishes first.
 - **Matrix outputs:** all combos write the **same** output names → overwrite (**last wins, unreliable**). Fix: unique names via `matrix` context, e.g. `result_${{ matrix.x }}`.
 
 ### Expression evaluation — two phases
@@ -264,7 +267,10 @@ preserved throughout.*
 
 ### Runner images & -latest (verified June 2026; mappings DRIFT)
 - `-latest` labels **float** — GitHub migrates them to newer OS gradually (~1–2 months) → **non-deterministic over time**. **Pin** a version label for reproducibility.
-- Current: `ubuntu-latest`=**Ubuntu 24.04** · `windows-latest`=**Windows Server 2025** (=`windows-2025`) · `macos-latest`=**macOS 15 Arm64** (gotcha: Apple silicon).
+- Current `-latest` mappings:
+  - `ubuntu-latest` → **Ubuntu 24.04**
+  - `windows-latest` → **Windows Server 2025** (same as `windows-2025`)
+  - `macos-latest` → **macOS 15 Arm64** (gotcha: Apple silicon)
 - **Ubuntu 20.04 retired** (unsupported since **2025-04-01**) → `runs-on: ubuntu-20.04` **fails**.
 - ⚠️ **Pinning stops silent migration, NOT deprecation** — a pinned old label still dies when the image is retired.
 - (Newer, likely post-exam: `ubuntu-26.04` = public preview; `windows-latest` moving to "Server 2025 + VS 2026" toolset, June 2026.)
@@ -317,7 +323,9 @@ preserved throughout.*
 
 ### Job summaries — `GITHUB_STEP_SUMMARY`
 - **Environment FILE** (the variable = a file path), **one SEPARATE file per STEP** (steps isolated). Append **GFM** (GitHub Flavored Markdown, GitHub's superset of CommonMark); renders as the **job summary** on the run summary page.
-- `>>` appends to the current step's file (auto-newline each append); `>` overwrites **only the current step's** buffer — it can **NEVER** wipe another step's summary. (Trap: assuming `>` in a later step clears the whole job summary — it doesn't.)
+- `>>` appends to the current step's file (auto-newline each append).
+- `>` overwrites **only the current step's** buffer — it can **NEVER** wipe another step's summary.
+  - ⚠️ Trap: assuming `>` in a later step clears the whole job summary — it doesn't.
 - At **job end** all step files are grouped into **one** job summary. Across jobs, summaries are ordered by **job completion time**, not definition order.
 - ⚠️ **1 MiB per step** limit → exceeding it **aborts** that step's summary (error "1024k"), not silent truncation.
 - Renders GFM: tables, Mermaid, alerts (`> [!NOTE]`). `<details>` must stay within ONE step (isolation breaks cross-step tags).
@@ -379,7 +387,7 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 ```
 - "Enforce retention" programmatically
   - `retention-days` (declarative)
-  - list cia GET + DELETE, on a schedule
+  - list via GET + DELETE, on a schedule
   - caches instead use `gh cache delete`
 - ⚠️ **There is NO confirmed REST endpoint to SET the retention period.** `PUT .../actions/retention` is **UNVERIFIED / likely not official** — do NOT trust it. Default-retention config is UI/org-policy. REST does **get / list / delete** only.
 - ⚠️ **Quota recalculation lags** (commonly 6–24h). A "storage quota exceeded" error can persist *after* a successful delete — the deletion didn't fail; just wait + lower retention going forward.
@@ -400,12 +408,13 @@ DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 - CLI: `gh run rerun <id>` | `gh run rerun <id> --failed` | `gh run rerun --job <job_id>` (`--debug` for debug logging).
 - REST: `POST .../runs/{run_id}/rerun` | `.../runs/{run_id}/rerun-failed-jobs` | `.../jobs/{job_id}/rerun`.
 - Re-runs create a **new ATTEMPT:**
-  - old run preserved and ui allows you to navigate through attemps
+  - old run preserved and the UI lets you navigate through attempts
   - **reuses the original SHA/ref** (not a fresh checkout of the branch)
 - **Re-run actor split:**
   - `github.actor` / `GITHUB_ACTOR` = the **original** triggerer (unchanged on re-run; the re-run uses its privileges).
   - `github.triggering_actor` / `GITHUB_TRIGGERING_ACTOR` = whoever **re-ran** it (changes).
-- **Permissions:** re-running workflows **and** deleting logs both require repo **write** (the **`actions: write`** scope) — human role *write* or a token with `actions: write`. Download run logs = `GET /repos/{o}/{r}/actions/runs/{run_id}/logs`.
+- **Permissions:** re-running workflows **and** deleting logs both require repo **write** (the **`actions: write`** scope) — a human with the *write* role, or a token with `actions: write`.
+  - Download run logs: `GET /repos/{o}/{r}/actions/runs/{run_id}/logs`.
 
 ### KEEPER GOTCHA — single-job API rerun archives the attempt ⚠️
 - `POST .../actions/jobs/{job_id}/rerun` creates a NEW attempt → remaining old failures are now in the ARCHIVED attempt.
@@ -463,7 +472,7 @@ Three states of any tag:
 `@main` (branch, worst) → `@v4` (floating major) → `@v4.1.0` (plain version tag) → `@<full 40-char SHA>` (best)
 - Tags are **movable pointers**; full SHA are **content-addressed, can't be re-pointed**.
 - **Full 40-char SHA** only — short SHAs are ambiguous / not accepted.
-- On an immutable-releases repo the most readable option is a version tag `@v4.1.0` **that is itself a published immutable release** ≈ a SHA.
+- On an immutable-releases repo the most readable option is a version tag `@v4.1.0` **that is itself a published immutable release** — as trustworthy as pinning a full SHA, but still human-readable.
 - **`@v4` floating stays movable as long as no immutable release is published on it** (authors keep it release-free so it can advance). The name `v4` decides nothing.
 
 ---
@@ -493,19 +502,19 @@ Only two controls exist:
 
 ### Hosted-runner conflict
 - Standard hosted runners are on a **wide + shared + weekly-rotating Azure IPs** ⇒ can't practically allow-list (and it weakens control).
-- Under an allow list, use **self-hosted** OR **static-IP larger runners**; add the runner IP/range to the list. (
+- Under an allow list, use **self-hosted** OR **static-IP larger runners**; add the runner IP/range to the list.
 
 ### IP allow list — edge cases (distractors)
 - **Exempt (keep working)**
   - **Dependabot** (first-party App)
   - **GitHub App server-to-server installation tokens** (not currently restricted — *verify, may have changed*).
 - **Not working**
-  - Codespaces** for org repos — an org allow list makes them unusable (unpredictable IPs).
+  - **Codespaces** for org repos — an org allow list makes them unusable (unpredictable IPs).
 
 ### Private networking paths
 - **Static IP larger runner** → egress identity:
   - fixed range, usable *with* an allow list
-  - additional ranges needed if it scales past 500 concurrency (TBC)
+  - additional IP ranges are needed if it scales past 500 concurrency (exact threshold unverified)
 - **Azure VNET** → reachability:
   - **VNET injection** = NIC in your subnet, **VM stays GitHub-side**; inherits NSG / ExpressRoute / VPN.
   - **2–64 vCPU Ubuntu + Windows only.**
@@ -563,7 +572,7 @@ Only two controls exist:
 ## Topic 4C — Variables & Secrets REST API - (Domain 4 · 4.7, 4.8)
 
 ### ⚠️ Variable precedence — MOST SPECIFIC wins
-`environment > repository > organization`. Docs say "lowest level takes precedence" = closest to the job.
+`environment > repository > organization`. Docs say "lowest level takes precedence", meaning the level closest to the job wins.
 
 ### Scope levels
 - Configuration-variable / secret scope levels = **organization / repository / environment**.
@@ -629,7 +638,8 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
   - Access policy defaults to **private repos only** (overridable).
 - **Labels = routing** — `runs-on` matches **cumulatively (must have ALL labels — AND)**.
   - Auto-applied labels: `self-hosted` + OS (`linux`/`windows`/`macOS`) + arch (`x64`/`ARM`/`ARM64`).
-  - Set custom labels at registration via `--labels`. ⚠️ The config script **can't relabel an existing runner** — use UI/REST.
+  - Set custom labels at registration via `--labels`.
+  - ⚠️ The config script **can't relabel an existing runner** — use UI/REST.
 
 ### ⚠️ Security
 - **Never use self-hosted on PUBLIC repos** — a fork PR can run arbitrary code on your box.
@@ -645,7 +655,7 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
 ### action.yml metadata
 - Custom-action metadata always lives in **`action.yml` / `action.yaml`** (required even for a private action).
 - **Required keys:** `name` + `description` + `runs`.
-- ⚠️ **Inputs**: `description` is **required** in `action.yml` inputs (contrast: **optional** in reausable workflow inputs — both `workflow_dispatch` and `workflow_call`).
+- ⚠️ **Inputs**: `description` is **required** in `action.yml` inputs (contrast: **optional** in reusable workflow inputs — both `workflow_dispatch` and `workflow_call`).
 
 ### Composite Actions vs Reusable workflows (the distinction)
 - **Composite action:**
@@ -672,7 +682,7 @@ runs:
   post-if: 'success()'  # optional: only clean up on success
 ```
 
-- *(Distinct from self-hosted **runner** hooks `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED` in 4B.)*
+- *(Distinct from self-hosted **runner** hooks `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED`.)*
 
 ### Need to load content first - Checkout
 - ⚠️ **No `actions/checkout` ⇒ empty workspace** (repo files absent). Most action/build steps need it first.
@@ -686,7 +696,9 @@ runs:
 - **GHES** = GitHub Enterprise Server (self-hosted). No Marketplace by default.
 
 ### Getting github.com actions onto GHES
-- **GitHub Connect** = **AUTO** access to github.com actions. Needs **outbound** to github.com from **both the instance AND the runners** (no inbound). No outbound ⇒ `actions-sync` only.
+- **GitHub Connect** = **AUTO** access to github.com actions.
+  - Needs **outbound** to github.com from **both the instance AND the runners** (no inbound).
+  - No outbound ⇒ `actions-sync` only.
 - **`actions-sync`** = **MANUAL** copy (air-gapped scenario).
 - Neither is enabled by default.
 - ⚠️ **Security:** the first use of a github.com action **retires that org/repo namespace locally** (blocks a MITM via a look-alike local repo); a Site admin unretires via Site admin.
@@ -703,7 +715,9 @@ runs:
 ### GHCR behavior
 - **Public GHCR images pull anonymously** — the only GitHub Packages registry that allows it; the others (npm, NuGet, Maven, RubyGems) need auth even for public packages.
 - **New packages default to private.**
-- Repo↔package link: a **workflow push auto-links**; a **CLI push** needs `LABEL org.opencontainers.image.source=<repo-URL>` in the Dockerfile.
+- Repo↔package link:
+  - a **workflow push auto-links**.
+  - a **CLI push** needs `LABEL org.opencontainers.image.source=<repo-URL>` in the Dockerfile.
 
 ### Events
 - `registry_package` event only **reacts to** a publish (types `published` / `updated`) — it does not perform the publish.
@@ -737,14 +751,14 @@ runs:
 - **Untrusted sources:** issue/PR `title`, `body`, **branch/ref names** (`head_ref`), **email addresses**, `label`, `message`, `name`. Branch-name PoC: `zzz";echo${IFS}"hello";#`.
 - **Defense-in-depth:** least-privilege `permissions:`, input validation, vetted/SHA-pinned actions, CodeQL / Scorecards.
 
-### Bit 1b — `pull_request` vs `pull_request_target` (security)
+### `pull_request` vs `pull_request_target` (security)
 - `pull_request` = **merge-commit context**, **no fork secrets**, blocked by a merge conflict → **SAFE** for running PR code. Fork `pull_request` token is **read-only** (nothing to steal — that's why running fork code is safe).
 - ⚠️ `pull_request_target` = **base-branch context**, **full secrets (incl. on fork PRs)**, not blocked by conflict, **auto-runs** (no first-timer approval), runs the **base-branch** workflow (checks out base by default) → **DANGEROUS** for untrusted PR code ("pwn request").
 - ⚠️ **The vuln is not the checkout — it's *executing* the checked-out fork code** inside the privileged job that already holds secrets + a write token.
 - **Safe pattern** when you must build untrusted code AND use secrets: unprivileged `pull_request` builds → uploads an **artifact** → privileged `workflow_run` consumes it (treat the artifact as **untrusted data**).
 - Recency: `actions/checkout` v7 now **blocks** fork head/merge checkout in these privileged events (`allow-unsafe-pr-checkout` opt-out).
 
-### Bit 2 — `GITHUB_TOKEN` vs PAT (5.4)
+### `GITHUB_TOKEN` vs PAT (5.4)
 - **What it is:** a **GitHub App installation token**, minted **per job**, auto-injected, never stored. Read via `secrets.GITHUB_TOKEN` or `github.token`. NOT user-bound (that's why it's safer than a PAT).
 - **Three traits:** ephemeral (dies at job end) · repo-scoped (can't reach other repos) · permission-tunable.
 - **Lifetime cap:** 6h hosted · self-hosted refreshable only to 24h.
@@ -755,7 +769,7 @@ runs:
     - `workflow_run` fires off another workflow **completing** (a lifecycle event, not a token-emitted one), so it runs normally — the standard way to **chain** off a run the guard would otherwise suppress.
 - **PATs:** fine-grained (recommended, repo-restrictable) > classic (every repo the user can access). Flaw = user-bound + long-lived.
 
-### Bit 3 — GitHub Apps & the token-lifetime ladder
+### GitHub Apps & the token-lifetime ladder
 - A **GitHub App** authenticates to a repo/org as an *installation* via a short-lived **installation access token** (not tied to any user). `GITHUB_TOKEN` is the special case: the installation token for the App that Actions auto-installs (per-job, repo-scoped).
 - For your **own** automation needing cross-repo reach or to trigger downstream workflows: register a GitHub App, install it, and mint a token in-workflow with **`actions/create-github-app-token`** — usable immediately in that run. Prefer it over a PAT (short-lived, not user-bound).
 - **Token-lifetime ladder:**
@@ -780,16 +794,16 @@ runs:
 - ⚠️ **`sub` precedence: environment > pull_request > branch/tag.** A job referencing an environment gets `:environment:NAME` even on a PR trigger. No composite form. A condition for `:ref:refs/heads/main` breaks the moment a job declares an environment.
 - ⚠️ **PR job referencing `production` → `sub` matches `:environment:production`.** The cloud condition does NOT stop it — **environment protection rules** (GitHub-side, before token issue) do. Scope-to-environment + protection-rules are a **pair**.
 - ⚠️ **`StringEquals` + `*` fails CLOSED.** `*` is literal under `StringEquals` → matches nothing → too-restrictive bug, not exposure. Danger appears under `StringLike` (wildcard expands). Distinguish too-restrictive (broken) from too-permissive (hole).
-- ⚠️ **Immutable subject claims ≠ immutable releases (3A).** Same word, unrelated feature.
+- ⚠️ **Immutable subject claims ≠ immutable releases.** Same word, unrelated feature.
 
-### Bit 1 — Concept & flow
+### Concept & flow
 - **Why:** swap a **long-lived stored cloud secret** for a **short-lived token fetched at runtime**. Nothing durable in GitHub.
 - **Flow:** job (with `id-token: write`) → request token mints a **signed JWT** from `https://token.actions.githubusercontent.com` → JWT sent to cloud → cloud validates against its trust policy → returns **short-lived, job-scoped** cloud creds.
 - **Acceptance = asymmetric crypto.** GitHub signs with a private key (RS256); cloud verifies with GitHub's **public** keys (JWKS via `.well-known/openid-configuration`). No shared secret. Trust anchored by one-time provider registration (issuer URL).
 - **Scope:** trust policy = *who may assume the role*; role permission policy = *what it can do*. GitHub's only levers = `id-token: write` + the identity claims.
 - **Mechanics:** the cloud's official login action (`aws-actions/configure-aws-credentials`, `azure/login`, `google-github-actions/auth`), or a manual fetch via `ACTIONS_ID_TOKEN_REQUEST_URL` + `ACTIONS_ID_TOKEN_REQUEST_TOKEN` (`getIDToken()` helper).
 
-### Bit 2 — Trust config & claims
+### Trust config & claims
 - **`sub` format:** `repo:<owner>/<repo>:<ref-type>:<ref>`. Forms: `ref:refs/heads/<branch>`, `ref:refs/tags/<tag>`, `environment:<name>`, `pull_request`.
 - ⚠️ **`pull_request` sub is stable, no PR number** → conditioning on it trusts ALL PRs incl. forks. Never for production.
 - **`aud`:** defaults to the owner URL; cloud actions set it (AWS `sts.amazonaws.com`). Condition on `aud` AND `sub`.
@@ -807,25 +821,29 @@ runs:
   - customize the `sub` template via REST (`include_claim_keys`)
   - condition on `repository_id`, `repository_visibility`, `repo_property_*`
   - `job_workflow_ref` for reusable workflows
-- ⚠️ **Immutable subject claims:** repos created after **2026-07-15** default to a `sub` with owner_id + repo_id → `repo:org@123456/repo@456789:...` (anti namespace-recycling). Old repos opt in (settings UI / REST). **Not** on GHES. The trust policy must match the repo's actual format.
+- ⚠️ **Immutable subject claims:**
+  - repos created after **2026-07-15** default to a `sub` carrying owner_id + repo_id → `repo:org@123456/repo@456789:...` (anti namespace-recycling).
+  - older repos opt in (settings UI / REST).
+  - **Not** available on GHES.
+  - the trust policy must match the repo's actual `sub` format.
 
 
 ---
 
 ## Topic 5C — Action Enforcement Policies & Build Provenance
 
-> 5C = **enforcement** (Bit 1) + **provenance proof** (Bit 2). NOT a re-teach of 3A concepts.
+> 5C covers **enforcement** + **provenance proof**.
 
 ### ⚠️ THE BIG ONE — "artifact" is two unrelated features (the exam won't name the domain)
 
 | Verbs in the question | It's… | Domain |
 |---|---|---|
-| `upload-artifact`/`download-artifact`, "between jobs," "retention," "90 days" | **workflow artifact** | 1 (Topic 1E) |
+| `upload-artifact`/`download-artifact`, "between jobs," "retention," "90 days" | **workflow artifact** | 1 |
 | `attest`, "provenance," "Sigstore," "`gh attestation verify`," "SLSA," "verify before deploy" | **build output under an attestation** | 5 (5.8) |
 
 Same word, unrelated mechanics. Read the verbs, not the noun.
 
-### Bit 1 — enforcement keepers
+### Enforcement keepers
 - **Override direction:** enterprise → org → repo. A lower level can only **tighten**, never loosen.
 - **Section labels differ by scope** (concept identical; recognize, don't memorize):
   - repo = "Actions permissions"
@@ -851,11 +869,14 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - self-review can be prevented
   - teams allowed
 - ⚠️ **Environment protection + environment secrets only activate when a job sets `environment:`** — selecting an environment via a `workflow_dispatch` `environment` **input** is just a picker; it does NOT apply protection rules or expose environment secrets.
-- **Immutable actions:** **consuming = live/transparent** (OCI packages from GitHub Packages, host `pkg.actions.githubusercontent.com` under `*.actions.githubusercontent.com`). **Publishing your own = ⚠️ not confidently GA** (README "not for public use" vs roadmap "GA"). Verify on a practice exam.
+- **Immutable actions** (a published action version's bytes are frozen — a tag can't be re-pointed after release):
+  - **Consuming = automatic + transparent** — nothing to enable; GitHub serves them as OCI packages from GitHub Packages.
+    - Firewall/allowlist note: host is `pkg.actions.githubusercontent.com` (under the `*.actions.githubusercontent.com` wildcard).
+  - **Publishing your own = ⚠️ GA status unclear** — GitHub's README said "not for public use" while the roadmap said "GA." Treat publish-side availability as unverified; confirm on a practice exam.
 
-### Bit 2 — attestation keepers
+### Attestation keepers
 - **Attestation = a signed claim binding SUBJECT (name + SHA-256 digest) → PREDICATE (provenance facts) in in-toto format.** Digest = hash of the actual bytes.
-- **3 permissions to generate:** `id-token: write` (OIDC signing identity — the 5B tie-in, NOT for deploy), `contents: read`, `attestations: write`. (+ `packages: write` for container images.)
+- **3 permissions to generate:** `id-token: write` (OIDC signing identity, NOT for deploy), `contents: read`, `attestations: write`. (+ `packages: write` for container images.)
 - **Action naming:** `actions/attest-build-provenance` (historic) is, as of v4, a **wrapper around `actions/attest`**. New code → `actions/attest@v4`. **Recognize BOTH names.** `@v1` in old material = drift, not wrong.
 - **Keyless signing via Sigstore:** public repo → **Public Good** instance (has a transparency log); private/internal → GitHub **private** Sigstore (no transparency log, federates only with Actions).
 - **Generating alone = no security benefit. Value only on verification** (`gh attestation verify`, needs `--owner` OR `--repo`).
@@ -863,11 +884,11 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - SBOM → must pass `--predicate-type` (else it verifies provenance, not the SBOM).
   - `--signer-workflow` / `--signer-repo` → require a *specific* signing workflow/repo.
   - Verify **prints every policy it evaluated** (pass/fail transparency; Feb-2025 change).
-- ⚠️ **CHECK ORDER (Q2 keeper):** verify runs **bytes → signature → identity**.
+- ⚠️ **CHECK ORDER:** verify runs **bytes digest (via SHA-256) → signature (cert public key) → identity of the issuer**.
   - A **plain file-swap fails at step 1 (digest/bytes lookup)** — the swapped bytes hash to a different digest, so **no attestation exists for them**, before any signature is examined.
   - The **signature check** defeats a **forged/invalid attestation that has a matching digest**.
   - The **identity check** rejects a validly-signed output from a *different* owner/repo than you demanded.
-  - The exam can split these: "what catches a swapped artifact?" (bytes) vs "what catches a forged attestation?" (signature).
+  - The exam can split these: "what catches a swapped artifact?" (bytes digest / SHA-256) vs "what catches a forged attestation?" (signature).
 - ⚠️ **MONOTONIC — state it precisely:** verify passes when **≥1 attestation satisfies the SPECIFIC CLAIMS YOU ASKED TO VERIFY** (`--owner`/`--repo` + `--signer-workflow`/`--predicate-type` if given) — NOT the generic "an attestation passes." Junk/non-matching attestations are **inert** (can't substitute, can't veto). Monotonic = once it passes, later additions can't flip it to fail (anti-DOS).
   - **Looseness lives in YOUR query:** `--owner acme` only proves "*someone* in acme signed it," not "`release.yml` did." Tighten with `--repo`/`--signer-workflow`. **Owner ≠ workflow.**
   - Verifying provenance ≠ verifying SBOM (different predicate).
@@ -886,7 +907,7 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 
 > 5D = cost/limits/optimization (5.10) + retention/storage (5.9).
 
-### Cost model (Bit 1)
+### Cost model
 - **Billed = round-up(minutes) × OS-multiplier.** Round each job **UP to the whole minute** (1s and 59s both = 1 min).
 - **OS multiplier: Linux 1× · Windows 2× · macOS 10×.** A macOS 10-min job = 100 min. Move to Linux = the biggest lever.
 - **Public repos + self-hosted runners = FREE** (no billable minutes). 10× only bites on **private** (or larger runners, never free even on public).
@@ -895,9 +916,13 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - **free while idle**
   - static IP no extra cost
   - included free minutes can't be used on them
-- ⚠️ **Job limit = 6 hours** (killed if exceeded). The **default `timeout-minutes` = 360** (i.e. that same 6 h ceiling) — set it lower so a hung job doesn't run to the cap. Concurrency capped per plan (Free→Enterprise). Matrix cap commonly cited **256**. `schedule:` ≥ 5-min spacing, can be delayed/dropped.
+- ⚠️ **Job limit = 6 hours** (killed if exceeded).
+  - Default **`timeout-minutes` = 360** (that same 6 h ceiling) — set it lower so a hung job doesn't run to the cap.
+  - Concurrency capped per plan (Free → Enterprise).
+  - Matrix cap commonly cited as **256** jobs.
+  - `schedule:` needs ≥ 5-min spacing and can be delayed/dropped.
 
-### Optimization levers (Bit 1)
+### Optimization levers
 - ⚠️ **Parallelization cuts TIME, not billed minutes — and can INCREASE them.** Minutes are summed across jobs; a split adds per-job setup + per-job round-up. Exam answer: "splitting into a parallel matrix reduces wall-clock, NOT billed minutes, and may raise them."
 - **Real minute-savers:**
   - path/branch filters + `if:` — run less.
@@ -905,10 +930,10 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
   - **`timeout-minutes`** — else a hung job runs to the 6h ceiling.
   - right-sizing — bigger ≠ cheaper (4× rate for 1.67× speed = net loss).
   - **`needs:` fast-fail gate** — a cheap lint job gates the expensive job → failure stops the run before costly work = where the dependency graph actually saves minutes.
-- **cache vs artifact (1E):** cache = deps/build-accel, **7-day default**, 10 GB LRU; artifact = results, **90-day default**. Don't swap their roles.
+- **cache vs artifact:** cache = deps/build-accel, **7-day default**, 10 GB LRU; artifact = results, **90-day default**. Don't swap their roles.
 - ⚠️ **Usage metrics show RAW minutes (NO multiplier applied)** → the dashboard number ≠ the bill. Metrics = "where minutes go"; the billing page / spending limits = actual cost.
 
-### Retention & storage (Bit 2)
+### Retention & storage
 - **Defaults:**
   - artifact/log = **90 days**
   - cache = **7 days**
