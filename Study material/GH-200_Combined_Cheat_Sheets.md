@@ -31,9 +31,10 @@ preserved throughout.*
 - [Topic 1C — Matrix Strategy In Depth](#topic-1c--matrix-strategy-in-depth)
 - [Topic 1D — YAML Anchors, Aliases & Merge Keys](#topic-1d--yaml-anchors-aliases--merge-keys)
 - [Topic 1E — Outputs, Summaries & Retention](#topic-1e--outputs-summaries--retention)
+- [Topic 1F — Concurrency](#topic-1f--concurrency)
 
 **Domain 2 — Troubleshoot**
-- [Topic 2A — Troubleshooting Matrix Runs](#topic-2a--troubleshooting-matrix-runs)
+- [Topic 2A — Re-runs & Attempts](#topic-2a--re-runs--attempts)
 
 **Domain 3 — Consume workflows & actions**
 - [Topic 3A — Immutable Releases & Version Pinning](#topic-3a--immutable-releases--version-pinning)
@@ -129,9 +130,7 @@ preserved throughout.*
   - **nesting depth 10** levels = top-level caller + 9 (raised from 4).
   - No **loops (cycles)** in the call chain — a reusable workflow can't call itself, directly or indirectly.
 - Workflow-level (`workflow_call`) outputs use the **`value:`** key; **job-level outputs do NOT** (`<name>: ${{ steps... }}` directly).
-- **Reusable workflow vs composite action:
-  - Reusable = **job-level** `uses:`, own runner, has a `secrets:` block. 
-  - Composite = a **step** in a job, caller's runner, **no** `secrets:` block (secrets arrive as `with:` or directly in env)
+- **Reusable workflow** = **job-level** `uses:`, its **own runner**, and **has a `secrets:` block**.
 
 ---
 
@@ -265,16 +264,6 @@ preserved throughout.*
 ### Matrix over a whole reusable workflow
 - You CAN parallelize an **entire reusable workflow**: put `strategy.matrix` on a job whose body is `jobs.<id>.uses: <reusable-wf>@ref` → runs that whole reusable workflow once per matrix combo. (Matrix itself is still job-scoped; this is the mechanism.)
 
-### Runner images & -latest (verified June 2026; mappings DRIFT)
-- `-latest` labels **float** — GitHub migrates them to newer OS gradually (~1–2 months) → **non-deterministic over time**. **Pin** a version label for reproducibility.
-- Current `-latest` mappings:
-  - `ubuntu-latest` → **Ubuntu 24.04**
-  - `windows-latest` → **Windows Server 2025** (same as `windows-2025`)
-  - `macos-latest` → **macOS 15 Arm64** (gotcha: Apple silicon)
-- **Ubuntu 20.04 retired** (unsupported since **2025-04-01**) → `runs-on: ubuntu-20.04` **fails**.
-- ⚠️ **Pinning stops silent migration, NOT deprecation** — a pinned old label still dies when the image is retired.
-- (Newer, likely post-exam: `ubuntu-26.04` = public preview; `windows-latest` moving to "Server 2025 + VS 2026" toolset, June 2026.)
-
 ### Reading matrix job labels
 - Auto-label = `<job_name> (val1, val2, ...)`, values in **matrix-key DECLARATION order**, comma-separated.
 - e.g. `matrix: {arch:[x64,arm64], node:[18,20]}` → `arch=arm64,node=18` shows as `build (arm64, 18)`.
@@ -285,19 +274,6 @@ preserved throughout.*
 - Default `fail-fast: true` → one failed leg **cancels** all other in-progress/queued legs.
 - Cancelled legs are **collateral**, true result UNKNOWN — the culprit is the leg that actually FAILED.
 - `fail-fast: false` + re-run = clean per-variant pass/fail map (is the failure one combo or broad?).
-
-### Concurrency (NOT a matrix key, lives on `workflow:` or `job:`)
-- **Purpose:** at most **one** thing per **group** runs at a time. A `group` is just a **resolved string** — same string = contend, different string = independent. 
-  - Grouping cares **only** about the string, not workflow identity, branch, or level.
-- **Two levels** (same mechanic, different unit):
-  - **Workflow-level** (top of file) → groups whole **workflow RUNS**. Typical: cancel stale CI → `group: ${{ github.workflow }}-${{ github.ref }}` + `cancel-in-progress: true`.
-  - **Job-level** (under a job) → groups a single **JOB**; other jobs unaffected. Typical: serialize deploys → `group: production-deploy` + `cancel-in-progress: false`.
-- **Capacity per group = 1 running + 1 pending** (2 max). A **3rd** arrival:
-  - `cancel-in-progress: false` (default) → **oldest PENDING is cancelled**, newest takes the pending slot; the **running one finishes** untouched (newest-wins queue, never grows past 1).
-  - `cancel-in-progress: true` → the **RUNNING one is cancelled**, newest takes over.
-- ⚠️ `concurrency` ≠ `max-parallel`: concurrency caps runs/jobs **in a named group** (cross-run); `max-parallel` throttles **matrix legs within one run**.
-- ⚠️ On a **matrix job**, a **static** `group` string is shared by **all combos** → they serialize/cancel each other. Bake matrix values into the key (e.g.: `group: build-${{ matrix.os }}`) to keep combos independent.
-
 
 ---
 
@@ -363,40 +339,39 @@ preserved throughout.*
 - ⚠️ **Cache scope is a HARD isolation boundary:** a run can read caches from its **own branch + the default branch (+ PR base)**; **sibling branches are isolated**. Default-branch caches are shared to all.
 - **Artifact scope defaults to the RUN** — but that's a **SOFT** default, not a wall. With `actions: read` + `run-id` (+ optional `repository`), `download-artifact` v4+ pulls artifacts from **other runs and repos**.
 
-### Retention numbers ⚠️ TWO DIFFERENT SETS (easy to confuse)
-
-| | Default | Public cap | Private/internal cap |
-|---|---|---|---|
-| **Artifacts / logs** | 90 days | ≤ 90 | ≤ 400 (range 1–400) |
-| **Cache** | 7 days | ≤ 90 | ≤ 365 |
-
-- **Cache size cap:** 10 GB/repo default, **LRU eviction** over the limit.
-- ⚠️ **Understand *why*:** cache = disposable/churns fast + size-capped LRU; artifact = retrievable results. Don't memorize in isolation.
-- ⚠️ **A retention-period change is NOT retroactive** — it applies to **NEW objects only**; existing artifacts keep their original lifespan (by design). To reclaim now → delete explicitly.
-- Per-artifact override: `retention-days:` on `upload-artifact` (capped by repo/org/enterprise max). `compression-level: 0–9`.
+### Artifact tooling & deletion via REST API
 - `upload-artifact@v4` / `download-artifact@v4` current; **v3 deprecated & stopped working**. (v4: artifact names must be unique within a run.)
 - **No official `actions/delete-artifact` action** — delete via REST API, delete the run, or the per-artifact UI.
-
-### Retention & deletion via REST API (verified)
 ```
 GET    /repos/{o}/{r}/actions/artifacts                  # list repo artifacts
 GET    /repos/{o}/{r}/actions/runs/{run_id}/artifacts    # list a run's artifacts
-DELETE /repos/{o}/{r}/actions/artifacts/{artifact_id}    # delete one  <- retention workhorse
+DELETE /repos/{o}/{r}/actions/artifacts/{artifact_id}    # delete one  <- deletion workhorse
 GET    /repos/{o}/{r}/actions/artifacts/{id}/{format}    # download (format=zip; URL expires in 1 MIN)
 DELETE /repos/{o}/{r}/actions/runs/{run_id}              # delete a whole run
 ```
-- "Enforce retention" programmatically
-  - `retention-days` (declarative)
-  - list via GET + DELETE, on a schedule
-  - caches instead use `gh cache delete`
-- ⚠️ **There is NO confirmed REST endpoint to SET the retention period.** `PUT .../actions/retention` is **UNVERIFIED / likely not official** — do NOT trust it. Default-retention config is UI/org-policy. REST does **get / list / delete** only.
-- ⚠️ **Quota recalculation lags** (commonly 6–24h). A "storage quota exceeded" error can persist *after* a successful delete — the deletion didn't fail; just wait + lower retention going forward.
+- Programmatic cleanup: list via GET + DELETE on a schedule; caches instead use `gh cache delete`.
 
 ### VS Code GitHub Actions extension (`GitHub.vscode-github-actions`)
 - Two halves: (1) **authoring** — schema validation + completion, incl. smart checks of job/step references and event-payload validation from `on:`; (2) **run management** — view/cancel/re-run/trigger runs, drill runs→jobs→steps, view logs.
 - ⚠️ **No remote repos** — github.dev / vscode.dev unsupported; use a local clone. GHES support = experimental beta.
 - NOT the same as "GitHub Local Actions" (third-party, runs workflows locally via `act`).
 
+
+---
+
+## Topic 1F — Concurrency
+
+### Concurrency (NOT a matrix key, lives on `workflow:` or `job:`)
+- **Purpose:** at most **one** thing per **group** runs at a time. A `group` is just a **resolved string** — same string = contend, different string = independent.
+  - Grouping cares **only** about the string, not workflow identity, branch, or level.
+- **Two levels** (same mechanic, different unit):
+  - **Workflow-level** (top of file) → groups whole **workflow RUNS**. Typical: cancel stale CI → `group: ${{ github.workflow }}-${{ github.ref }}` + `cancel-in-progress: true`.
+  - **Job-level** (under a job) → groups a single **JOB**; other jobs unaffected. Typical: serialize deploys → `group: production-deploy` + `cancel-in-progress: false`.
+- **Capacity per group = 1 running + 1 pending** (2 max). A **3rd** arrival:
+  - `cancel-in-progress: false` (default) → **oldest PENDING is cancelled**, newest takes the pending slot; the **running one finishes** untouched (newest-wins queue, never grows past 1).
+  - `cancel-in-progress: true` → the **RUNNING one is cancelled**, newest takes over.
+- ⚠️ `concurrency` ≠ `max-parallel`: concurrency caps runs/jobs **in a named group** (cross-run); `max-parallel` throttles **matrix legs within one run**.
+- ⚠️ On a **matrix job**, a **static** `group` string is shared by **all combos** → they serialize/cancel each other. Bake matrix values into the key (e.g.: `group: build-${{ matrix.os }}`) to keep combos independent.
 
 ---
 
@@ -561,6 +536,16 @@ Only two controls exist:
   - dedicated runner group for image gen
   - **don't share prod with dev/test** (injection)
   - buildable from **any branch** ⇒ write access = trigger ⇒ least privilege
+
+### Runner images & -latest (verified June 2026; mappings DRIFT)
+- `-latest` labels **float** — GitHub migrates them to newer OS gradually (~1–2 months) → **non-deterministic over time**. **Pin** a version label for reproducibility.
+- Current `-latest` mappings:
+  - `ubuntu-latest` → **Ubuntu 24.04**
+  - `windows-latest` → **Windows Server 2025** (same as `windows-2025`)
+  - `macos-latest` → **macOS 15 Arm64** (gotcha: Apple silicon)
+- **Ubuntu 20.04 retired** (unsupported since **2025-04-01**) → `runs-on: ubuntu-20.04` **fails**.
+- ⚠️ **Pinning stops silent migration, NOT deprecation** — a pinned old label still dies when the image is retired.
+- (Newer, likely post-exam: `ubuntu-26.04` = public preview; `windows-latest` moving to "Server 2025 + VS 2026" toolset, June 2026.)
 
 ### Find the exact software on a runner image
 - **UI path:** run **Log → "Set up job" step → "Runner Image" → "Included Software"** link → full tool+version manifest for that image.
@@ -934,11 +919,15 @@ Same word, unrelated mechanics. Read the verbs, not the noun.
 - ⚠️ **Usage metrics show RAW minutes (NO multiplier applied)** → the dashboard number ≠ the bill. Metrics = "where minutes go"; the billing page / spending limits = actual cost.
 
 ### Retention & storage
-- **Defaults:**
-  - artifact/log = **90 days**
-  - cache = **7 days**
-  - *Understand why:* cache = disposable/churns fast + size-capped LRU; artifact = retrievable results. Don't memorize in isolation.
-- **Range:** artifacts **1–400 days** (private/internal/Enterprise); **public capped at 90**. Cache: public ≤ 90, private/internal ≤ 365.
+- ⚠️ **TWO DIFFERENT SETS** (easy to confuse):
+
+| | Default | Public cap | Private/internal cap |
+|---|---|---|---|
+| **Artifacts / logs** | 90 days | ≤ 90 | ≤ 400 (range 1–400) |
+| **Cache** | 7 days | ≤ 90 | ≤ 365 |
+
+- **Cache size cap:** 10 GB/repo default, **LRU eviction** over the limit.
+- *Understand why:* cache = disposable/churns fast + size-capped LRU; artifact = retrievable results. Don't memorize in isolation.
 - ⚠️ **A period change is NOT retroactive** — it applies to NEW objects only; old artifacts keep their original lifespan (by design, not a bug). To reclaim now → delete explicitly.
 - Per-artifact override: `retention-days:` in `upload-artifact` (capped by repo/org max); `compression-level: 0–9`.
 - ⚠️ **Programmatic retention — precise meaning:** = per-artifact `retention-days` (declarative) + programmatic **deletion** via REST/`gh`. There is **NO confirmed REST endpoint to SET the retention period** (`PUT .../actions/retention` unverified/likely not official). REST does **get / list / delete** only.
