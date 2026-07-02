@@ -18,9 +18,35 @@ import argparse
 import datetime
 import os
 import random
+import re
 import sys
 
 from shuffle_bank import split_blocks, parse_block, render_block
+
+VERIFIED_NOTE_RE = re.compile(r"^> \*\*✅ Verified")
+NOTE_DISCLAIMER = ("> *(Shuffle note: any option letters mentioned above refer to the "
+                   "pre-shuffle order. The verified correct answer itself is unchanged; "
+                   "the remapped **Answer:** line above is authoritative.)*")
+
+
+def add_note_disclaimers(lines):
+    """Append a shuffle disclaimer after each carried-over ✅ Verified note.
+
+    The note prose is never rewritten (letter mentions inside free text can't
+    be remapped safely); instead the disclaimer is added as an extra line at
+    the end of the note's blockquote.
+    """
+    out = []
+    i = 0
+    while i < len(lines):
+        out.append(lines[i])
+        if VERIFIED_NOTE_RE.match(lines[i]):
+            while i + 1 < len(lines) and lines[i + 1].startswith(">"):
+                i += 1
+                out.append(lines[i])
+            out.append(NOTE_DISCLAIMER)
+        i += 1
+    return out
 
 
 def main():
@@ -46,7 +72,8 @@ def main():
     out.extend([
         f"> **🔀 Shuffled {today}** — option order randomized per question "
         f"(`shuffle_all.py`, seed {seed}) and answer keys remapped accordingly. "
-        "Prose notes may still reference pre-shuffle option letters.",
+        "Carried-over verification notes keep their original prose (which may "
+        "reference pre-shuffle letters); a shuffle disclaimer is appended to each.",
         "",
     ])
 
@@ -56,7 +83,7 @@ def main():
         order = list(range(len(q["options"])))
         rng.shuffle(order)
         lines, old_to_new = render_block(q, order)
-        out.extend(lines)
+        out.extend(add_note_disclaimers(lines))
         new_first = sorted(old_to_new[letter] for letter in q["marked"])[0]
         first_letter_counts[new_first] = first_letter_counts.get(new_first, 0) + 1
 
