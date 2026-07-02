@@ -10,6 +10,9 @@
 > **Questions with no source docs link:** Q009, Q052, Q072.
 > **Answer letters (A/B/C…)** were assigned by this capture in the source file's option order; the source itself has no letters, only `[x]`/`[ ]` checkboxes.
 
+> **✅ Currency-verification pass (COMPLETE):** run **2026-07-02**, covering all **178** questions (Q001–Q179; Q157 absent). Each question was reviewed individually; any question carrying a version- or currency-sensitive claim is checked live against `docs.github.com` and gets a dated `> **Verified …**` note appended after its `Docs:` line. Questions resting on settled, stable behaviour get **no** note — *absence of a note means reviewed with nothing to flag.* Notes are **additive only**: no question, option, or marked answer is ever altered; a disputed key is flagged in a note, never changed. Re-run the pass if using this bank more than a few months after the latest date below.
+> **Result (as of 2026-07-02):** every marked answer was confirmed still correct — **no answer key was found wrong**. **8** questions carried a version-/currency-sensitive claim and were live-checked against `docs.github.com`, each with a dated note appended: **Q001** (reusable-workflow token can only downgrade), **Q004** (Actions free for public repos on *standard* runners), **Q021** (`workflow_dispatch` input types incl. `number`), **Q044** (cross-run artifact download is v4+), **Q076** (reusable-workflow call limit — now **50** on GitHub.com, still **20** on GHES/EC), **Q090** (360-min default job timeout), **Q116** (delete run: "completed **or** >2 weeks", not a 14-day wait), **Q117** (admins bypass protection rules by default). The single most movement-prone value is **Q076**. All other questions rest on stable behaviour. Re-run this pass if using the bank more than a few months after this date.
+
 ---
 
 ## Q001
@@ -23,6 +26,8 @@ Which statement is correct regarding passing permissions to reusable workflows?
 
 **Answer:** A  ·  *single*
 **Docs:** https://docs.github.com/en/actions/using-workflows/reusing-workflows#access-and-permissions
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Reuse workflows; Reusing workflow configurations). A caller's `GITHUB_TOKEN` permissions can only be **downgraded** (never elevated) by the called workflow; in nested chains they can only be maintained or reduced. Marked answer **A** stands.
 
 ---
 
@@ -63,6 +68,8 @@ Are GitHub Actions free for public repositories?
 
 **Answer:** A  ·  *single*
 **Docs:** https://docs.github.com/en/billing/concepts/product-billing/github-actions#how-use-of-github-actions-is-measured
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (GitHub Actions billing): usage is free for **standard** GitHub-hosted runners in public repositories (and for self-hosted runners). Marked answer **A** stands. Caveat that makes A correct: *larger* runners are always billed, even in public repos — so "free" holds only for **standard** runners. The Jan 1 2026 pricing changes (hosted-runner rate cuts + a $0.002/min platform charge) do **not** affect public-repo standard-runner usage; it remains free.
 
 ---
 
@@ -355,6 +362,8 @@ What are the possible types of an input variable for a manually triggered workfl
 
 **Answer:** A, B, C, D, E  ·  *multi-select (5 correct)*
 **Docs:** https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputsinput_idtype
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Workflow syntax → `on.workflow_dispatch.inputs.<input_id>.type`): the type must be one of **boolean, choice, number, environment, string** — the five marked (A–E). `number` **is** valid for `workflow_dispatch` today, but this was historically ambiguous (some older doc revisions omitted it), so a stale source may list only four types — watch for that trap. `dropdown` (F) and `select` (G) are not real types. Marked answer **A, B, C, D, E** stands.
 
 ---
 
@@ -797,6 +806,8 @@ To access an `artifact` that was created in another, previously triggered workfl
 
 **Answer:** B  ·  *single*
 **Docs:** https://github.com/actions/download-artifact?tab=readme-ov-file#download-artifacts-from-other-workflow-runs-or-repositories
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Store and share data with workflow artifacts) and the `actions/download-artifact` README: to fetch an artifact from a *different* workflow run you supply a `github-token` scoped `actions: read` plus a `run-id` (and `repository` for cross-repo). The README describes this precisely as *elevating* the default (current-run-only) permissions, so B's "with elevated permissions" is accurate wording. Marked answer **B** stands. **Currency caveat:** this is a **v4+ capability** (introduced Jan 2024; the action is now v5, README shows up to v8). Before v4, option A ("you cannot access artifacts from a different workflow run") was true — so pre-2024 material will contradict this. No token is needed for the current run or its own previous attempts.
 
 ---
 
@@ -1343,6 +1354,8 @@ What's the maximum amount of reusable workflows that can be called from a single
 **Answer:** E  ·  *single*
 **Docs:** https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations#limitations-of-reusable-workflows
 
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Reusing workflow configurations → Limitations): on **GitHub.com the limit is now 50** unique reusable workflows per single workflow file (counting nested trees; e.g. caller → A → B counts as 2). Marked answer **E (50)** stands. **Currency/tier caveat — important:** this limit was **raised from 20 → 50** on GitHub.com. **GitHub Enterprise Server** (every version through 3.21) *and* the **Enterprise Cloud** docs still state **20**. Most older GH-200 material says 20 — treat **50** as the current GitHub.com value, but expect **20** in stale sources and in any GHES context. (Nesting depth remains capped at **4** levels — unchanged.)
+
 ---
 
 ## Q077
@@ -1567,6 +1580,8 @@ What is the default timeout for a GitHub Actions job?
 
 **Answer:** D  ·  *single*
 **Docs:** https://docs.github.com/en/actions/reference/limits#existing-system-limits
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Actions limits) plus corroborating sources: the default job timeout on GitHub-hosted runners is **360 minutes (6 hours)**, stable since launch. On hosted runners this is also the hard ceiling — `timeout-minutes` can only *lower* it; self-hosted runners aren't bound by this 6-hour cap. Marked answer **D (360)** stands.
 
 ---
 
@@ -2048,6 +2063,8 @@ When can you delete workflow runs?
 **Answer:** A  ·  *single*
 **Docs:** https://docs.github.com/en/actions/how-tos/manage-workflow-runs/delete-a-workflow-run
 
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Deleting a workflow run): *"You can delete a workflow run that has been **completed, or is more than two weeks old**."* A *completed* run can therefore be deleted with no age requirement — marked answer **A** stands. Note the exact wording: "completed" and "more than two weeks old" are **alternative** conditions joined by *or*, **not** a 14-day prerequisite; the contributor note above misreads it as a required wait. (Write access required.)
+
 ---
 
 ## Q117
@@ -2060,6 +2077,8 @@ Who can bypass configured deployment protection rules to force deployment (by de
 
 **Answer:** A  ·  *single*
 **Docs:** https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#allow-administrators-to-bypass-configured-protection-rules
+
+> **✅ Verified 2026-07-02** — Confirmed current on `docs.github.com` (Deployments and environments): *"By default, administrators can bypass the protection rules and force deployments."* Marked answer **A** stands. Caveats: it can be turned off per environment ("disallow bypassing the protection rules"), and the *allow-admins-to-bypass* capability is limited to **public** repositories on Free/Pro/Team plans (private repos need Enterprise). Write or read permission alone never grants bypass — only admins.
 
 ---
 
