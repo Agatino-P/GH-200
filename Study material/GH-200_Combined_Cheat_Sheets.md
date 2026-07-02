@@ -622,10 +622,9 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
   - **enterprise** = many orgs
 - Validate connectivity with the runner app's `config.sh` / `run.sh --check`; connectivity logs live in the runner's `_diag` folder.
 
-<!-- IMPORTANT Here -->
 ### ⚠️ Groups = access control; Labels = routing (don't merge them)
 - **Runner GROUPS = access control** — *which repos/orgs may use these runners*.
-  - Org/enterprise only.
+  - Org/Enterprise only.
   - Every org has a **default** group (unspecified at registration → default).
   - Access policy defaults to **private repos only** (overridable).
 - **Labels = routing** — `runs-on` matches **cumulatively (must have ALL labels — AND)**.
@@ -646,9 +645,9 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
 ### action.yml metadata
 - Custom-action metadata always lives in **`action.yml` / `action.yaml`** (required even for a private action).
 - **Required keys:** `name` + `description` + `runs`.
-- `description` is **required** in `action.yml` inputs (contrast: not required in `workflow_dispatch` inputs).
+- ⚠️ **Inputs**: `description` is **required** in `action.yml` inputs (contrast: **optional** in reausable workflow inputs — both `workflow_dispatch` and `workflow_call`).
 
-### Composite vs reusable (the distinction)
+### Composite Actions vs Reusable workflows (the distinction)
 - **Composite action:**
   - a **step** in a job
   - runs on the **caller's runner**
@@ -659,13 +658,24 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
   - **has a `secrets:` block**
 
 ### Cleanup hooks
-- **JavaScript action** → `runs.post`.
+- A **cleanup hook** runs **after the job finishes** (success *or* failure) to undo what the action set up — stop a service, delete temp creds, close a tunnel.
+- **JavaScript action** → `runs.post` (+ optional `runs.post-if` condition; default `always()`).
 - **Docker container action** → `runs.post-entrypoint`.
+- Runs even if a later step fails, so it's the safe place for teardown.
+
+```yaml
+# JavaScript action
+runs:
+  using: 'node20'
+  main: 'index.js'      # setup + main work
+  post: 'cleanup.js'    # auto-runs at end of job
+  post-if: 'success()'  # optional: only clean up on success
+```
+
 - *(Distinct from self-hosted **runner** hooks `ACTIONS_RUNNER_HOOK_JOB_STARTED`/`_COMPLETED` in 4B.)*
 
-### Checkout
+### Need to load content first - Checkout
 - ⚠️ **No `actions/checkout` ⇒ empty workspace** (repo files absent). Most action/build steps need it first.
-
 
 ---
 
@@ -681,10 +691,9 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
 - Neither is enabled by default.
 - ⚠️ **Security:** the first use of a github.com action **retires that org/repo namespace locally** (blocks a MITM via a look-alike local repo); a Site admin unretires via Site admin.
 
-
 ---
 
-## Topic 4G — Packages & GHCR Publishing
+## Topic 4G — Packages & GHCR (GitHub Container Registry) Publishing
 
 ### Permissions & scopes
 - ⚠️ **`GITHUB_TOKEN` default = read-only for packages → add `packages: write`** to push.
@@ -692,14 +701,14 @@ Combined **org+repo** variables = **256 KB / workflow run** (GitHub.com/GHEC; **
 - PAT (classic) package scopes: `read:packages` / `write:packages` / `delete:packages` (+ `repo` for private).
 
 ### GHCR behavior
-- **Public GHCR images pull anonymously** (other registries need auth even when public).
+- **Public GHCR images pull anonymously** — the only GitHub Packages registry that allows it; the others (npm, NuGet, Maven, RubyGems) need auth even for public packages.
 - **New packages default to private.**
 - Repo↔package link: a **workflow push auto-links**; a **CLI push** needs `LABEL org.opencontainers.image.source=<repo-URL>` in the Dockerfile.
 
 ### Events
 - `registry_package` event only **reacts to** a publish (types `published` / `updated`) — it does not perform the publish.
 
-
+<!-- IMPORTANT Here -->
 ---
 
 ## Topic 5A — Untrusted Input & Token Hardening
