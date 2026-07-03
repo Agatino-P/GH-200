@@ -34,6 +34,9 @@ The teaching/remediation phase is complete (all five domains, 14 recaps + 14 che
 - `GH-200_Coverage_Map.md` and `GH-200_Study_Protocol_and_Progress.md` — objective list + teaching-phase record (for cross-referencing a miss back to where it was taught).
 
 ## 4. Testing protocol (how we run the phase)
+
+**▶ Tooling (added 2026-07-03):** §4.10–§4.17 are now script-enforced — session generation, letter-vs-letter grading, and durable logging all run through `Practice/QUIZ-PROTOCOL.md`. Follow that recipe for every quiz session; results land in `Practice/attempts.jsonl`.
+
 1. **Drill the verified GHCertified bank as the primary diagnostic** (already captured + fully verified). (The Tutorials Dojo sampler was trialed and **retired 2026-06-29** — see §6.) Any unofficial bank's keys are treated skeptically and verified against `docs.github.com` before trusting them (GHCertified is already done).
 2. **For drilling, work from the verified bank file directly** (no capture needed — GHCertified is already captured + verified). If a *new external* assessment is ever run, capture its questions-with-options and results into dated `.md` files and verify keys against `docs.github.com` before trusting them.
 3. **Score and break down by section/domain.** Note small-n sections (a "50%" on a 2-item section is one miss — don't over-read).

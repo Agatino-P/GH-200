@@ -49,6 +49,6 @@ python3 shuffle_bank.py gh-200-ghcertified-bank-full-2026-06-24.md --check
 - 2026-07-02 — 10-question sample (seed 42) verified by an independent agent: stems, option multisets, resolved correct-answer texts, type suffixes, and Docs lines all match; option order changed in 10/10.
 - 2026-07-02 — full-bank output (seed 20260702) verified with the same per-question criteria: 178/178 PASS.
 
-## Next step (planned)
+## Next step (done 2026-07-03)
 
-An automated process, invoked from Claude Code, that uses these scripts to prepare fresh practice question sets from the bank. Not yet defined.
+Built as the quiz tooling in this directory: `make_session.py` (imports this library to prepare fresh, answer-free question sets), `log_answer.py`, `report.py`. Session recipe: `QUIZ-PROTOCOL.md`.

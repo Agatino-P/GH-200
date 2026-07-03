@@ -1,0 +1,60 @@
+# GH-200 Quiz Protocol (session recipe)
+
+Scripts live in `Practice/`; run with `python3` from there. `attempts.jsonl` is the append-only system of record — never edit it by hand. The answer key lives only in each session's `manifest.json`, written at generation time and read only by `log_answer.py`.
+
+## 1. Setup
+
+```
+python3 report.py                       # last scores, exclusion count, --after candidate
+python3 make_session.py --limit 25 [--after Qnnn]
+```
+
+`make_session.py` skips questions whose last 2 graded attempts were correct (`--exclude-recent-correct 2` is the default; `0` disables). It prints the session id and writes `sessions/<id>/questions.md`.
+
+Hard rules for the quizmaster:
+- Never open `manifest.json` or the master bank during a session.
+- Never reuse or inspect a seed.
+
+## 2. Present
+
+Read `sessions/<id>/questions.md`. **One question per turn**: stem + options verbatim, plus the Type line (single / multi-select N correct). Then wait. The learner may ask clarifying questions before committing. No hints, no discussing options before commitment.
+
+## 3. Grade
+
+The instant the learner commits:
+
+```
+python3 log_answer.py --session <id> --qid Qnnn --answer X[,Y]
+```
+
+The script's output is the **only** source of the verdict and correct letters — never compute or guess a grade. Reveal and rationale come after the command, from the option texts already in `questions.md`.
+
+## 4. Miss triage
+
+Discuss each miss, agree a bucket — (a) careless, (b) fundamentals gap, (c) retention hole, (d) bad question — then:
+
+```
+python3 log_answer.py --session <id> --qid Qnnn --set-bucket b --note "..."
+```
+
+## 5. Mishaps
+
+Leaked or garbled presentation: `--void "reason"`, move on. A duplicate log for the same question is refused; `--force` supersedes an erroneous entry (last record wins).
+
+## 6. Close
+
+```
+python3 report.py
+```
+
+State the session's raw and adjusted score (adjusted = raw / (scored − bucket-b/d misses), target ≥77%). Commit `attempts.jsonl` + `sessions/<id>/` to git. Update the §6 session row and resume point in `GH-200_Practice_Protocol_and_Progress.md`.
+
+## Tooling map
+
+| File | Role |
+|---|---|
+| `make_session.py` | filter bank by history, shuffle (via `shuffle_bank.py`), write `questions.md` + `manifest.json` |
+| `log_answer.py` | grade letter-vs-letter against the manifest, append to `attempts.jsonl` |
+| `report.py` | per-session raw/adjusted scores, failed-last list, exclusion preview, per-question history |
+| `backfill_pass1.py` | one-off, already run — Pass 1 drill log → `attempts.jsonl` (sessions `pass1-*`) |
+| `quiz_log.py` | shared attempts reader (amendment/supersession merge) |
