@@ -6,10 +6,12 @@ Scripts live in `Practice/`; run with `python3` from there. `attempts.jsonl` is 
 
 ```
 python3 report.py                       # last scores, exclusion count, --after candidate
-python3 make_session.py --limit 25 [--after Qnnn]
+python3 make_session.py [--after Qnnn]
 ```
 
 `make_session.py` skips questions whose last 2 graded attempts were correct (`--exclude-recent-correct 2` is the default; `0` disables). It prints the session id and writes `sessions/<id>/questions.md`.
+
+Sessions are **open-ended**: generate all eligible questions (no `--limit`) and quiz until the learner says stop — session length is never known in advance. Stopping mid-file is fine; unanswered questions have no log entry and stay eligible for the next session.
 
 Hard rules for the quizmaster:
 - Never open `manifest.json` or the master bank during a session.
@@ -17,7 +19,7 @@ Hard rules for the quizmaster:
 
 ## 2. Present
 
-Read `sessions/<id>/questions.md`. **One question per turn**: stem + options verbatim, plus the Type line (single / multi-select N correct). Then wait. The learner may ask clarifying questions before committing. No hints, no discussing options before commitment.
+Read `sessions/<id>/questions.md` **incrementally** (a chunk at a time, in order — not the whole file; it can hold the full bank). **One question per turn**: stem + options verbatim, plus the Type line (single / multi-select N correct). Then wait. The learner may ask clarifying questions before committing. No hints, no discussing options before commitment. Keep going until the learner says stop, then close (§6).
 
 ## 3. Grade
 
