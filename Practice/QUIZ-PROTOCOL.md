@@ -58,5 +58,6 @@ State the session's raw and adjusted score (adjusted = raw / (scored − bucket-
 | `make_session.py` | filter bank by history, shuffle (via `shuffle_bank.py`), write `questions.md` + `manifest.json` |
 | `log_answer.py` | grade letter-vs-letter against the manifest, append to `attempts.jsonl` |
 | `report.py` | per-session raw/adjusted scores, failed-last list, exclusion preview, per-question history |
+| `validate_session.py` | post-generation integrity check: confirms a session's options + correct-answer maps match the bank exactly (`validate_session.py [session-id]`) |
 | `backfill_pass1.py` | one-off, already run — Pass 1 drill log → `attempts.jsonl` (sessions `pass1-*`) |
 | `quiz_log.py` | shared attempts reader (amendment/supersession merge) |
