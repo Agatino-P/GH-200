@@ -60,5 +60,7 @@ State the session's raw and adjusted score (adjusted = raw / (scored − bucket-
 | `log_answer.py` | grade letter-vs-letter against the manifest, append to `attempts.jsonl` |
 | `report.py` | per-session raw/adjusted scores, failed-last list, exclusion preview, per-question history |
 | `validate_session.py` | post-generation integrity check: confirms a session's options + correct-answer maps match the bank exactly (`validate_session.py [session-id]`) |
+| `question_status.py` | per-question pass classifier (both/first-only/second-only/never/…) + next-pass presented flag; run on specific qids to debug one |
+| `pass_progress.py` | aggregates `question_status` over a qid range: category counts + presented-vs-excluded totals for the next pass (`pass_progress.py --to 150`) |
 | `backfill_pass1.py` | one-off, already run — Pass 1 drill log → `attempts.jsonl` (sessions `pass1-*`) |
 | `quiz_log.py` | shared attempts reader (amendment/supersession merge) |
