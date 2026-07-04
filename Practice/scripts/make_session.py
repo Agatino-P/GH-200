@@ -27,15 +27,16 @@ import re
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.dirname(SCRIPT_DIR)  # Practice/ — bank, attempts, sessions live here
 sys.path.insert(0, SCRIPT_DIR)
 
 from shuffle_bank import ANSWER_RE, FENCE_RE, parse_block, render_block, split_blocks
 from quiz_log import history_by_qid, load_attempts, recently_correct
 
 DOCS_RE = re.compile(r"^\*\*Docs:\*\*")
-DEFAULT_BANK = os.path.join(SCRIPT_DIR, "gh-200-ghcertified-bank-full-2026-06-24.md")
-DEFAULT_ATTEMPTS = os.path.join(SCRIPT_DIR, "attempts.jsonl")
-DEFAULT_SESSIONS = os.path.join(SCRIPT_DIR, "sessions")
+DEFAULT_BANK = os.path.join(DATA_DIR, "gh-200-ghcertified-bank-full-2026-06-24.md")
+DEFAULT_ATTEMPTS = os.path.join(DATA_DIR, "attempts.jsonl")
+DEFAULT_SESSIONS = os.path.join(DATA_DIR, "sessions")
 
 
 def type_line(n_correct):

@@ -18,16 +18,16 @@
 cd Practice
 
 # Shuffle a whole bank into a new file (input is never modified):
-python3 shuffle_all.py gh-200-ghcertified-bank-full-2026-06-24.md my-shuffled-bank.md --seed 7
+python3 scripts/shuffle_all.py gh-200-ghcertified-bank-full-2026-06-24.md my-shuffled-bank.md --seed 7
 
 # Same, but let the script pick (and print) a random seed:
-python3 shuffle_all.py gh-200-ghcertified-bank-full-2026-06-24.md my-shuffled-bank.md
+python3 scripts/shuffle_all.py gh-200-ghcertified-bank-full-2026-06-24.md my-shuffled-bank.md
 
 # Core engine directly — subset + per-question mapping log on stderr:
-python3 shuffle_bank.py gh-200-ghcertified-bank-full-2026-06-24.md -o sample.md --limit 10 --seed 42
+python3 scripts/shuffle_bank.py gh-200-ghcertified-bank-full-2026-06-24.md -o sample.md --limit 10 --seed 42
 
 # Parser safety check (run after editing a bank or the scripts):
-python3 shuffle_bank.py gh-200-ghcertified-bank-full-2026-06-24.md --check
+python3 scripts/shuffle_bank.py gh-200-ghcertified-bank-full-2026-06-24.md --check
 ```
 
 - **Seeds** make runs reproducible: same bank + same seed = identical output. `shuffle_all.py` records the seed in the output's provenance note.

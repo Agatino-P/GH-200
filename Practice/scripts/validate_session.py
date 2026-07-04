@@ -31,12 +31,13 @@ import re
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.dirname(SCRIPT_DIR)  # Practice/ — bank and sessions live here
 sys.path.insert(0, SCRIPT_DIR)
 
 from shuffle_bank import split_blocks, parse_block, OPTION_RE, FENCE_RE, HEADER_RE
 
-DEFAULT_BANK = os.path.join(SCRIPT_DIR, "gh-200-ghcertified-bank-full-2026-06-24.md")
-DEFAULT_SESSIONS = os.path.join(SCRIPT_DIR, "sessions")
+DEFAULT_BANK = os.path.join(DATA_DIR, "gh-200-ghcertified-bank-full-2026-06-24.md")
+DEFAULT_SESSIONS = os.path.join(DATA_DIR, "sessions")
 
 
 def opt_text(lines):

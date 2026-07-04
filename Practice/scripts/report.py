@@ -14,11 +14,12 @@ import os
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.dirname(SCRIPT_DIR)  # Practice/ — attempts.jsonl lives here
 sys.path.insert(0, SCRIPT_DIR)
 
 from quiz_log import SCOREABLE, history_by_qid, load_attempts, recently_correct
 
-DEFAULT_ATTEMPTS = os.path.join(SCRIPT_DIR, "attempts.jsonl")
+DEFAULT_ATTEMPTS = os.path.join(DATA_DIR, "attempts.jsonl")
 TARGET = 0.77
 MARK = {"correct": "✓", "incorrect": "✗", "void": "V", "gap": "G", "excluded": "E"}
 

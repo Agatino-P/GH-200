@@ -1,12 +1,13 @@
 # GH-200 Quiz Protocol (session recipe)
 
-Scripts live in `Practice/`; run with `python3` from there. `attempts.jsonl` is the append-only system of record — never edit it by hand. The answer key lives only in each session's `manifest.json`, written at generation time and read only by `log_answer.py`.
+Scripts live in `Practice/scripts/`; run them from `Practice/` as `python3 scripts/<name>.py`. Data (`attempts.jsonl`, the banks, `sessions/`) stays in `Practice/` — the scripts resolve it via their parent dir, so the working directory doesn't matter. `attempts.jsonl` is the append-only system of record — never edit it by hand. The answer key lives only in each session's `manifest.json`, written at generation time and read only by `log_answer.py`.
 
 ## 1. Setup
 
 ```
-python3 report.py                       # last scores, exclusion count, --after candidate
-python3 make_session.py [--after Qnnn]
+python3 scripts/report.py                       # last scores, exclusion count, --after candidate
+python3 scripts/make_session.py [--after Qnnn]
+python3 scripts/validate_session.py <id>        # optional: confirm the new session matches the bank
 ```
 
 `make_session.py` skips questions whose last 2 graded attempts were correct (`--exclude-recent-correct 2` is the default; `0` disables). It prints the session id and writes `sessions/<id>/questions.md`.
@@ -26,7 +27,7 @@ Read `sessions/<id>/questions.md` **incrementally** (a chunk at a time, in order
 The instant the learner commits:
 
 ```
-python3 log_answer.py --session <id> --qid Qnnn --answer X[,Y]
+python3 scripts/log_answer.py --session <id> --qid Qnnn --answer X[,Y]
 ```
 
 The script's output is the **only** source of the verdict and correct letters — never compute or guess a grade. Reveal and rationale come after the command, from the option texts already in `questions.md`.
@@ -36,7 +37,7 @@ The script's output is the **only** source of the verdict and correct letters �
 Discuss each miss, agree a bucket — (a) careless, (b) fundamentals gap, (c) retention hole, (d) bad question — then:
 
 ```
-python3 log_answer.py --session <id> --qid Qnnn --set-bucket b --note "..."
+python3 scripts/log_answer.py --session <id> --qid Qnnn --set-bucket b --note "..."
 ```
 
 ## 5. Mishaps
@@ -46,7 +47,7 @@ Leaked or garbled presentation: `--void "reason"`, move on. A duplicate log for 
 ## 6. Close
 
 ```
-python3 report.py
+python3 scripts/report.py
 ```
 
 State the session's raw and adjusted score (adjusted = raw / (scored − bucket-b/d misses), target ≥77%). Commit `attempts.jsonl` + `sessions/<id>/` to git. Update the §6 session row and resume point in `GH-200_Practice_Protocol_and_Progress.md`.

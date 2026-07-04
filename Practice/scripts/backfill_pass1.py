@@ -22,8 +22,10 @@ import re
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_LOG = os.path.join(os.path.dirname(SCRIPT_DIR), "gh-200-drill-log.md")
-DEFAULT_OUT = os.path.join(SCRIPT_DIR, "attempts.jsonl")
+DATA_DIR = os.path.dirname(SCRIPT_DIR)  # Practice/
+REPO_ROOT = os.path.dirname(DATA_DIR)
+DEFAULT_LOG = os.path.join(REPO_ROOT, "gh-200-drill-log.md")
+DEFAULT_OUT = os.path.join(DATA_DIR, "attempts.jsonl")
 
 ENTRY_RE = re.compile(r"^### GHCertified (Q\d+)\b.*$", re.M)
 TS_RE = re.compile(r"\(presented (2026-\d\d-\d\dT[\d:]+Z)\)")

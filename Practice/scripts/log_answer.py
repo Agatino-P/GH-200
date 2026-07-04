@@ -23,12 +23,13 @@ import re
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.dirname(SCRIPT_DIR)  # Practice/ — attempts, sessions live here
 sys.path.insert(0, SCRIPT_DIR)
 
 from quiz_log import SCOREABLE, read_records
 
-DEFAULT_ATTEMPTS = os.path.join(SCRIPT_DIR, "attempts.jsonl")
-DEFAULT_SESSIONS = os.path.join(SCRIPT_DIR, "sessions")
+DEFAULT_ATTEMPTS = os.path.join(DATA_DIR, "attempts.jsonl")
+DEFAULT_SESSIONS = os.path.join(DATA_DIR, "sessions")
 
 
 def now_ts():
