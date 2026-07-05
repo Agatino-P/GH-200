@@ -1,0 +1,260 @@
+{
+  "session": "2026-07-05-b",
+  "created": "2026-07-05T13:56:39Z",
+  "bank": "gh-200-ghcertified-bank-full-2026-06-24.md",
+  "seed": 127231703,
+  "selection": {
+    "exclude_recent_correct": 2,
+    "limit": null,
+    "after": null,
+    "qids": null
+  },
+  "questions": [
+    {
+      "qid": "Q014",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "D": "B",
+        "B": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q022",
+      "n_options": 2,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "B": "B"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q027",
+      "n_options": 5,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "E": "A",
+        "C": "B",
+        "B": "C",
+        "D": "D",
+        "A": "E"
+      },
+      "correct": [
+        "C",
+        "E"
+      ]
+    },
+    {
+      "qid": "Q036",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "B": "B",
+        "D": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q038",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "A": "B",
+        "C": "C",
+        "B": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q072",
+      "n_options": 7,
+      "type": "multi",
+      "n_correct": 4,
+      "map_old_to_new": {
+        "C": "A",
+        "F": "B",
+        "A": "C",
+        "B": "D",
+        "G": "E",
+        "E": "F",
+        "D": "G"
+      },
+      "correct": [
+        "A",
+        "C",
+        "D",
+        "G"
+      ]
+    },
+    {
+      "qid": "Q081",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "D": "A",
+        "B": "B",
+        "A": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A",
+        "B"
+      ]
+    },
+    {
+      "qid": "Q098",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "B": "B",
+        "A": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q115",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "B": "B",
+        "C": "C",
+        "D": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q121",
+      "n_options": 6,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "C": "A",
+        "D": "B",
+        "F": "C",
+        "A": "D",
+        "E": "E",
+        "B": "F"
+      },
+      "correct": [
+        "A",
+        "D",
+        "F"
+      ]
+    },
+    {
+      "qid": "Q125",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "C": "A",
+        "A": "B",
+        "B": "C",
+        "D": "D"
+      },
+      "correct": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    {
+      "qid": "Q132",
+      "n_options": 5,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "D": "A",
+        "B": "B",
+        "E": "C",
+        "A": "D",
+        "C": "E"
+      },
+      "correct": [
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "qid": "Q148",
+      "n_options": 5,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "C": "B",
+        "E": "C",
+        "B": "D",
+        "D": "E"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q158",
+      "n_options": 5,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "E": "A",
+        "A": "B",
+        "C": "C",
+        "B": "D",
+        "D": "E"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q162",
+      "n_options": 6,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "A": "A",
+        "F": "B",
+        "D": "C",
+        "B": "D",
+        "C": "E",
+        "E": "F"
+      },
+      "correct": [
+        "A",
+        "D"
+      ]
+    }
+  ]
+}
