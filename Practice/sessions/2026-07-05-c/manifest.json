@@ -1,0 +1,93 @@
+{
+  "session": "2026-07-05-c",
+  "created": "2026-07-05T14:08:22Z",
+  "bank": "gh-200-ghcertified-bank-full-2026-06-24.md",
+  "seed": 873834129,
+  "selection": {
+    "exclude_recent_correct": 2,
+    "limit": null,
+    "after": null,
+    "qids": null
+  },
+  "questions": [
+    {
+      "qid": "Q014",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "D": "B",
+        "B": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q081",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "B": "A",
+        "C": "B",
+        "D": "C",
+        "A": "D"
+      },
+      "correct": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "qid": "Q098",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "D": "B",
+        "C": "C",
+        "B": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q125",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "B": "A",
+        "D": "B",
+        "C": "C",
+        "A": "D"
+      },
+      "correct": [
+        "A",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "qid": "Q158",
+      "n_options": 5,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "D": "B",
+        "A": "C",
+        "B": "D",
+        "E": "E"
+      },
+      "correct": [
+        "C"
+      ]
+    }
+  ]
+}
