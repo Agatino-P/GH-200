@@ -110,7 +110,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("session_id", nargs="?", help="session id (default: newest)")
     ap.add_argument("--session", dest="session_flag", help="session id (alt form)")
-    ap.add_argument("--bank", default=DEFAULT_BANK)
+    ap.add_argument("--bank", default=None,
+                    help="bank file (default: the one recorded in the session manifest)")
     ap.add_argument("--sessions-dir", default=DEFAULT_SESSIONS)
     args = ap.parse_args()
 
@@ -119,10 +120,17 @@ def main():
     if not os.path.isdir(sdir):
         sys.exit(f"no such session dir: {sdir}")
 
-    bank = bank_by_qid(args.bank)
-    session = session_options(os.path.join(sdir, "questions.md"))
     with open(os.path.join(sdir, "manifest.json"), encoding="utf-8") as f:
-        man = {q["qid"]: q for q in json.load(f)["questions"]}
+        manifest = json.load(f)
+        man = {q["qid"]: q for q in manifest["questions"]}
+
+    bank_path = args.bank or os.path.join(DATA_DIR, manifest.get("bank") or "")
+    if not os.path.isfile(bank_path):
+        sys.exit(f"bank not found: {bank_path} (manifest bank={manifest.get('bank')!r}; "
+                 "pass --bank to override)")
+
+    bank = bank_by_qid(bank_path)
+    session = session_options(os.path.join(sdir, "questions.md"))
 
     problems = []
     for qid in session:
@@ -144,7 +152,7 @@ def main():
                              f"bank opts={len(b['opts'])} correct={len(b['marked'])}",
                              f"manifest opts={mm['n_options']} correct={mm['n_correct']}"))
 
-    print(f"session {sid}: {len(session)} questions checked against {os.path.basename(args.bank)}")
+    print(f"session {sid}: {len(session)} questions checked against {os.path.basename(bank_path)}")
     if not problems:
         print("ALL CLEAN — every session question's options + correct answers match the bank exactly.")
         return 0
