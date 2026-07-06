@@ -52,6 +52,14 @@ python3 scripts/report.py
 
 State the session's raw and adjusted score (adjusted = raw / (scored − bucket-b/d misses), target ≥77%). Commit `attempts.jsonl` + `sessions/<id>/` to git. Update the §6 session row and resume point in `GH-200_Practice_Protocol_and_Progress.md`.
 
+## Gap bank
+
+`gh-200-gap-bank-2026-07-03.md` — 52 authored questions (Q501–Q552) for the objectives the GHCertified bank misses (attestations/SLSA, script injection, YAML anchors, job summaries, service containers, IP allow lists, runner groups & troubleshooting, action troubleshooting). Same format, same recipe, shared `attempts.jsonl` (IDs disjoint from Q001–Q179). Only setup differs:
+
+```
+python3 scripts/make_session.py --bank gh-200-gap-bank-2026-07-03.md
+```
+
 ## Tooling map
 
 | File | Role |

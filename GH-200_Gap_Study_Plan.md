@@ -172,7 +172,9 @@ Each stage gates the next: don't start Phase 2 before the cheat review, don't st
 
 ---
 
-## §5 — Authored gap bank *(DRAFT — added 2026-06-30, to be refined before authoring)*
+## §5 — Authored gap bank *(BUILT 2026-07-06 — see status note; draft spec below kept for the record)*
+
+**Status (2026-07-06):** authored as `Practice/gh-200-gap-bank-2026-07-03.md` — **52 questions, IDs Q501–Q552** (5 multi-select), covering 5.8 (9), 5.3 (8), 1.9/2.3 (7), 1.14 (5), 1.7 (6), 4.4 (6), 4.5 (6), 3.3 (5). Counts weighted by gap-severity × domain weight (D1/D4 20–25%, D3 15–20%, D5 10–15%). Exact GHCertified format — the quiz tooling runs it unchanged via `make_session.py --bank gh-200-gap-bank-2026-07-03.md` (see `Practice/QUIZ-PROTOCOL.md`). Every key verified against live `docs.github.com` by independent review agents before first use. **One deviation from the draft below:** results land in the shared `attempts.jsonl` (not a separate log) — the disjoint Q5xx ID range keeps provenance unambiguous now that the log is machine-readable; the bank file itself stays separate and is never merged into the GHCertified bank.
 
 **Why:** the GHCertified bank (178 Q) gives **zero drillable reps** on several Jan-2026 objectives — `5.8` attestations/SLSA (zero coverage) plus the thin ones (`1.9`, `1.14`, `5.3`, `4.4`, `4.5`, `1.7`, `3.3`). The Phase-1 *check questions* above are **ephemeral** (build understanding, not logged). This step adds a **persistent, drillable, logged** set for the uncovered material so it can be re-tested like the main bank.
 
