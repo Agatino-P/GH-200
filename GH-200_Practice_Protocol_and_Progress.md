@@ -1,6 +1,6 @@
 # GH-200 Practice (Testing) Protocol & Progress Tracker
 
-**Last updated: 2026-07-07 18:11 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
+**Last updated: 2026-07-07 20:07 UTC** *(bump this timestamp on every edit — same convention as the study protocol §3.7. Use `date -u`; this value is the real system clock.)*
 
 *This file is the operating agreement and running state for the **testing/practice phase** of GH-200 preparation. It is the companion to `GH-200_Study_Protocol_and_Progress.md`, which is now the historical **teaching-phase** record (Domains 1–5 gap-complete). Paste this into the project so any future session has full context. Claude updates the **Session log (§6)**, **Coverage ledger (§6b)**, and **Miss ledger (§7)** at the end of every session, then re-syncs all three sources (project + repo + HD).*
 
