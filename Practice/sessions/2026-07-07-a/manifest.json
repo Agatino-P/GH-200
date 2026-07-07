@@ -1,0 +1,197 @@
+{
+  "session": "2026-07-07-a",
+  "created": "2026-07-07T19:50:47Z",
+  "bank": "gh-200-gap-bank-2026-07-03.md",
+  "seed": 438900129,
+  "selection": {
+    "exclude_recent_correct": 2,
+    "limit": null,
+    "after": null,
+    "qids": "Q502,Q505,Q507,Q523,Q531,Q534,Q535,Q538,Q541,Q542,Q546,Q551"
+  },
+  "questions": [
+    {
+      "qid": "Q502",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "C": "A",
+        "D": "B",
+        "A": "C",
+        "B": "D"
+      },
+      "correct": [
+        "C",
+        "D"
+      ]
+    },
+    {
+      "qid": "Q505",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "B": "A",
+        "C": "B",
+        "D": "C",
+        "A": "D"
+      },
+      "correct": [
+        "A",
+        "D"
+      ]
+    },
+    {
+      "qid": "Q507",
+      "n_options": 4,
+      "type": "multi",
+      "n_correct": 2,
+      "map_old_to_new": {
+        "C": "A",
+        "D": "B",
+        "B": "C",
+        "A": "D"
+      },
+      "correct": [
+        "C",
+        "D"
+      ]
+    },
+    {
+      "qid": "Q523",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "D": "B",
+        "C": "C",
+        "B": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q531",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "A": "B",
+        "C": "C",
+        "B": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q534",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "C": "B",
+        "B": "C",
+        "D": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q535",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "A": "B",
+        "B": "C",
+        "D": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q538",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "B": "A",
+        "C": "B",
+        "D": "C",
+        "A": "D"
+      },
+      "correct": [
+        "D"
+      ]
+    },
+    {
+      "qid": "Q541",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "B": "A",
+        "D": "B",
+        "A": "C",
+        "C": "D"
+      },
+      "correct": [
+        "C"
+      ]
+    },
+    {
+      "qid": "Q542",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "A": "A",
+        "B": "B",
+        "D": "C",
+        "C": "D"
+      },
+      "correct": [
+        "A"
+      ]
+    },
+    {
+      "qid": "Q546",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "B": "B",
+        "A": "C",
+        "D": "D"
+      },
+      "correct": [
+        "C"
+      ]
+    },
+    {
+      "qid": "Q551",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "B": "A",
+        "C": "B",
+        "D": "C",
+        "A": "D"
+      },
+      "correct": [
+        "D"
+      ]
+    }
+  ]
+}
