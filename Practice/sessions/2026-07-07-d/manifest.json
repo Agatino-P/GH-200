@@ -1,0 +1,34 @@
+{
+  "session": "2026-07-07-d",
+  "created": "2026-07-07T21:09:55Z",
+  "bank": "gh-200-ghcertified-bank-full-2026-06-24.md",
+  "seed": 492852448,
+  "selection": {
+    "exclude_recent_correct": 2,
+    "limit": null,
+    "after": null,
+    "qids": "Q050"
+  },
+  "questions": [
+    {
+      "qid": "Q050",
+      "n_options": 7,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "A": "A",
+        "D": "B",
+        "C": "C",
+        "B": "D",
+        "F": "E",
+        "E": "F",
+        "G": "G"
+      },
+      "correct": [
+        "A",
+        "C",
+        "D"
+      ]
+    }
+  ]
+}
