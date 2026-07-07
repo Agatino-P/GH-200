@@ -1,0 +1,162 @@
+{
+  "session": "2026-07-07-c",
+  "created": "2026-07-07T20:55:46Z",
+  "bank": "gh-200-ghcertified-bank-full-2026-06-24.md",
+  "seed": 785017374,
+  "selection": {
+    "exclude_recent_correct": 2,
+    "limit": null,
+    "after": null,
+    "qids": null
+  },
+  "questions": [
+    {
+      "qid": "Q008",
+      "n_options": 5,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "B": "B",
+        "A": "C",
+        "E": "D",
+        "D": "E"
+      },
+      "correct": [
+        "C"
+      ]
+    },
+    {
+      "qid": "Q037",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "A": "B",
+        "D": "C",
+        "B": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q050",
+      "n_options": 7,
+      "type": "multi",
+      "n_correct": 3,
+      "map_old_to_new": {
+        "E": "A",
+        "G": "B",
+        "A": "C",
+        "C": "D",
+        "F": "E",
+        "D": "F",
+        "B": "G"
+      },
+      "correct": [
+        "C",
+        "D",
+        "G"
+      ]
+    },
+    {
+      "qid": "Q063",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "B": "B",
+        "C": "C",
+        "A": "D"
+      },
+      "correct": [
+        "D"
+      ]
+    },
+    {
+      "qid": "Q072",
+      "n_options": 7,
+      "type": "multi",
+      "n_correct": 4,
+      "map_old_to_new": {
+        "D": "A",
+        "F": "B",
+        "C": "C",
+        "G": "D",
+        "E": "E",
+        "A": "F",
+        "B": "G"
+      },
+      "correct": [
+        "A",
+        "C",
+        "F",
+        "G"
+      ]
+    },
+    {
+      "qid": "Q101",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "B": "B",
+        "A": "C",
+        "C": "D"
+      },
+      "correct": [
+        "C"
+      ]
+    },
+    {
+      "qid": "Q110",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "D": "A",
+        "A": "B",
+        "C": "C",
+        "B": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q144",
+      "n_options": 4,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "C": "A",
+        "A": "B",
+        "B": "C",
+        "D": "D"
+      },
+      "correct": [
+        "B"
+      ]
+    },
+    {
+      "qid": "Q158",
+      "n_options": 5,
+      "type": "single",
+      "n_correct": 1,
+      "map_old_to_new": {
+        "E": "A",
+        "A": "B",
+        "B": "C",
+        "C": "D",
+        "D": "E"
+      },
+      "correct": [
+        "B"
+      ]
+    }
+  ]
+}
